@@ -3,7 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "vite build",
+		"build": "zen generate && vite build",
 		"dev": "vite dev --port 3000",
 		"format": "oxfmt",
 		"format:check": "oxfmt --check",
@@ -53,6 +53,7 @@
 		"oxlint": "^1.39.0",
 		"typescript": "^5.7.2",
 		"vite": "^7.1.7",
+		"vite-plugin-oxlint": "^1.5.1",
 		"vitest": "^3.0.5",
 		"web-vitals": "^5.1.0"
 	}

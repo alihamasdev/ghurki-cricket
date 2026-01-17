@@ -1,8 +1,15 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
-	"plugins": ["unicorn", "typescript", "oxc"],
+	"plugins": ["unicorn", "typescript", "oxc", "import", "promise", "react"],
 	"categories": {},
 	"rules": {
+		"import/no-default-export": "warn",
+		"promise/avoid-new": "error",
+		"react/button-has-type": "warn",
+		"react/checked-requires-onchange-or-readonly": "warn",
+		"react/jsx-key": "error",
+		"typescript/return-await": "error",
+		"typescript/consistent-type-imports": ["warn", { "fixStyle": "inline-type-imports", "prefer": "type-imports" }],
 		"constructor-super": "warn",
 		"for-direction": "warn",
 		"no-async-promise-executor": "warn",
@@ -89,7 +96,7 @@
 		"typescript/no-unsafe-unary-minus": "warn",
 		"typescript/no-useless-empty-export": "warn",
 		"typescript/no-wrapper-object-types": "warn",
-		"typescript/prefer-as-const": "warn",
+		"typescript/prefer-as-const": "error",
 		"typescript/require-array-sort-compare": "warn",
 		"typescript/restrict-template-expressions": "warn",
 		"typescript/triple-slash-reference": "warn",
@@ -114,12 +121,9 @@
 			"components": {},
 			"attributes": {}
 		},
-		"next": {
-			"rootDir": []
-		},
 		"react": {
 			"formComponents": [],
-			"linkComponents": [],
+			"linkComponents": [{ "name": "Link", "attribute": "to" }],
 			"version": null
 		},
 		"jsdoc": {
@@ -140,5 +144,5 @@
 		"builtin": true
 	},
 	"globals": {},
-	"ignorePatterns": []
+	"ignorePatterns": ["routeTree.gen.ts", "zenstack/input.ts", "zenstack/models.ts", "zenstack/schema.ts"]
 }

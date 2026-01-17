@@ -6,6 +6,8 @@
 	"singleQuote": false,
 	"trailingComma": "all",
 	"jsxSingleQuote": false,
+	"semi": true,
+	"objectWrap": "preserve",
 	"experimentalTailwindcss": {
 		"config": "./tailwind.config.js",
 		"stylesheet": "./src/styles.css",
@@ -27,5 +29,6 @@
 	},
 	"experimentalSortPackageJson": {
 		"sortScripts": true
-	}
+	},
+	"ignorePatterns": ["routeTree.gen.ts", "zenstack/input.ts", "zenstack/models.ts", "zenstack/schema.ts"]
 }

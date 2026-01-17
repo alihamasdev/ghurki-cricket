@@ -3,10 +3,14 @@
 		"**/routeTree.gen.ts": true
 	},
 	"search.exclude": {
+		"**/bun.lock": true,
 		"**/routeTree.gen.ts": true
 	},
 	"files.readonlyInclude": {
-		"**/routeTree.gen.ts": true
+		"**/routeTree.gen.ts": true,
+		"**/zenstack/input.ts": true,
+		"**/zenstack/models.ts": true,
+		"**/zenstack/schema.ts": true
 	},
 	"[zmodel-v3]": {
 		"editor.defaultFormatter": "zenstack.zenstack-v3"
@@ -15,6 +19,7 @@
 		"*.css": "tailwindcss",
 		"*.zmodel": "zmodel-v3"
 	},
+	"npm.packageManager": "bun",
 	"editor.defaultFormatter": "oxc.oxc-vscode",
 	"typescript.preferences.preferTypeOnlyAutoImports": true,
 	"typescript.preferences.autoImportFileExcludePatterns": ["@radix-ui", "radix-ui", "@base-ui", "base-ui"]

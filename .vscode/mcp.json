@@ -1,0 +1,11 @@
+{
+	"servers": {
+		"tanstack": {
+			"type": "http",
+			"url": "https://tanstack.com/api/mcp",
+			"headers": {
+				"Authorization": "Bearer ts_ec41b7897d67e795d5d14315004c43f99f87024fc7f121b5a7aedadaa750d23d"
+			}
+		}
+	}
+}
