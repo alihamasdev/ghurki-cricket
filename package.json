@@ -23,11 +23,13 @@
 		"@tanstack/react-start": "^1.132.0",
 		"@tanstack/react-table": "^8.21.3",
 		"@tanstack/router-plugin": "^1.132.0",
+		"@zenstackhq/orm": "^3.2.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"cmdk": "^1.1.1",
 		"date-fns": "^4.1.0",
 		"nitro": "latest",
+		"pg": "^8.17.1",
 		"radix-ui": "^1.4.3",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
@@ -45,9 +47,11 @@
 		"@testing-library/dom": "^10.4.0",
 		"@testing-library/react": "^16.2.0",
 		"@types/node": "^22.10.2",
+		"@types/pg": "^8.16.0",
 		"@types/react": "^19.2.0",
 		"@types/react-dom": "^19.2.0",
 		"@vitejs/plugin-react": "^5.0.4",
+		"@zenstackhq/cli": "^3.2.1",
 		"jsdom": "^27.0.0",
 		"oxfmt": "^0.24.0",
 		"oxlint": "^1.39.0",
@@ -56,5 +60,9 @@
 		"vite-plugin-oxlint": "^1.5.1",
 		"vitest": "^3.0.5",
 		"web-vitals": "^5.1.0"
+	},
+	"zenstack": {
+		"schema": "zenstack/schema.zmodel",
+		"output": "zenstack/output"
 	}
 }

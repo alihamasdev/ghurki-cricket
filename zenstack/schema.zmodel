@@ -1,0 +1,35 @@
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Teams {
+  name   String  @id
+  avatar String?
+  @@map("teams")
+}
+
+model Players {
+  name         String  @id
+  avatar       String?
+  battingStyle String?
+  bowlingStyle String?
+  @@map("players")
+}
+
+model Rivalries {
+  title String    @id
+  start DateTime  @db.Date @default(now())
+  end   DateTime? @db.Date
+  dates Dates[]
+  @@map("rivalries")
+}
+
+model Dates {
+  date      DateTime   @id @db.Date
+  title     String
+  rivalryId String?
+  rivalry   Rivalries? @relation(fields: [rivalryId], references: [title])
+  @@map("dates")
+}

@@ -8,9 +8,10 @@
 	},
 	"files.readonlyInclude": {
 		"**/routeTree.gen.ts": true,
-		"**/zenstack/input.ts": true,
-		"**/zenstack/models.ts": true,
-		"**/zenstack/schema.ts": true
+		"**/zenstack/output/input.ts": true,
+		"**/zenstack/output/models.ts": true,
+		"**/zenstack/output/schema.ts": true,
+		"**/zenstack/migrations/migration_lock.toml": true
 	},
 	"[zmodel-v3]": {
 		"editor.defaultFormatter": "zenstack.zenstack-v3"
