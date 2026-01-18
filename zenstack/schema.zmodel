@@ -13,11 +13,14 @@ model Teams {
 }
 
 model Players {
-  name            String    @id
+  name            String     @id
   avatar          String?
   battingStyle    String?
   bowlingStyle    String?
   playerOfMatches Matches[]
+  batting         Batters[]
+  bowling         Bowlers[]
+  fielding        Fielders[]
   @@map("players")
 }
 
@@ -58,16 +61,63 @@ model Matches {
 }
 
 model Innings {
-  id      Int      @id
-  runs    Int      @default(0)
-  balls   Int      @default(0)
-  wickets Int      @default(0)
-  allOuts Int      @default(0)
-  teamId  String
-  team    Teams    @relation(fields: [teamId], references: [name])
-  matchId Int
-  match   Matches  @relation(fields: [matchId], references: [id])
-  dateId  DateTime @db.Date
-  date    Dates    @relation(fields: [dateId], references: [date])
+  id       Int        @id
+  runs     Int        @default(0)
+  balls    Int        @default(0)
+  wickets  Int        @default(0)
+  allOuts  Int        @default(0)
+  teamId   String
+  team     Teams      @relation(fields: [teamId], references: [name])
+  matchId  Int
+  match    Matches    @relation(fields: [matchId], references: [id])
+  dateId   DateTime   @db.Date
+  date     Dates      @relation(fields: [dateId], references: [date])
+  batters  Batters[]
+  bowlers  Bowlers[]
+  fielders Fielders[]
   @@map("innings")
+}
+
+model Batters {
+  id        Int     @id
+  runs      Int     @default(0)
+  balls     Int     @default(0)
+  fours     Int     @default(0)
+  sixes     Int     @default(0)
+  dots      Int     @default(0)
+  outs      Int     @default(0)
+  ducks     Int     @default(0)
+  playerId  String
+  player    Players @relation(fields: [playerId], references: [name])
+  inningsId Int
+  innings   Innings @relation(fields: [inningsId], references: [id])
+  @@map("batting")
+}
+
+model Bowlers {
+  id        Int     @id
+  runs      Int     @default(0)
+  balls     Int     @default(0)
+  wickets   Int     @default(0)
+  fours     Int     @default(0)
+  sixes     Int     @default(0)
+  dots      Int     @default(0)
+  wides     Int     @default(0)
+  noBalls   Int     @default(0)
+  playerId  String
+  player    Players @relation(fields: [playerId], references: [name])
+  inningsId Int
+  innings   Innings @relation(fields: [inningsId], references: [id])
+  @@map("bowling")
+}
+
+model Fielders {
+  id        Int     @id
+  catches   Int     @default(0)
+  runOuts   Int     @default(0)
+  playerId  String
+  player    Players @relation(fields: [playerId], references: [name])
+  inningsId Int
+  innings   Innings @relation(fields: [inningsId], references: [id])
+  @@map("fielding")
 }
