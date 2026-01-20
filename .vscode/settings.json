@@ -20,8 +20,18 @@
 		"*.css": "tailwindcss",
 		"*.zmodel": "zmodel-v3"
 	},
+	"oxc.lint.run": "onSave",
 	"npm.packageManager": "bun",
 	"editor.defaultFormatter": "oxc.oxc-vscode",
+	"[tailwindcss]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[javascriptreact]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[css]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[javascript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[json]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[jsonc]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[html]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[markdown]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[typescriptreact]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
 	"typescript.preferences.preferTypeOnlyAutoImports": true,
 	"typescript.preferences.autoImportFileExcludePatterns": ["@radix-ui", "radix-ui", "@base-ui", "base-ui"]
 }

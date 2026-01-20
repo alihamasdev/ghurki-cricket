@@ -21,6 +21,8 @@ model Players {
   batting         Batters[]
   bowling         Bowlers[]
   fielding        Fielders[]
+  battingRecords  Records[]  @relation("BattingRecord")
+  bowlingRecords  Records[]  @relation("BowlingRecord")
   @@map("players")
 }
 
@@ -39,6 +41,7 @@ model Dates {
   rivalry   Rivalries? @relation(fields: [rivalryId], references: [title])
   matches   Matches[]
   innings   Innings[]
+  records   Records[]
   @@map("dates")
 }
 
@@ -120,4 +123,20 @@ model Fielders {
   inningsId Int
   innings   Innings @relation(fields: [inningsId], references: [id])
   @@map("fielding")
+}
+
+model Records {
+  id       Int      @id
+  runs     Int      @default(0)
+  wickets  Int      @default(0)
+  fours    Int      @default(0)
+  sixes    Int      @default(0)
+  dots     Int      @default(0)
+  batterId String
+  batter   Players  @relation("BattingRecord", fields: [batterId], references: [name])
+  bowlerId String
+  bowler   Players  @relation("BowlingRecord", fields: [bowlerId], references: [name])
+  dateId   DateTime @db.Date
+  date     Dates    @relation(fields: [dateId], references: [date])
+  @@map("records")
 }
