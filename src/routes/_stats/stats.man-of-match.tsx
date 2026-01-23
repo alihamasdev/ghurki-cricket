@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { TabsLayout } from "@/components/tabs/tabs-layout";
+
 function ManOfMatchStatsRoute() {
-	return <></>;
+	return <TabsLayout title="Man of Match Stats"></TabsLayout>;
 }
 
 export const Route = createFileRoute("/_stats/stats/man-of-match")({

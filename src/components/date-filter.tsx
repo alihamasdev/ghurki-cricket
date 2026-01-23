@@ -24,7 +24,6 @@ export const datesQueryOptions = () => {
 	return queryOptions({
 		queryKey: ["dates"],
 		queryFn: () => getDates(),
-		staleTime: Infinity,
 	});
 };
 
@@ -45,7 +44,7 @@ interface DateFilterProps extends React.ComponentProps<typeof Button> {
 	hasDates?: boolean;
 }
 
-export function DateFilter({ align = "end", hasRivalries = true, hasDates = true, ...props }: DateFilterProps) {
+export function DateFilter({ align = "center", hasRivalries = true, hasDates = true, ...props }: DateFilterProps) {
 	const { data } = useSuspenseQuery(datesQueryOptions());
 	const [selectedDate, setSelectedDate] = useQueryState("date", dateSearchParams);
 	const isRivalry = data.rivalries.find((rivalry) => JSON.stringify(rivalry.dates) === JSON.stringify(selectedDate));
@@ -54,7 +53,7 @@ export function DateFilter({ align = "end", hasRivalries = true, hasDates = true
 			<DropdownMenuTrigger asChild>
 				<Button variant="outline" {...props}>
 					<HugeiconsIcon icon={Calendar02Icon} strokeWidth={2} />
-					{formatDate(selectedDate) ?? isRivalry?.title}
+					{formatDate(selectedDate) ?? isRivalry?.title ?? "All Time"}
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align={align} className="w-auto">

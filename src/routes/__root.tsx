@@ -1,8 +1,12 @@
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
 
+import { datesQueryOptions } from "@/components/date-filter";
+import { playerQueryOptions } from "@/components/players/query";
 import { Toaster } from "@/components/ui/sonner";
+import { MenuProvider } from "@/context/menu-context";
 
 import appCss from "../styles.css?url";
 
@@ -16,6 +20,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 		links: [{ rel: "stylesheet", href: appCss }],
 	}),
 	shellComponent: RootDocument,
+	loader: async ({ context }) =>
+		await Promise.all([
+			context.queryClient.ensureQueryData(playerQueryOptions()),
+			context.queryClient.ensureQueryData(datesQueryOptions()),
+		]),
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -27,8 +36,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body>
 				<QueryClientProvider client={queryClient}>
-					<NuqsAdapter>{children}</NuqsAdapter>
+					<NuqsAdapter>
+						<MenuProvider>{children}</MenuProvider>
+					</NuqsAdapter>
 					<Toaster />
+					<ReactQueryDevtools client={queryClient} initialIsOpen={true} />
 				</QueryClientProvider>
 				<Scripts />
 			</body>

@@ -12,10 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TabRouteImport } from './routes/_tab'
 import { Route as StatsRouteImport } from './routes/_stats'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TabStatsRouteImport } from './routes/_tab/stats'
-import { Route as TabPlayersRouteImport } from './routes/_tab/players'
-import { Route as TabMatchesRouteImport } from './routes/_tab/matches'
-import { Route as TabCompareRouteImport } from './routes/_tab/compare'
+import { Route as TabStatsIndexRouteImport } from './routes/_tab/stats.index'
+import { Route as TabPlayersIndexRouteImport } from './routes/_tab/players.index'
+import { Route as TabMatchesIndexRouteImport } from './routes/_tab/matches.index'
+import { Route as TabCompareIndexRouteImport } from './routes/_tab/compare.index'
 import { Route as StatsStatsTeamsRouteImport } from './routes/_stats/stats.teams'
 import { Route as StatsStatsManOfMatchRouteImport } from './routes/_stats/stats.man-of-match'
 import { Route as StatsStatsFieldingRouteImport } from './routes/_stats/stats.fielding'
@@ -35,24 +35,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TabStatsRoute = TabStatsRouteImport.update({
-  id: '/stats',
-  path: '/stats',
+const TabStatsIndexRoute = TabStatsIndexRouteImport.update({
+  id: '/stats/',
+  path: '/stats/',
   getParentRoute: () => TabRoute,
 } as any)
-const TabPlayersRoute = TabPlayersRouteImport.update({
-  id: '/players',
-  path: '/players',
+const TabPlayersIndexRoute = TabPlayersIndexRouteImport.update({
+  id: '/players/',
+  path: '/players/',
   getParentRoute: () => TabRoute,
 } as any)
-const TabMatchesRoute = TabMatchesRouteImport.update({
-  id: '/matches',
-  path: '/matches',
+const TabMatchesIndexRoute = TabMatchesIndexRouteImport.update({
+  id: '/matches/',
+  path: '/matches/',
   getParentRoute: () => TabRoute,
 } as any)
-const TabCompareRoute = TabCompareRouteImport.update({
-  id: '/compare',
-  path: '/compare',
+const TabCompareIndexRoute = TabCompareIndexRouteImport.update({
+  id: '/compare/',
+  path: '/compare/',
   getParentRoute: () => TabRoute,
 } as any)
 const StatsStatsTeamsRoute = StatsStatsTeamsRouteImport.update({
@@ -83,82 +83,82 @@ const StatsStatsBattingRoute = StatsStatsBattingRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/compare': typeof TabCompareRoute
-  '/matches': typeof TabMatchesRoute
-  '/players': typeof TabPlayersRoute
-  '/stats': typeof TabStatsRoute
   '/stats/batting': typeof StatsStatsBattingRoute
   '/stats/bowling': typeof StatsStatsBowlingRoute
   '/stats/fielding': typeof StatsStatsFieldingRoute
   '/stats/man-of-match': typeof StatsStatsManOfMatchRoute
   '/stats/teams': typeof StatsStatsTeamsRoute
+  '/compare/': typeof TabCompareIndexRoute
+  '/matches/': typeof TabMatchesIndexRoute
+  '/players/': typeof TabPlayersIndexRoute
+  '/stats/': typeof TabStatsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/compare': typeof TabCompareRoute
-  '/matches': typeof TabMatchesRoute
-  '/players': typeof TabPlayersRoute
-  '/stats': typeof TabStatsRoute
   '/stats/batting': typeof StatsStatsBattingRoute
   '/stats/bowling': typeof StatsStatsBowlingRoute
   '/stats/fielding': typeof StatsStatsFieldingRoute
   '/stats/man-of-match': typeof StatsStatsManOfMatchRoute
   '/stats/teams': typeof StatsStatsTeamsRoute
+  '/compare': typeof TabCompareIndexRoute
+  '/matches': typeof TabMatchesIndexRoute
+  '/players': typeof TabPlayersIndexRoute
+  '/stats': typeof TabStatsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_stats': typeof StatsRouteWithChildren
   '/_tab': typeof TabRouteWithChildren
-  '/_tab/compare': typeof TabCompareRoute
-  '/_tab/matches': typeof TabMatchesRoute
-  '/_tab/players': typeof TabPlayersRoute
-  '/_tab/stats': typeof TabStatsRoute
   '/_stats/stats/batting': typeof StatsStatsBattingRoute
   '/_stats/stats/bowling': typeof StatsStatsBowlingRoute
   '/_stats/stats/fielding': typeof StatsStatsFieldingRoute
   '/_stats/stats/man-of-match': typeof StatsStatsManOfMatchRoute
   '/_stats/stats/teams': typeof StatsStatsTeamsRoute
+  '/_tab/compare/': typeof TabCompareIndexRoute
+  '/_tab/matches/': typeof TabMatchesIndexRoute
+  '/_tab/players/': typeof TabPlayersIndexRoute
+  '/_tab/stats/': typeof TabStatsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/compare'
-    | '/matches'
-    | '/players'
-    | '/stats'
     | '/stats/batting'
     | '/stats/bowling'
     | '/stats/fielding'
     | '/stats/man-of-match'
     | '/stats/teams'
+    | '/compare/'
+    | '/matches/'
+    | '/players/'
+    | '/stats/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/compare'
-    | '/matches'
-    | '/players'
-    | '/stats'
     | '/stats/batting'
     | '/stats/bowling'
     | '/stats/fielding'
     | '/stats/man-of-match'
     | '/stats/teams'
+    | '/compare'
+    | '/matches'
+    | '/players'
+    | '/stats'
   id:
     | '__root__'
     | '/'
     | '/_stats'
     | '/_tab'
-    | '/_tab/compare'
-    | '/_tab/matches'
-    | '/_tab/players'
-    | '/_tab/stats'
     | '/_stats/stats/batting'
     | '/_stats/stats/bowling'
     | '/_stats/stats/fielding'
     | '/_stats/stats/man-of-match'
     | '/_stats/stats/teams'
+    | '/_tab/compare/'
+    | '/_tab/matches/'
+    | '/_tab/players/'
+    | '/_tab/stats/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -190,32 +190,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_tab/stats': {
-      id: '/_tab/stats'
+    '/_tab/stats/': {
+      id: '/_tab/stats/'
       path: '/stats'
-      fullPath: '/stats'
-      preLoaderRoute: typeof TabStatsRouteImport
+      fullPath: '/stats/'
+      preLoaderRoute: typeof TabStatsIndexRouteImport
       parentRoute: typeof TabRoute
     }
-    '/_tab/players': {
-      id: '/_tab/players'
+    '/_tab/players/': {
+      id: '/_tab/players/'
       path: '/players'
-      fullPath: '/players'
-      preLoaderRoute: typeof TabPlayersRouteImport
+      fullPath: '/players/'
+      preLoaderRoute: typeof TabPlayersIndexRouteImport
       parentRoute: typeof TabRoute
     }
-    '/_tab/matches': {
-      id: '/_tab/matches'
+    '/_tab/matches/': {
+      id: '/_tab/matches/'
       path: '/matches'
-      fullPath: '/matches'
-      preLoaderRoute: typeof TabMatchesRouteImport
+      fullPath: '/matches/'
+      preLoaderRoute: typeof TabMatchesIndexRouteImport
       parentRoute: typeof TabRoute
     }
-    '/_tab/compare': {
-      id: '/_tab/compare'
+    '/_tab/compare/': {
+      id: '/_tab/compare/'
       path: '/compare'
-      fullPath: '/compare'
-      preLoaderRoute: typeof TabCompareRouteImport
+      fullPath: '/compare/'
+      preLoaderRoute: typeof TabCompareIndexRouteImport
       parentRoute: typeof TabRoute
     }
     '/_stats/stats/teams': {
@@ -275,17 +275,17 @@ const StatsRouteChildren: StatsRouteChildren = {
 const StatsRouteWithChildren = StatsRoute._addFileChildren(StatsRouteChildren)
 
 interface TabRouteChildren {
-  TabCompareRoute: typeof TabCompareRoute
-  TabMatchesRoute: typeof TabMatchesRoute
-  TabPlayersRoute: typeof TabPlayersRoute
-  TabStatsRoute: typeof TabStatsRoute
+  TabCompareIndexRoute: typeof TabCompareIndexRoute
+  TabMatchesIndexRoute: typeof TabMatchesIndexRoute
+  TabPlayersIndexRoute: typeof TabPlayersIndexRoute
+  TabStatsIndexRoute: typeof TabStatsIndexRoute
 }
 
 const TabRouteChildren: TabRouteChildren = {
-  TabCompareRoute: TabCompareRoute,
-  TabMatchesRoute: TabMatchesRoute,
-  TabPlayersRoute: TabPlayersRoute,
-  TabStatsRoute: TabStatsRoute,
+  TabCompareIndexRoute: TabCompareIndexRoute,
+  TabMatchesIndexRoute: TabMatchesIndexRoute,
+  TabPlayersIndexRoute: TabPlayersIndexRoute,
+  TabStatsIndexRoute: TabStatsIndexRoute,
 }
 
 const TabRouteWithChildren = TabRoute._addFileChildren(TabRouteChildren)
