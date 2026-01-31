@@ -4,24 +4,28 @@ import { createServerFn } from "@tanstack/react-start";
 import { type ColumnDef } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/data-table";
+import { DateFilter, dateSearchSchema } from "@/components/date-filter";
 import { PlayerAvatarCell } from "@/components/players/avatar";
 import { TabsLayout } from "@/components/tabs/tabs-layout";
 import { db } from "@/lib/db";
 import { type ManOfMatchStats } from "@/lib/types";
 
-const playerOfMatchStatsQueryOptions = () => {
+const playerOfMatchStatsQueryOptions = (date?: string[]) => {
 	return queryOptions({
-		queryKey: ["player-of-match-stats"],
-		queryFn: () => getPlayerOfMatchStats(),
+		queryKey: ["player-of-match-stats", ...(date ?? ["all-time"])],
+		queryFn: () => getPlayerOfMatchStats({ data: { date } }),
 	});
 };
 
-const getPlayerOfMatchStats = createServerFn({ method: "GET" }).handler(async (): Promise<ManOfMatchStats[]> => {
-	const stats = await db.players.findMany({
-		select: { name: true, _count: { select: { playerOfMatches: true } } },
+const getPlayerOfMatchStats = createServerFn({ method: "GET" })
+	.inputValidator(dateSearchSchema)
+	.handler(async ({ data: { date } }): Promise<ManOfMatchStats[]> => {
+		const stats = await db.players.findMany({
+			where: { playerOfMatches: { every: { dateId: { in: date } } } },
+			select: { name: true, _count: { select: { playerOfMatches: true } } },
+		});
+		return stats.map(({ _count, name }) => ({ player: name, count: _count.playerOfMatches })).filter(({ count }) => count > 0);
 	});
-	return stats.map(({ _count, name }) => ({ player: name, count: _count.playerOfMatches })).filter(({ count }) => count > 0);
-});
 
 const columns: ColumnDef<ManOfMatchStats>[] = [
 	{ accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerAvatarCell name={row.original.player} /> },
@@ -30,11 +34,12 @@ const columns: ColumnDef<ManOfMatchStats>[] = [
 
 export const Route = createFileRoute("/_stats/stats/player-of-the-match")({
 	head: () => ({ meta: [{ title: "Player of the Match Stats" }] }),
-	loader: async ({ context }) => await context.queryClient.ensureQueryData(playerOfMatchStatsQueryOptions()),
+	loader: async ({ context }) => await context.queryClient.ensureQueryData(playerOfMatchStatsQueryOptions(context.date)),
 	component: () => {
-		const { data } = useSuspenseQuery(playerOfMatchStatsQueryOptions());
+		const { date } = Route.useRouteContext();
+		const { data } = useSuspenseQuery(playerOfMatchStatsQueryOptions(date));
 		return (
-			<TabsLayout title="Player of the Match Stats">
+			<TabsLayout title="Player of the Match Stats" secondary={<DateFilter />}>
 				<DataTable columns={columns} data={data} />
 			</TabsLayout>
 		);

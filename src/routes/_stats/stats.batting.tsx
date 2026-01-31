@@ -4,40 +4,44 @@ import { createServerFn } from "@tanstack/react-start";
 import { type ColumnDef } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/data-table";
+import { DateFilter, dateSearchSchema } from "@/components/date-filter";
 import { PlayerAvatarCell } from "@/components/players/avatar";
 import { TabsLayout } from "@/components/tabs/tabs-layout";
 import { db } from "@/lib/db";
 import { type BattingStats } from "@/lib/types";
 
-const battingStatsQueryOptions = () => {
+const battingStatsQueryOptions = (date?: string[]) => {
 	return queryOptions({
-		queryKey: ["batting-stats"],
-		queryFn: () => getBattingStats(),
+		queryKey: ["batting-stats", ...(date ?? ["all-time"])],
+		queryFn: () => getBattingStats({ data: { date } }),
 	});
 };
 
-const getBattingStats = createServerFn({ method: "GET" }).handler(async (): Promise<BattingStats[]> => {
-	const stats = await db.batters.groupBy({
-		by: ["playerId"],
-		orderBy: { _sum: { runs: "desc" } },
-		_max: { highestScore: true },
-		_sum: { innings: true, runs: true, balls: true, notOuts: true, fours: true, sixes: true, dots: true, ducks: true },
+const getBattingStats = createServerFn({ method: "GET" })
+	.inputValidator(dateSearchSchema)
+	.handler(async ({ data: { date } }): Promise<BattingStats[]> => {
+		const stats = await db.batters.groupBy({
+			by: ["playerId"],
+			where: { dateId: { in: date } },
+			orderBy: { _sum: { runs: "desc" } },
+			_max: { highestScore: true },
+			_sum: { innings: true, runs: true, balls: true, notOuts: true, fours: true, sixes: true, dots: true, ducks: true },
+		});
+		return stats.map(({ playerId, _sum, _max }) => ({
+			player: playerId,
+			innings: _sum.innings,
+			runs: _sum.runs,
+			balls: _sum.balls,
+			not_outs: _sum.notOuts,
+			highest_score: _max.highestScore,
+			strike_rate: _sum.balls ? (_sum.runs / _sum.balls) * 100 : 0,
+			average: _sum.innings - _sum.notOuts ? _sum.runs / (_sum.innings - _sum.notOuts) : 0,
+			fours: _sum.fours,
+			sixes: _sum.sixes,
+			dots: _sum.dots,
+			ducks: _sum.ducks,
+		}));
 	});
-	return stats.map(({ playerId, _sum, _max }) => ({
-		player: playerId,
-		innings: _sum.innings,
-		runs: _sum.runs,
-		balls: _sum.balls,
-		not_outs: _sum.notOuts,
-		highest_score: _max.highestScore,
-		strike_rate: _sum.balls ? (_sum.runs / _sum.balls) * 100 : 0,
-		average: _sum.innings - _sum.notOuts ? _sum.runs / (_sum.innings - _sum.notOuts) : 0,
-		fours: _sum.fours,
-		sixes: _sum.sixes,
-		dots: _sum.dots,
-		ducks: _sum.ducks,
-	}));
-});
 
 const columns: ColumnDef<BattingStats>[] = [
 	{ accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerAvatarCell name={row.original.player} /> },
@@ -56,11 +60,12 @@ const columns: ColumnDef<BattingStats>[] = [
 
 export const Route = createFileRoute("/_stats/stats/batting")({
 	head: () => ({ meta: [{ title: "Batting Stats" }] }),
-	loader: async ({ context }) => await context.queryClient.ensureQueryData(battingStatsQueryOptions()),
+	loader: async ({ context }) => await context.queryClient.ensureQueryData(battingStatsQueryOptions(context.date)),
 	component: () => {
-		const { data } = useSuspenseQuery(battingStatsQueryOptions());
+		const { date } = Route.useRouteContext();
+		const { data } = useSuspenseQuery(battingStatsQueryOptions(date));
 		return (
-			<TabsLayout title="Batting Stats">
+			<TabsLayout title="Batting Stats" secondary={<DateFilter />}>
 				<DataTable columns={columns} data={data} />
 			</TabsLayout>
 		);

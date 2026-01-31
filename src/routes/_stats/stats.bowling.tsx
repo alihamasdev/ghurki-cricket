@@ -4,51 +4,54 @@ import { createServerFn } from "@tanstack/react-start";
 import { type ColumnDef } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/data-table";
+import { DateFilter, dateSearchSchema } from "@/components/date-filter";
 import { PlayerAvatarCell } from "@/components/players/avatar";
 import { TabsLayout } from "@/components/tabs/tabs-layout";
 import { db } from "@/lib/db";
 import { type BowlingStats } from "@/lib/types";
 import { ballsToOvers } from "@/lib/utils";
 
-const bowlingStatsQueryOptions = () => {
+const bowlingStatsQueryOptions = (date?: string[]) => {
 	return queryOptions({
-		queryKey: ["bowling-stats"],
-		queryFn: () => getBowlingStats(),
+		queryKey: ["bowling-stats", ...(date ?? ["all-time"])],
+		queryFn: () => getBowlingStats({ data: { date } }),
 	});
 };
 
-const getBowlingStats = createServerFn({ method: "GET" }).handler(async (): Promise<BowlingStats[]> => {
-	const stats = await db.bowlers.groupBy({
-		by: ["playerId"],
-		_max: { wickets: true },
-		orderBy: { _sum: { wickets: "desc" } },
-		_sum: {
-			innings: true,
-			runs: true,
-			balls: true,
-			wickets: true,
-			fours: true,
-			sixes: true,
-			dots: true,
-			wides: true,
-			noBalls: true,
-		},
+const getBowlingStats = createServerFn({ method: "GET" })
+	.inputValidator(dateSearchSchema)
+	.handler(async ({ data: { date } }): Promise<BowlingStats[]> => {
+		const stats = await db.bowlers.groupBy({
+			by: ["playerId"],
+			where: { dateId: { in: date } },
+			orderBy: { _sum: { wickets: "desc" } },
+			_sum: {
+				innings: true,
+				runs: true,
+				balls: true,
+				wickets: true,
+				fours: true,
+				sixes: true,
+				dots: true,
+				wides: true,
+				noBalls: true,
+			},
+		});
+		return stats.map(({ playerId, _sum }) => ({
+			player: playerId,
+			innings: _sum.innings,
+			runs: _sum.runs,
+			balls: _sum.balls,
+			wickets: _sum.wickets,
+			economy: _sum.balls ? _sum.runs / _sum.balls : 0,
+			average: _sum.wickets ? _sum.runs / _sum.wickets : Infinity,
+			fours: _sum.fours,
+			sixes: _sum.sixes,
+			dots: _sum.dots,
+			wides: _sum.wides,
+			no_balls: _sum.noBalls,
+		}));
 	});
-	return stats.map(({ playerId, _sum }) => ({
-		player: playerId,
-		innings: _sum.innings,
-		runs: _sum.runs,
-		balls: _sum.balls,
-		wickets: _sum.wickets,
-		economy: _sum.balls ? _sum.runs / _sum.balls : 0,
-		average: _sum.wickets ? _sum.runs / _sum.wickets : Infinity,
-		fours: _sum.fours,
-		sixes: _sum.sixes,
-		dots: _sum.dots,
-		wides: _sum.wides,
-		no_balls: _sum.noBalls,
-	}));
-});
 
 const columns: ColumnDef<BowlingStats>[] = [
 	{ accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerAvatarCell name={row.original.player} /> },
@@ -71,11 +74,12 @@ const columns: ColumnDef<BowlingStats>[] = [
 
 export const Route = createFileRoute("/_stats/stats/bowling")({
 	head: () => ({ meta: [{ title: "Bowling Stats" }] }),
-	loader: async ({ context }) => await context.queryClient.ensureQueryData(bowlingStatsQueryOptions()),
+	loader: async ({ context }) => await context.queryClient.ensureQueryData(bowlingStatsQueryOptions(context.date)),
 	component: () => {
-		const { data } = useSuspenseQuery(bowlingStatsQueryOptions());
+		const { date } = Route.useRouteContext();
+		const { data } = useSuspenseQuery(bowlingStatsQueryOptions(date));
 		return (
-			<TabsLayout title="Bowling Stats">
+			<TabsLayout title="Bowling Stats" secondary={<DateFilter />}>
 				<DataTable columns={columns} data={data} />
 			</TabsLayout>
 		);

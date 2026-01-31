@@ -4,6 +4,7 @@ import { createServerFn } from "@tanstack/react-start";
 import type { Teams } from "zenstack/output/models";
 import { z } from "zod";
 
+import { DateFilter, dateSearchSchema } from "@/components/date-filter";
 import { TabsLayout } from "@/components/tabs/tabs-layout";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -11,11 +12,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { db } from "@/lib/db";
 import { ballsToOvers } from "@/lib/utils";
 
-const teamStatsQueryOptions = (teams: Teams[]) => {
+const teamStatsQueryOptions = (teams: Teams[], date?: string[]) => {
 	const teamIds = teams.map((team) => team.name);
-	const teamStats = teamIds.map((teamId) => getTeamStats({ data: teamId }));
+	const teamStats = teamIds.map((teamId) => getTeamStats({ data: { teamId, date } }));
 	return queryOptions({
-		queryKey: ["teams-stats", ...teamIds],
+		queryKey: ["teams-stats", ...teamIds, ...(date ?? ["all-time"])],
 		queryFn: async () => await Promise.all(teamStats),
 	});
 };
@@ -26,21 +27,24 @@ const getTeams = createServerFn({ method: "GET" }).handler(async () => {
 });
 
 const getTeamStats = createServerFn({ method: "GET" })
-	.inputValidator(z.string())
-	.handler(async ({ data: teamId }) => {
+	.inputValidator(dateSearchSchema.extend({ teamId: z.string() }))
+	.handler(async ({ data: { teamId, date } }) => {
 		const [wonMatches, lowestScore, highestScore, aggregate] = await Promise.all([
-			db.matches.count({ where: { winnerId: teamId } }),
-			db.innings.findFirst({ where: { teamId }, orderBy: { runs: "asc" } }),
-			db.innings.findFirst({ where: { teamId }, orderBy: { runs: "desc" } }),
-			db.innings.aggregate({ where: { teamId }, _sum: { runs: true, balls: true, wickets: true, allOuts: true } }),
+			db.matches.count({ where: { winnerId: teamId, dateId: { in: date } } }),
+			db.innings.findFirst({ where: { teamId, match: { dateId: { in: date } } }, orderBy: { runs: "asc" } }),
+			db.innings.findFirst({ where: { teamId, match: { dateId: { in: date } } }, orderBy: { runs: "desc" } }),
+			db.innings.aggregate({
+				where: { teamId, match: { dateId: { in: date } } },
+				_sum: { runs: true, balls: true, wickets: true, allOuts: true },
+			}),
 		]);
 		return {
 			teamId,
 			wonMatches,
-			totalRuns: aggregate._sum.runs,
-			totalBalls: aggregate._sum.balls,
-			totalWickets: aggregate._sum.wickets,
-			totalAllOuts: aggregate._sum.allOuts,
+			totalRuns: aggregate._sum.runs || 0,
+			totalBalls: aggregate._sum.balls || 0,
+			totalWickets: aggregate._sum.wickets || 0,
+			totalAllOuts: aggregate._sum.allOuts || 0,
 			strikeRate: aggregate._sum.balls ? (aggregate._sum.runs / aggregate._sum.balls) * 100 : 0,
 			lowestScore: lowestScore
 				? `${lowestScore.runs}${!lowestScore.allOuts ? `-${lowestScore.wickets}` : ""} (${ballsToOvers(lowestScore.balls)})`
@@ -54,11 +58,11 @@ const getTeamStats = createServerFn({ method: "GET" })
 export const Route = createFileRoute("/_stats/stats/teams")({
 	head: () => ({ meta: [{ title: "Teams Stats" }] }),
 	beforeLoad: () => getTeams(),
-	loader: async ({ context }) => await context.queryClient.ensureQueryData(teamStatsQueryOptions(context.teams)),
+	loader: async ({ context }) => await context.queryClient.ensureQueryData(teamStatsQueryOptions(context.teams, context.date)),
 	component: () => {
 		const isMobile = useIsMobile();
-		const { teams } = Route.useRouteContext();
-		const { data } = useSuspenseQuery(teamStatsQueryOptions(teams));
+		const { teams, date } = Route.useRouteContext();
+		const { data } = useSuspenseQuery(teamStatsQueryOptions(teams, date));
 		const totalMatches = data.reduce((acc, { wonMatches }) => acc + wonMatches, 0);
 		const teamStats = data
 			.map((stat) => ({
@@ -69,7 +73,7 @@ export const Route = createFileRoute("/_stats/stats/teams")({
 			.sort((a, b) => b.winPercent - a.winPercent);
 
 		return (
-			<TabsLayout title="Teams Stats">
+			<TabsLayout title="Teams Stats" secondary={<DateFilter />}>
 				<ResizablePanelGroup direction="horizontal">
 					<ResizablePanel defaultSize={100} minSize={isMobile ? 100 : 40}>
 						<div className="overflow-hidden rounded-md border">

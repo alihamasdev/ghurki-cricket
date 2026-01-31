@@ -2,6 +2,7 @@ import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
+import { z } from "zod";
 
 import { datesQueryOptions } from "@/components/date-filter";
 import { playerQueryOptions } from "@/components/players/query";
@@ -9,6 +10,13 @@ import { Toaster } from "@/components/ui/sonner";
 import { MenuProvider } from "@/context/menu-context";
 
 import appCss from "../styles.css?url";
+
+const rootSearchSchema = z.object({
+	date: z
+		.union([z.string(), z.array(z.string())])
+		.transform((v) => (Array.isArray(v) ? v : [v]))
+		.optional(),
+}).loose();
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
 	head: () => ({
@@ -20,6 +28,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 		links: [{ rel: "stylesheet", href: appCss }],
 	}),
 	shellComponent: RootDocument,
+	validateSearch: (search) => rootSearchSchema.parse(search),
 	loader: async ({ context }) =>
 		await Promise.all([
 			context.queryClient.ensureQueryData(playerQueryOptions()),

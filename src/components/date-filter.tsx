@@ -1,9 +1,10 @@
 import { Calendar02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
+import { useLocation, useNavigate, useSearch } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { format } from "date-fns";
-import { parseAsString, parseAsArrayOf, useQueryState } from "nuqs";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +19,9 @@ import {
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 
-export const dateSearchParams = parseAsArrayOf(parseAsString);
+export const dateSearchSchema = z.object({
+	date: z.array(z.string().transform((val) => new Date(val))).optional(),
+});
 
 export const datesQueryOptions = () => {
 	return queryOptions({
@@ -38,15 +41,17 @@ export const getDates = createServerFn({ method: "GET" }).handler(async () => {
 	};
 });
 
-interface DateFilterProps extends React.ComponentProps<typeof Button> {
+type DateFilterProps = React.ComponentProps<typeof Button> & {
 	align?: "start" | "end" | "center";
 	hasRivalries?: boolean;
 	hasDates?: boolean;
-}
+};
 
 export function DateFilter({ align = "center", hasRivalries = true, hasDates = true, ...props }: DateFilterProps) {
+	const navigate = useNavigate();
+	const { pathname } = useLocation();
 	const { data } = useSuspenseQuery(datesQueryOptions());
-	const [selectedDate, setSelectedDate] = useQueryState("date", dateSearchParams);
+	const { date: selectedDate } = useSearch({ strict: false }) as { date?: string[] };
 	const isRivalry = data.rivalries.find((rivalry) => JSON.stringify(rivalry.dates) === JSON.stringify(selectedDate));
 	return (
 		<DropdownMenu>
@@ -57,13 +62,19 @@ export function DateFilter({ align = "center", hasRivalries = true, hasDates = t
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align={align} className="w-auto">
-				<DropdownMenuRadioGroup value={selectedDate ? selectedDate.toString() : ""} onValueChange={() => setSelectedDate(null)}>
+				<DropdownMenuRadioGroup
+					value={selectedDate ? selectedDate.toString() : ""}
+					onValueChange={() => navigate({ to: pathname, search: (prev) => ({ ...prev, date: undefined }) })}
+				>
 					<DropdownMenuRadioItem value="">All Time</DropdownMenuRadioItem>
 				</DropdownMenuRadioGroup>
 				{hasRivalries && (
 					<DropdownMenuGroup>
 						<DropdownMenuLabel>Rivalries</DropdownMenuLabel>
-						<DropdownMenuRadioGroup value={selectedDate?.toString()} onValueChange={(value) => setSelectedDate(value.split(","))}>
+						<DropdownMenuRadioGroup
+							value={selectedDate?.toString()}
+							onValueChange={(value) => navigate({ to: pathname, search: (prev) => ({ ...prev, date: value.split(",") }) })}
+						>
 							{data.rivalries.map(({ title, dates }) => (
 								<DropdownMenuRadioItem key={title} value={dates.toString()}>
 									<span>{title}</span>
@@ -75,8 +86,11 @@ export function DateFilter({ align = "center", hasRivalries = true, hasDates = t
 				)}
 				{hasDates && (
 					<DropdownMenuGroup>
-						<DropdownMenuLabel>Dates</DropdownMenuLabel>
-						<DropdownMenuRadioGroup value={selectedDate?.toString()} onValueChange={(value) => setSelectedDate([value])}>
+						<DropdownMenuLabel>Series</DropdownMenuLabel>
+						<DropdownMenuRadioGroup
+							value={selectedDate?.toString()}
+							onValueChange={(value) => navigate({ to: pathname, search: (prev) => ({ ...prev, date: value }) })}
+						>
 							{data.dates.map(({ date, title }) => (
 								<DropdownMenuRadioItem key={date} value={date} className="justify-between">
 									<span>{title}</span>
