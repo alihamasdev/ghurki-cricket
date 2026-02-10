@@ -20,11 +20,19 @@ const playerOfMatchStatsQueryOptions = ({ date, rivalry }: DateSearchSchema) => 
 const getPlayerOfMatchStats = createServerFn({ method: "GET" })
 	.inputValidator(dateSearchSchema)
 	.handler(async ({ data: { date, rivalry } }): Promise<ManOfMatchStats[]> => {
-		const stats = await db.players.findMany({
-			where: { playerOfMatches: { every: { date: { date, rivalryId: rivalry } } } },
-			select: { name: true, _count: { select: { playerOfMatches: true } } },
+		const stats = await db.matches.groupBy({
+			by: ["potmId"],
+			_count: { potmId: true },
+			where: { date: { date, rivalryId: rivalry } },
+			orderBy: { _count: { potmId: "desc" } },
 		});
-		return stats.map(({ _count, name }) => ({ player: name, count: _count.playerOfMatches })).filter(({ count }) => count > 0);
+
+		return stats
+			.filter(({ potmId }) => potmId !== null)
+			.map(({ potmId, _count }) => ({
+				player: potmId as string,
+				count: _count.potmId,
+			}));
 	});
 
 const columns: ColumnDef<ManOfMatchStats>[] = [

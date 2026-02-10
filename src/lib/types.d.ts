@@ -40,3 +40,17 @@ export type ManOfMatchStats = {
 	player: string;
 	count: number;
 };
+
+export type TeamStats = {
+	team: string;
+	playedMatches: number;
+	wonMatches: number;
+	winPercent: number;
+	totalRuns: number;
+	totalBalls: number;
+	totalWickets: number;
+	totalAllOuts: number;
+	strikeRate: number;
+	lowestScore: string;
+	highestScore: string;
+};
