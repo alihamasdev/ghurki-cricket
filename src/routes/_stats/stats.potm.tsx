@@ -32,7 +32,7 @@ const columns: ColumnDef<ManOfMatchStats>[] = [
 	{ accessorKey: "count", header: "Player of Match" },
 ];
 
-export const Route = createFileRoute("/_stats/stats/player-of-the-match")({
+export const Route = createFileRoute("/_stats/stats/potm")({
 	head: () => ({ meta: [{ title: "Player of the Match Stats" }] }),
 	loader: async ({ context }) => await context.queryClient.ensureQueryData(playerOfMatchStatsQueryOptions(context)),
 	component: () => {

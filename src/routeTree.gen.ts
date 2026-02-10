@@ -18,7 +18,7 @@ import { Route as TabMatchesIndexRouteImport } from './routes/_tab/matches.index
 import { Route as TabExpenseIndexRouteImport } from './routes/_tab/expense.index'
 import { Route as TabCompareIndexRouteImport } from './routes/_tab/compare.index'
 import { Route as StatsStatsTeamsRouteImport } from './routes/_stats/stats.teams'
-import { Route as StatsStatsPlayerOfTheMatchRouteImport } from './routes/_stats/stats.player-of-the-match'
+import { Route as StatsStatsPotmRouteImport } from './routes/_stats/stats.potm'
 import { Route as StatsStatsFieldingRouteImport } from './routes/_stats/stats.fielding'
 import { Route as StatsStatsBowlingRouteImport } from './routes/_stats/stats.bowling'
 import { Route as StatsStatsBattingRouteImport } from './routes/_stats/stats.batting'
@@ -66,12 +66,11 @@ const StatsStatsTeamsRoute = StatsStatsTeamsRouteImport.update({
   path: '/stats/teams',
   getParentRoute: () => StatsRoute,
 } as any)
-const StatsStatsPlayerOfTheMatchRoute =
-  StatsStatsPlayerOfTheMatchRouteImport.update({
-    id: '/stats/player-of-the-match',
-    path: '/stats/player-of-the-match',
-    getParentRoute: () => StatsRoute,
-  } as any)
+const StatsStatsPotmRoute = StatsStatsPotmRouteImport.update({
+  id: '/stats/potm',
+  path: '/stats/potm',
+  getParentRoute: () => StatsRoute,
+} as any)
 const StatsStatsFieldingRoute = StatsStatsFieldingRouteImport.update({
   id: '/stats/fielding',
   path: '/stats/fielding',
@@ -93,7 +92,7 @@ export interface FileRoutesByFullPath {
   '/stats/batting': typeof StatsStatsBattingRoute
   '/stats/bowling': typeof StatsStatsBowlingRoute
   '/stats/fielding': typeof StatsStatsFieldingRoute
-  '/stats/player-of-the-match': typeof StatsStatsPlayerOfTheMatchRoute
+  '/stats/potm': typeof StatsStatsPotmRoute
   '/stats/teams': typeof StatsStatsTeamsRoute
   '/compare/': typeof TabCompareIndexRoute
   '/expense/': typeof TabExpenseIndexRoute
@@ -106,7 +105,7 @@ export interface FileRoutesByTo {
   '/stats/batting': typeof StatsStatsBattingRoute
   '/stats/bowling': typeof StatsStatsBowlingRoute
   '/stats/fielding': typeof StatsStatsFieldingRoute
-  '/stats/player-of-the-match': typeof StatsStatsPlayerOfTheMatchRoute
+  '/stats/potm': typeof StatsStatsPotmRoute
   '/stats/teams': typeof StatsStatsTeamsRoute
   '/compare': typeof TabCompareIndexRoute
   '/expense': typeof TabExpenseIndexRoute
@@ -122,7 +121,7 @@ export interface FileRoutesById {
   '/_stats/stats/batting': typeof StatsStatsBattingRoute
   '/_stats/stats/bowling': typeof StatsStatsBowlingRoute
   '/_stats/stats/fielding': typeof StatsStatsFieldingRoute
-  '/_stats/stats/player-of-the-match': typeof StatsStatsPlayerOfTheMatchRoute
+  '/_stats/stats/potm': typeof StatsStatsPotmRoute
   '/_stats/stats/teams': typeof StatsStatsTeamsRoute
   '/_tab/compare/': typeof TabCompareIndexRoute
   '/_tab/expense/': typeof TabExpenseIndexRoute
@@ -137,7 +136,7 @@ export interface FileRouteTypes {
     | '/stats/batting'
     | '/stats/bowling'
     | '/stats/fielding'
-    | '/stats/player-of-the-match'
+    | '/stats/potm'
     | '/stats/teams'
     | '/compare/'
     | '/expense/'
@@ -150,7 +149,7 @@ export interface FileRouteTypes {
     | '/stats/batting'
     | '/stats/bowling'
     | '/stats/fielding'
-    | '/stats/player-of-the-match'
+    | '/stats/potm'
     | '/stats/teams'
     | '/compare'
     | '/expense'
@@ -165,7 +164,7 @@ export interface FileRouteTypes {
     | '/_stats/stats/batting'
     | '/_stats/stats/bowling'
     | '/_stats/stats/fielding'
-    | '/_stats/stats/player-of-the-match'
+    | '/_stats/stats/potm'
     | '/_stats/stats/teams'
     | '/_tab/compare/'
     | '/_tab/expense/'
@@ -245,11 +244,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StatsStatsTeamsRouteImport
       parentRoute: typeof StatsRoute
     }
-    '/_stats/stats/player-of-the-match': {
-      id: '/_stats/stats/player-of-the-match'
-      path: '/stats/player-of-the-match'
-      fullPath: '/stats/player-of-the-match'
-      preLoaderRoute: typeof StatsStatsPlayerOfTheMatchRouteImport
+    '/_stats/stats/potm': {
+      id: '/_stats/stats/potm'
+      path: '/stats/potm'
+      fullPath: '/stats/potm'
+      preLoaderRoute: typeof StatsStatsPotmRouteImport
       parentRoute: typeof StatsRoute
     }
     '/_stats/stats/fielding': {
@@ -280,7 +279,7 @@ interface StatsRouteChildren {
   StatsStatsBattingRoute: typeof StatsStatsBattingRoute
   StatsStatsBowlingRoute: typeof StatsStatsBowlingRoute
   StatsStatsFieldingRoute: typeof StatsStatsFieldingRoute
-  StatsStatsPlayerOfTheMatchRoute: typeof StatsStatsPlayerOfTheMatchRoute
+  StatsStatsPotmRoute: typeof StatsStatsPotmRoute
   StatsStatsTeamsRoute: typeof StatsStatsTeamsRoute
 }
 
@@ -288,7 +287,7 @@ const StatsRouteChildren: StatsRouteChildren = {
   StatsStatsBattingRoute: StatsStatsBattingRoute,
   StatsStatsBowlingRoute: StatsStatsBowlingRoute,
   StatsStatsFieldingRoute: StatsStatsFieldingRoute,
-  StatsStatsPlayerOfTheMatchRoute: StatsStatsPlayerOfTheMatchRoute,
+  StatsStatsPotmRoute: StatsStatsPotmRoute,
   StatsStatsTeamsRoute: StatsStatsTeamsRoute,
 }
 
