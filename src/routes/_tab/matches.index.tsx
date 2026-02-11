@@ -1,5 +1,5 @@
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
 import { DateFilter, dateSearchSchema, type DateSearchSchema } from "@/components/date-filter";
@@ -44,20 +44,22 @@ export const Route = createFileRoute("/_tab/matches/")({
 								<h2 className="font-semibold">{date}</h2>
 								<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
 									{matches.map(({ id, innings, winnerId, winBy }) => (
-										<Item key={id} variant="outline" className="items-start gap-1">
-											<ItemContent>
-												{innings.map((inning) => (
-													<div key={inning.id} className="flex items-center justify-between gap-3">
-														<ItemTitle>{inning.teamId}</ItemTitle>
-														<ItemDescription>
-															{`${inning.runs}${!inning.allOuts ? `-${inning.wickets}` : ""}  (${ballsToOvers(inning.balls)})`}
-														</ItemDescription>
-													</div>
-												))}
-											</ItemContent>
-											<ItemFooter>
-												<ItemDescription>{`${winnerId} ${winBy ? `wins by ${winBy}` : `wins`}`}</ItemDescription>
-											</ItemFooter>
+										<Item key={id} variant="outline" className="items-start gap-1" asChild>
+											<Link to="/matches/$matchId" params={{ matchId: id.toString() }}>
+												<ItemContent>
+													{innings.map((inning) => (
+														<div key={inning.id} className="flex items-center justify-between gap-3">
+															<ItemTitle>{inning.teamId}</ItemTitle>
+															<ItemDescription>
+																{`${inning.runs}${!inning.allOuts ? `-${inning.wickets}` : ""}  (${ballsToOvers(inning.balls)})`}
+															</ItemDescription>
+														</div>
+													))}
+												</ItemContent>
+												<ItemFooter>
+													<ItemDescription>{`${winnerId} ${winBy ? `wins by ${winBy}` : `wins`}`}</ItemDescription>
+												</ItemFooter>
+											</Link>
 										</Item>
 									))}
 								</div>
