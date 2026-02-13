@@ -5,6 +5,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/data-table";
 import { TabsLayout } from "@/components/tabs/tabs-layout";
+import { TableCell, TableFooter, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 
@@ -39,7 +40,31 @@ export const Route = createFileRoute("/_tab/expense/")({
 		const { data } = useSuspenseQuery(expenseQueryOptions());
 		return (
 			<TabsLayout title="Expense">
-				<DataTable columns={columns} data={data} showFooter />
+				<DataTable
+					columns={columns}
+					data={data}
+					footer={(table) => (
+						<TableFooter>
+							<TableRow>
+								{table.getVisibleFlatColumns().map((column, index) => {
+									const isFirst = index === 0;
+									const total = table.getFilteredRowModel().rows.reduce((sum, row) => {
+										const value = row.getValue(column.id);
+										return typeof value === "number" ? sum + value : sum;
+									}, 0);
+
+									return (
+										<TableCell key={column.id} className="font-medium">
+											{isFirst
+												? "Total"
+												: total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
+										</TableCell>
+									);
+								})}
+							</TableRow>
+						</TableFooter>
+					)}
+				/>
 			</TabsLayout>
 		);
 	},
