@@ -1,29 +1,37 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { type ColumnDef } from "@tanstack/react-table";
+import { z } from "zod";
 
 import { DataTable } from "@/components/data-table";
-import { DateFilter, dateSearchSchema, type DateSearchSchema } from "@/components/date-filter";
+import { validateDate } from "@/components/date-filter";
 import { PlayerAvatarCell } from "@/components/players/avatar";
-import { TabsLayout } from "@/components/tabs/tabs-layout";
+import { TabsLayout } from "@/components/tabs-layout";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { db } from "@/lib/db";
 import { type BowlingStats } from "@/lib/types";
 import { ballsToOvers } from "@/lib/utils";
 
-const bowlingStatsQueryOptions = ({ date, rivalry }: DateSearchSchema) => {
-	return queryOptions({
-		queryKey: ["bowling-stats", date ?? rivalry ?? "all-time"],
-		queryFn: () => getBowlingStats({ data: { date, rivalry } }),
-	});
-};
+const bowlingFilters = [
+	"most-wickets",
+	"most-runs-conceded",
+	"best-economy",
+	"best-average",
+	"most-dots",
+	"most-wides",
+	"most-no-balls",
+	"most-2fr",
+	"most-3fr",
+] as const;
+
+type BowlingFilter = (typeof bowlingFilters)[number];
 
 const getBowlingStats = createServerFn({ method: "GET" })
-	.inputValidator(dateSearchSchema)
-	.handler(async ({ data: { date, rivalry } }): Promise<BowlingStats[]> => {
+	.inputValidator(validateDate)
+	.handler(async ({ data }): Promise<BowlingStats[]> => {
 		const stats = await db.bowlers.groupBy({
 			by: ["playerId"],
-			where: { date: { date, rivalryId: rivalry } },
+			where: { date: data },
 			orderBy: { _sum: { wickets: "desc" } },
 			_sum: {
 				innings: true,
@@ -53,34 +61,68 @@ const getBowlingStats = createServerFn({ method: "GET" })
 		}));
 	});
 
-const columns: ColumnDef<BowlingStats>[] = [
-	{ accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerAvatarCell name={row.original.player} /> },
-	{ accessorKey: "innings", header: "Inns" },
-	{ accessorKey: "balls", header: "Overs", cell: ({ row }) => Number(ballsToOvers(row.original.balls)) },
-	{ accessorKey: "runs", header: "Runs" },
-	{ accessorKey: "wickets", header: "Wkts" },
-	{ accessorKey: "economy", header: "Eco", cell: ({ row }) => (row.original.economy * 6).toFixed(1) },
-	{
+const bowlingColumns: Record<keyof BowlingStats, ColumnDef<BowlingStats>> = {
+	player: { accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerAvatarCell name={row.original.player} /> },
+	innings: { accessorKey: "innings", header: "Inns" },
+	balls: { accessorKey: "balls", header: "Overs", cell: ({ row }) => Number(ballsToOvers(row.original.balls)) },
+	runs: { accessorKey: "runs", header: "Runs" },
+	wickets: { accessorKey: "wickets", header: "Wkts" },
+	economy: { accessorKey: "economy", header: "Eco", cell: ({ row }) => (row.original.economy * 6).toFixed(1) },
+	average: {
 		accessorKey: "average",
 		header: "Avg",
 		cell: ({ row }) => (row.original.average === Infinity ? "-" : row.original.average.toFixed(1)),
 	},
-	{ accessorKey: "dots", header: "Dots" },
-	{ accessorKey: "wides", header: "WDs" },
-	{ accessorKey: "no_balls", header: "NBs" },
-	{ accessorKey: "2fr", header: "2fr" },
-	{ accessorKey: "3fr", header: "3fr" },
-];
+	dots: { accessorKey: "dots", header: "Dots" },
+	wides: { accessorKey: "wides", header: "WDs" },
+	no_balls: { accessorKey: "no_balls", header: "NBs" },
+	"2fr": { accessorKey: "2fr", header: "2fr" },
+	"3fr": { accessorKey: "3fr", header: "3fr" },
+};
+
+const filterColumns: Record<BowlingFilter, (keyof BowlingStats)[]> = {
+	"most-wickets": ["player", "balls", "wickets"],
+	"most-runs-conceded": ["player", "balls", "runs"],
+	"best-economy": ["player", "runs", "balls", "economy"],
+	"best-average": ["player", "runs", "wickets", "average"],
+	"most-dots": ["player", "balls", "dots"],
+	"most-wides": ["player", "balls", "wides"],
+	"most-no-balls": ["player", "balls", "no_balls"],
+	"most-2fr": ["player", "innings", "2fr"],
+	"most-3fr": ["player", "innings", "3fr"],
+};
+
+const getBowlingColumns = (): ColumnDef<BowlingStats>[] => {
+	const isMobile = useIsMobile();
+	const { filter } = Route.useSearch();
+
+	if (filter && filter in filterColumns) {
+		return filterColumns[filter].map((col) => (typeof col === "string" ? bowlingColumns[col] : col));
+	}
+
+	if (isMobile) {
+		return (["player", "innings", "balls", "runs", "wickets", "economy", "average"] as const).map((k) => bowlingColumns[k]);
+	}
+
+	return (
+		["player", "innings", "balls", "runs", "wickets", "economy", "average", "dots", "wides", "no_balls", "2fr", "3fr"] as const
+	).map((k) => bowlingColumns[k]);
+};
 
 export const Route = createFileRoute("/_stats/stats/bowling")({
 	head: () => ({ meta: [{ title: "Bowling Stats" }] }),
-	loader: async ({ context }) => await context.queryClient.ensureQueryData(bowlingStatsQueryOptions(context)),
+	validateSearch: z.object({ filter: z.enum(bowlingFilters).optional().catch(undefined) }),
+	loaderDeps: ({ search }) => search,
+	loader: async ({ context, deps }) =>
+		await context.queryClient.ensureQueryData({
+			queryKey: ["bowling-stats", deps.date ?? deps.rivalry ?? "all-time"],
+			queryFn: () => getBowlingStats({ data: deps }),
+		}),
 	component: () => {
-		const context = Route.useRouteContext();
-		const { data } = useSuspenseQuery(bowlingStatsQueryOptions(context));
+		const data = Route.useLoaderData();
 		return (
-			<TabsLayout title="Bowling Stats" secondary={<DateFilter />}>
-				<DataTable columns={columns} data={data} />
+			<TabsLayout title="Bowling Stats" filters={{ stats: { options: bowlingFilters } }}>
+				<DataTable columns={getBowlingColumns()} data={data} />
 			</TabsLayout>
 		);
 	},

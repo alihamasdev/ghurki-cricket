@@ -17,21 +17,18 @@ import {
 	DropdownMenuTrigger,
 	DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 
 export const dateSearchSchema = z.object({
-	date: z
-		.string()
-		.optional()
-		.transform((value) => (value ? new Date(value) : undefined)),
+	date: z.string().optional(),
 	rivalry: z.string().optional(),
 });
 
-export type DateSearchSchema = {
-	date?: string;
-	rivalry?: string;
+export const validateDate = ({ date, rivalry }: z.infer<typeof dateSearchSchema>) => {
+	if (date) return { date: new Date(date) };
+	if (rivalry) return { rivalryId: rivalry };
+	return undefined;
 };
 
 export const datesQueryOptions = () => {
@@ -60,8 +57,12 @@ const getDates = createServerFn({ method: "GET" }).handler(async () => {
 	};
 });
 
-export function DateFilter({ hasDates = true }: { hasDates?: boolean }) {
-	const isMobile = useIsMobile();
+export type DateFilterProps = {
+	options?: "dates" | "rivalries" | "both";
+	side?: "start" | "center" | "end";
+};
+
+export function DateFilter({ options = "both", side = "end" }: DateFilterProps) {
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
 	const { data } = useSuspenseQuery(datesQueryOptions());
@@ -69,12 +70,12 @@ export function DateFilter({ hasDates = true }: { hasDates?: boolean }) {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button variant="outline">
+				<Button variant="outline" className="w-full md:w-fit">
 					<HugeiconsIcon icon={Calendar02Icon} strokeWidth={2} />
 					{formatDate(selectedDate) ?? selectedRivalry ?? "All Time"}
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align={isMobile ? "center" : "end"} className="w-auto">
+			<DropdownMenuContent align={side} className="w-auto">
 				<DropdownMenuGroup>
 					<DropdownMenuRadioGroup
 						value={!selectedDate && !selectedRivalry ? "" : "none"}
@@ -83,33 +84,37 @@ export function DateFilter({ hasDates = true }: { hasDates?: boolean }) {
 						<DropdownMenuRadioItem value="">All Time</DropdownMenuRadioItem>
 					</DropdownMenuRadioGroup>
 				</DropdownMenuGroup>
-				<DropdownMenuSeparator />
-				<DropdownMenuGroup>
-					<DropdownMenuLabel>Rivalries</DropdownMenuLabel>
-					<DropdownMenuRadioGroup
-						value={selectedRivalry}
-						onValueChange={(value) =>
-							navigate({ to: pathname, search: (prev) => ({ ...prev, date: undefined, rivalry: value }) })
-						}
-					>
-						{data.rivalries.map(({ title, series }) => (
-							<DropdownMenuRadioItem key={title} value={title} className="justify-between">
-								<span>{title}</span>
-								<span className="text-muted-foreground">({series} Series)</span>
-							</DropdownMenuRadioItem>
-						))}
-					</DropdownMenuRadioGroup>
-				</DropdownMenuGroup>
-				{hasDates && (
+				{(options === "both" || options === "rivalries") && (
+					<>
+						<DropdownMenuSeparator />
+						<DropdownMenuGroup>
+							<DropdownMenuLabel>Rivalries</DropdownMenuLabel>
+							<DropdownMenuRadioGroup
+								value={selectedRivalry}
+								onValueChange={(value) => {
+									navigate({ to: pathname, search: (prev) => ({ ...prev, date: undefined, rivalry: value }) });
+								}}
+							>
+								{data.rivalries.map(({ title, series }) => (
+									<DropdownMenuRadioItem key={title} value={title} className="justify-between">
+										<span>{title}</span>
+										<span className="text-muted-foreground">({series} Series)</span>
+									</DropdownMenuRadioItem>
+								))}
+							</DropdownMenuRadioGroup>
+						</DropdownMenuGroup>
+					</>
+				)}
+				{(options === "both" || options === "dates") && (
 					<>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
 							<DropdownMenuLabel>Series</DropdownMenuLabel>
 							<DropdownMenuRadioGroup
 								value={selectedDate?.toString()}
-								onValueChange={(value) =>
-									navigate({ to: pathname, search: (prev) => ({ ...prev, date: value, rivalry: undefined }) })
-								}
+								onValueChange={(value) => {
+									navigate({ to: pathname, search: (prev) => ({ ...prev, date: value, rivalry: undefined }) });
+								}}
 							>
 								{data.dates.map(({ date, title }) => (
 									<DropdownMenuRadioItem key={date} value={date} className="justify-between">

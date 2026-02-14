@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { PlayerAvatar } from "@/components/players/avatar";
 import { playerQueryOptions } from "@/components/players/query";
-import { TabsLayout } from "@/components/tabs/tabs-layout";
+import { TabsLayout } from "@/components/tabs-layout";
 import { Item, ItemContent, ItemTitle, ItemMedia } from "@/components/ui/item";
 
 export const Route = createFileRoute("/_tab/players/")({
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_tab/players/")({
 	component: () => {
 		const { data } = useSuspenseQuery(playerQueryOptions());
 		return (
-			<TabsLayout title="Players">
+			<TabsLayout title="Players" filters={{ date: false }}>
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 					{data.map((player) => (
 						<Item key={player.name} variant="outline" className="flex-row" asChild>

@@ -1,10 +1,9 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import type { InningsWhereInput } from "zenstack/output/input";
 
-import { DateFilter, dateSearchSchema, type DateSearchSchema } from "@/components/date-filter";
-import { TabsLayout } from "@/components/tabs/tabs-layout";
+import { validateDate } from "@/components/date-filter";
+import { TabsLayout } from "@/components/tabs-layout";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -12,17 +11,10 @@ import { db } from "@/lib/db";
 import type { TeamStats } from "@/lib/types";
 import { ballsToOvers } from "@/lib/utils";
 
-const teamStatsQueryOptions = ({ date, rivalry }: DateSearchSchema) => {
-	return queryOptions({
-		queryKey: ["teams-stats", date ?? rivalry ?? "all-time"],
-		queryFn: () => getTeamStats({ data: { date, rivalry } }),
-	});
-};
-
 const getTeamStats = createServerFn({ method: "GET" })
-	.inputValidator(dateSearchSchema)
-	.handler(async ({ data: { date, rivalry } }): Promise<TeamStats[]> => {
-		const whereClause: InningsWhereInput = { match: { date: { date, rivalryId: rivalry } } };
+	.inputValidator(validateDate)
+	.handler(async ({ data }): Promise<TeamStats[]> => {
+		const whereClause: InningsWhereInput = { match: { date: data } };
 
 		const teamsWithInnings = await db.innings.findMany({
 			where: whereClause,
@@ -47,7 +39,7 @@ const getTeamStats = createServerFn({ method: "GET" })
 			// Matches won per team
 			db.matches.groupBy({
 				by: ["winnerId"],
-				where: { winnerId: { in: teamIds }, date: { date, rivalryId: rivalry } },
+				where: { winnerId: { in: teamIds }, date: data },
 				_count: { winnerId: true },
 			}),
 
@@ -119,11 +111,15 @@ const getTeamStats = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/_stats/stats/teams")({
 	head: () => ({ meta: [{ title: "Teams Stats" }] }),
-	loader: async ({ context }) => await context.queryClient.ensureQueryData(teamStatsQueryOptions(context)),
+	loaderDeps: ({ search }) => search,
+	loader: async ({ context, deps }) =>
+		await context.queryClient.ensureQueryData({
+			queryKey: ["teams-stats", deps.date ?? deps.rivalry ?? "all-time"],
+			queryFn: () => getTeamStats({ data: deps }),
+		}),
 	component: () => {
 		const isMobile = useIsMobile();
-		const context = Route.useRouteContext();
-		const { data } = useSuspenseQuery(teamStatsQueryOptions(context));
+		const data = Route.useLoaderData();
 		const teamStats = data.sort((a, b) => b.winPercent - a.winPercent);
 
 		const statsConfig = [
@@ -140,7 +136,7 @@ export const Route = createFileRoute("/_stats/stats/teams")({
 		];
 
 		return (
-			<TabsLayout title="Teams Stats" secondary={<DateFilter />}>
+			<TabsLayout title="Teams Stats">
 				<ResizablePanelGroup direction="horizontal">
 					<ResizablePanel defaultSize={100} minSize={isMobile ? 100 : 40}>
 						<div className="overflow-hidden rounded-md border">

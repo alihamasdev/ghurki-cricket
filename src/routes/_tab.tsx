@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
 import { Outlet } from "@tanstack/react-router";
 
-import { tabItems } from "@/components/tabs/items";
+import { tabItems } from "@/components/tabs-layout";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_tab")({

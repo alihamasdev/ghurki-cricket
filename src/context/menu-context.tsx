@@ -4,8 +4,7 @@ import { createContext, use, useEffect, useState } from "react";
 
 import { PlayerAvatar } from "@/components/players/avatar";
 import { playerQueryOptions } from "@/components/players/query";
-import { statsItems } from "@/components/tabs/items";
-import { tabItems } from "@/components/tabs/items";
+import { tabItems, statsItems } from "@/components/tabs-layout";
 import {
 	Command,
 	CommandDialog,

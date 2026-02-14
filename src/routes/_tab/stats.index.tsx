@@ -1,14 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { statsItems } from "@/components/tabs/items";
-import { TabsLayout } from "@/components/tabs/tabs-layout";
+import { TabsLayout, statsItems } from "@/components/tabs-layout";
 import { Item, ItemContent, ItemTitle, ItemMedia } from "@/components/ui/item";
 
 export const Route = createFileRoute("/_tab/stats/")({
 	head: () => ({ meta: [{ title: "Stats" }] }),
 	component: () => {
 		return (
-			<TabsLayout title="Stats">
+			<TabsLayout title="Stats" filters={{ date: false }}>
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 					{statsItems.map((item) => (
 						<Item key={item.name} variant="outline" className="flex-row" asChild>

@@ -3,10 +3,10 @@ import { Link } from "@tanstack/react-router";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
-interface PlayerAvatarProps extends React.ComponentProps<typeof Avatar> {
+type PlayerAvatarProps = React.ComponentProps<typeof Avatar> & {
 	name: string;
 	area?: number;
-}
+};
 
 export function PlayerAvatar({ name, area = 32, className, ...props }: PlayerAvatarProps) {
 	return (

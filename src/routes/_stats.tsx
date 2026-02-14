@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
 import { Outlet } from "@tanstack/react-router";
 
-import { statsItems } from "@/components/tabs/items";
+import { dateSearchSchema } from "@/components/date-filter";
+import { statsItems } from "@/components/tabs-layout";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_stats")({
+	validateSearch: dateSearchSchema,
 	component: () => {
 		const { pathname } = useLocation();
 		const searchParams = Route.useSearch();

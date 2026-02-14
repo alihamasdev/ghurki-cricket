@@ -1,29 +1,21 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { type ColumnDef } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/data-table";
-import { DateFilter, dateSearchSchema, type DateSearchSchema } from "@/components/date-filter";
+import { validateDate } from "@/components/date-filter";
 import { PlayerAvatarCell } from "@/components/players/avatar";
-import { TabsLayout } from "@/components/tabs/tabs-layout";
+import { TabsLayout } from "@/components/tabs-layout";
 import { db } from "@/lib/db";
 import { type ManOfMatchStats } from "@/lib/types";
 
-const playerOfMatchStatsQueryOptions = ({ date, rivalry }: DateSearchSchema) => {
-	return queryOptions({
-		queryKey: ["player-of-match-stats", date ?? rivalry ?? ["all-time"]],
-		queryFn: () => getPlayerOfMatchStats({ data: { date, rivalry } }),
-	});
-};
-
 const getPlayerOfMatchStats = createServerFn({ method: "GET" })
-	.inputValidator(dateSearchSchema)
-	.handler(async ({ data: { date, rivalry } }): Promise<ManOfMatchStats[]> => {
+	.inputValidator(validateDate)
+	.handler(async ({ data }): Promise<ManOfMatchStats[]> => {
 		const stats = await db.matches.groupBy({
 			by: ["potmId"],
 			_count: { potmId: true },
-			where: { date: { date, rivalryId: rivalry } },
+			where: { date: data },
 			orderBy: { _count: { potmId: "desc" } },
 		});
 
@@ -42,12 +34,16 @@ const columns: ColumnDef<ManOfMatchStats>[] = [
 
 export const Route = createFileRoute("/_stats/stats/potm")({
 	head: () => ({ meta: [{ title: "Player of the Match Stats" }] }),
-	loader: async ({ context }) => await context.queryClient.ensureQueryData(playerOfMatchStatsQueryOptions(context)),
+	loaderDeps: ({ search }) => search,
+	loader: async ({ context, deps }) =>
+		await context.queryClient.ensureQueryData({
+			queryKey: ["player-of-match-stats", deps.date ?? deps.rivalry ?? "all-time"],
+			queryFn: () => getPlayerOfMatchStats({ data: deps }),
+		}),
 	component: () => {
-		const context = Route.useRouteContext();
-		const { data } = useSuspenseQuery(playerOfMatchStatsQueryOptions(context));
+		const data = Route.useLoaderData();
 		return (
-			<TabsLayout title="Player of the Match Stats" secondary={<DateFilter />}>
+			<TabsLayout title="Player of the Match Stats">
 				<DataTable columns={columns} data={data} />
 			</TabsLayout>
 		);

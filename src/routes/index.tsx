@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { tabItems } from "@/components/tabs/items";
+import { tabItems } from "@/components/tabs-layout";
 import { Item, ItemContent, ItemTitle, ItemMedia } from "@/components/ui/item";
 
 export const Route = createFileRoute("/")({

@@ -1,28 +1,37 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { type ColumnDef } from "@tanstack/react-table";
+import { z } from "zod";
 
 import { DataTable } from "@/components/data-table";
-import { DateFilter, dateSearchSchema, type DateSearchSchema } from "@/components/date-filter";
+import { validateDate } from "@/components/date-filter";
 import { PlayerAvatarCell } from "@/components/players/avatar";
-import { TabsLayout } from "@/components/tabs/tabs-layout";
+import { TabsLayout } from "@/components/tabs-layout";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { db } from "@/lib/db";
 import { type BattingStats } from "@/lib/types";
 
-const battingStatsQueryOptions = ({ date, rivalry }: DateSearchSchema) => {
-	return queryOptions({
-		queryKey: ["batting-stats", date ?? rivalry ?? "all-time"],
-		queryFn: () => getBattingStats({ data: { date, rivalry } }),
-	});
-};
+const battingFilters = [
+	"most-runs",
+	"best-strike-rate",
+	"best-average",
+	"most-not-outs",
+	"highest-score",
+	"most-fours",
+	"most-sixes",
+	"most-ducks",
+	"most-fifties",
+	"most-hundreds",
+] as const;
+
+type BattingFilter = (typeof battingFilters)[number];
 
 const getBattingStats = createServerFn({ method: "GET" })
-	.inputValidator(dateSearchSchema)
-	.handler(async ({ data: { date, rivalry } }): Promise<BattingStats[]> => {
+	.inputValidator(validateDate)
+	.handler(async ({ data }): Promise<BattingStats[]> => {
 		const stats = await db.batters.groupBy({
 			by: ["playerId"],
-			where: { date: { date, rivalryId: rivalry } },
+			where: { date: data },
 			orderBy: { _sum: { runs: "desc" } },
 			_max: { highestScore: true },
 			_sum: {
@@ -54,31 +63,80 @@ const getBattingStats = createServerFn({ method: "GET" })
 		}));
 	});
 
-const columns: ColumnDef<BattingStats>[] = [
-	{ accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerAvatarCell name={row.original.player} /> },
-	{ accessorKey: "innings", header: "Inns" },
-	{ accessorKey: "runs", header: "Runs" },
-	{ accessorKey: "balls", header: "Balls" },
-	{ accessorKey: "strike_rate", header: "SR", cell: ({ row }) => row.original.strike_rate.toFixed() },
-	{ accessorKey: "average", header: "Avg", cell: ({ row }) => row.original.average.toFixed() },
-	{ accessorKey: "not_outs", header: "NO" },
-	{ accessorKey: "highest_score", header: "HS" },
-	{ accessorKey: "fours", header: "4s" },
-	{ accessorKey: "sixes", header: "6s" },
-	{ accessorKey: "ducks", header: "0s" },
-	{ accessorKey: "fifties", header: "50s" },
-	{ accessorKey: "hundreds", header: "100s" },
-];
+const battingColumns: Record<keyof BattingStats, ColumnDef<BattingStats>> = {
+	player: { accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerAvatarCell name={row.original.player} /> },
+	innings: { accessorKey: "innings", header: "Inns" },
+	runs: { accessorKey: "runs", header: "Runs" },
+	balls: { accessorKey: "balls", header: "Balls" },
+	not_outs: { accessorKey: "not_outs", header: "NO" },
+	strike_rate: { accessorKey: "strike_rate", header: "SR", cell: ({ row }) => row.original.strike_rate.toFixed() },
+	average: { accessorKey: "average", header: "Avg", cell: ({ row }) => row.original.average.toFixed() },
+	highest_score: { accessorKey: "highest_score", header: "HS" },
+	fours: { accessorKey: "fours", header: "4s" },
+	sixes: { accessorKey: "sixes", header: "6s" },
+	ducks: { accessorKey: "ducks", header: "0s" },
+	fifties: { accessorKey: "fifties", header: "50s" },
+	hundreds: { accessorKey: "hundreds", header: "100s" },
+};
+
+const filterColumns: Record<BattingFilter, (keyof BattingStats | ColumnDef<BattingStats>)[]> = {
+	"most-runs": ["player", "innings", "runs", "balls"],
+	"best-strike-rate": ["player", "runs", "balls", "strike_rate"],
+	"best-average": ["player", "runs", "innings", "not_outs", "average"],
+	"most-not-outs": ["player", "innings", { ...battingColumns.not_outs, header: "Not-Outs" }],
+	"highest-score": ["player", "highest_score"],
+	"most-fours": ["player", "balls", "fours"],
+	"most-sixes": ["player", "balls", "sixes"],
+	"most-ducks": ["player", "innings", { ...battingColumns.ducks, header: "Ducks" }],
+	"most-fifties": ["player", "innings", "fifties"],
+	"most-hundreds": ["player", "innings", "hundreds"],
+};
+
+const getBattingColumns = (): ColumnDef<BattingStats>[] => {
+	const isMobile = useIsMobile();
+	const { filter } = Route.useSearch();
+
+	if (filter && filter in filterColumns) {
+		return filterColumns[filter].map((col) => (typeof col === "string" ? battingColumns[col] : col));
+	}
+
+	if (isMobile) {
+		return (["player", "innings", "runs", "balls", "strike_rate", "average"] as const).map((k) => battingColumns[k]);
+	}
+
+	return (
+		[
+			"player",
+			"innings",
+			"runs",
+			"balls",
+			"not_outs",
+			"strike_rate",
+			"average",
+			"highest_score",
+			"fours",
+			"sixes",
+			"ducks",
+			"fifties",
+			"hundreds",
+		] as const
+	).map((k) => battingColumns[k]);
+};
 
 export const Route = createFileRoute("/_stats/stats/batting")({
 	head: () => ({ meta: [{ title: "Batting Stats" }] }),
-	loader: async ({ context }) => await context.queryClient.ensureQueryData(battingStatsQueryOptions(context)),
+	validateSearch: z.object({ filter: z.enum(battingFilters).optional().catch(undefined) }),
+	loaderDeps: ({ search }) => search,
+	loader: async ({ context, deps }) =>
+		await context.queryClient.ensureQueryData({
+			queryKey: ["batting-stats", deps.date ?? deps.rivalry ?? "all-time"],
+			queryFn: () => getBattingStats({ data: deps }),
+		}),
 	component: () => {
-		const context = Route.useRouteContext();
-		const { data } = useSuspenseQuery(battingStatsQueryOptions(context));
+		const data = Route.useLoaderData();
 		return (
-			<TabsLayout title="Batting Stats" secondary={<DateFilter />}>
-				<DataTable columns={columns} data={data} />
+			<TabsLayout title="Batting Stats" filters={{ stats: { options: battingFilters } }}>
+				<DataTable data={data} columns={getBattingColumns()} />
 			</TabsLayout>
 		);
 	},

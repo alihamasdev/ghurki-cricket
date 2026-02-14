@@ -1,20 +1,12 @@
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/data-table";
-import { TabsLayout } from "@/components/tabs/tabs-layout";
+import { TabsLayout } from "@/components/tabs-layout";
 import { TableCell, TableFooter, TableRow } from "@/components/ui/table";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
-
-const expenseQueryOptions = () => {
-	return queryOptions({
-		queryKey: ["expense"],
-		queryFn: () => getExpense(),
-	});
-};
 
 const getExpense = createServerFn({ method: "GET" }).handler(async () => {
 	const data = await db.expenses.findMany({ orderBy: { dateId: "desc" } });
@@ -35,11 +27,15 @@ const columns: ColumnDef<Awaited<ReturnType<typeof getExpense>>[number]>[] = [
 
 export const Route = createFileRoute("/_tab/expense/")({
 	head: () => ({ meta: [{ title: "Expense" }] }),
-	loader: async ({ context }) => await context.queryClient.ensureQueryData(expenseQueryOptions()),
+	loader: async ({ context }) =>
+		await context.queryClient.ensureQueryData({
+			queryKey: ["expense"],
+			queryFn: () => getExpense(),
+		}),
 	component: () => {
-		const { data } = useSuspenseQuery(expenseQueryOptions());
+		const data = Route.useLoaderData();
 		return (
-			<TabsLayout title="Expense">
+			<TabsLayout title="Expense" filters={{ date: false }}>
 				<DataTable
 					columns={columns}
 					data={data}
