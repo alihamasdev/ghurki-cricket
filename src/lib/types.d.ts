@@ -56,7 +56,7 @@ export type TeamStats = {
 };
 
 export type Expense = {
-	dateId: string;
+	date: string;
 	groundFee: number;
 	foodCost: number;
 	gearCost: number;

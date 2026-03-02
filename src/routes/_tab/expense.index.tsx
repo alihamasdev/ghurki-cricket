@@ -1,22 +1,28 @@
+import { EyeIcon } from "@hugeicons/core-free-icons";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import type { ColumnDef } from "@tanstack/react-table";
 import { type Table } from "@tanstack/react-table";
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { z } from "zod";
 
 import { DataTable } from "@/components/data-table";
 import { TabsLayout } from "@/components/tabs-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 
+const viewSchema = z.object({
+	view: z.enum(["table", "chart"]).optional().default("table"),
+});
+
 const getExpense = createServerFn({ method: "GET" }).handler(async () => {
-	const data = await db.expenses.findMany({ orderBy: { dateId: "desc" } });
+	const data = await db.expenses.findMany({ orderBy: { date: "desc" } });
 	return data.map((item) => ({
 		...item,
-		dateId: formatDate(item.dateId),
+		date: formatDate(item.date),
 		total: item.foodCost + item.gearCost + item.groundFee,
 	}));
 });
@@ -32,7 +38,7 @@ const sumColumn = (id: keyof ExpenseRow) => {
 };
 
 const columns: ColumnDef<ExpenseRow>[] = [
-	{ accessorKey: "dateId", header: "Date", footer: () => "Total" },
+	{ accessorKey: "date", header: "Date", footer: () => "Total" },
 	{ accessorKey: "groundFee", header: "Ground", footer: sumColumn("groundFee") },
 	{ accessorKey: "foodCost", header: "Food", footer: sumColumn("foodCost") },
 	{ accessorKey: "gearCost", header: "Gear", footer: sumColumn("gearCost") },
@@ -40,14 +46,15 @@ const columns: ColumnDef<ExpenseRow>[] = [
 ];
 
 const chartConfig: ChartConfig = {
-	groundFee: { label: "Ground", color: "var(--chart-1)" },
-	foodCost: { label: "Food", color: "var(--chart-2)" },
-	gearCost: { label: "Gear", color: "var(--chart-3)" },
-	total: { label: "Total", color: "var(--chart-4)" },
+	groundFee: { label: "Ground Fee", color: "var(--chart-1)" },
+	foodCost: { label: "Food Cost", color: "var(--chart-2)" },
+	gearCost: { label: "Gear Cost", color: "var(--chart-3)" },
+	total: { label: "Total Cost", color: "var(--chart-4)" },
 };
 
 export const Route = createFileRoute("/_tab/expense/")({
 	head: () => ({ meta: [{ title: "Expense" }] }),
+	validateSearch: viewSchema,
 	loader: async ({ context }) =>
 		await context.queryClient.ensureQueryData({
 			queryKey: ["expense"],
@@ -55,18 +62,30 @@ export const Route = createFileRoute("/_tab/expense/")({
 		}),
 	component: () => {
 		const data = Route.useLoaderData();
-		const chartData = [...data].reverse();
+		const { view } = Route.useSearch();
+		const navigate = Route.useNavigate();
 		const [activeChart, setActiveChart] = useState<keyof typeof chartConfig>("total");
 		return (
-			<TabsLayout title="Expense" filters={{ date: false }}>
-				<DataTable columns={columns} data={data} />
-				<Card className="py-0">
-					<CardHeader className="flex flex-col items-stretch border-b p-0! sm:flex-row">
-						<div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:py-0!">
-							<CardTitle>Expense Chart</CardTitle>
-							<CardDescription>Showing total expenses from Jan, 2026</CardDescription>
-						</div>
-						<div className="flex">
+			<TabsLayout
+				title="Expense"
+				filters={{
+					date: false,
+					dropdown: {
+						icon: EyeIcon,
+						value: view,
+						onValueChange: (val) => navigate({ search: { view: val === "chart" ? "chart" : undefined }, replace: true }),
+						options: [
+							{ label: "Table", value: "table" },
+							{ label: "Chart", value: "chart" },
+						],
+					},
+				}}
+			>
+				{view === "table" ? (
+					<DataTable columns={columns} data={data} />
+				) : (
+					<Card className="mt-1 py-0">
+						<CardHeader className="grid grid-cols-2 gap-0 divide-x divide-y border-b px-0 sm:grid-cols-4 md:divide-y-0 [.border-b]:pb-0">
 							{["groundFee", "foodCost", "gearCost", "total"].map((key) => {
 								const chart = key as keyof typeof chartConfig;
 								return (
@@ -75,7 +94,7 @@ export const Route = createFileRoute("/_tab/expense/")({
 										type="button"
 										data-active={activeChart === chart}
 										onClick={() => setActiveChart(chart)}
-										className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/70 sm:border-t-0 sm:border-l sm:px-8 sm:py-6"
+										className="relative z-30 flex flex-1 flex-col justify-center gap-1 px-6 py-4 text-left data-[active=true]:bg-muted/70 sm:px-8 sm:py-6"
 									>
 										<span className="text-xs text-muted-foreground">{chartConfig[chart].label}</span>
 										<span className="text-lg leading-none font-bold sm:text-3xl">
@@ -84,34 +103,34 @@ export const Route = createFileRoute("/_tab/expense/")({
 									</button>
 								);
 							})}
-						</div>
-					</CardHeader>
-					<CardContent className="px-2 sm:p-6">
-						<ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
-							<BarChart accessibilityLayer data={chartData} margin={{ left: 12, right: 12 }}>
-								<CartesianGrid vertical={false} />
-								<XAxis
-									dataKey="dateId"
-									tickLine={false}
-									axisLine={false}
-									tickMargin={8}
-									minTickGap={32}
-									tickFormatter={(value) => formatDate(value) ?? "All Time"}
-								/>
-								<ChartTooltip
-									content={
-										<ChartTooltipContent
-											className="w-[150px]"
-											nameKey="views"
-											labelFormatter={(value) => formatDate(value) ?? "All Time"}
-										/>
-									}
-								/>
-								<Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
-							</BarChart>
-						</ChartContainer>
-					</CardContent>
-				</Card>
+						</CardHeader>
+						<CardContent className="px-2 sm:p-6">
+							<ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
+								<BarChart accessibilityLayer data={[...data].reverse()} margin={{ left: 12, right: 12 }}>
+									<CartesianGrid vertical={false} />
+									<XAxis
+										dataKey="date"
+										tickLine={false}
+										axisLine={false}
+										tickMargin={8}
+										minTickGap={32}
+										tickFormatter={(value) => formatDate(value) ?? "All Time"}
+									/>
+									<ChartTooltip
+										content={
+											<ChartTooltipContent
+												className="w-[150px]"
+												nameKey="views"
+												labelFormatter={(value) => formatDate(value) ?? "All Time"}
+											/>
+										}
+									/>
+									<Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
+								</BarChart>
+							</ChartContainer>
+						</CardContent>
+					</Card>
+				)}
 			</TabsLayout>
 		);
 	},

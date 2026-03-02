@@ -2,6 +2,7 @@ import { Menu01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { DateFilter, type DateFilterProps } from "@/components/date-filter";
+import { DropdownFilter, type DropdownFilterProps } from "@/components/dropdown-filter";
 import { StatsFilter, type StatsFilterProps } from "@/components/stats-filter";
 import { Button } from "@/components/ui/button";
 import { useMenu } from "@/context/menu-context";
@@ -13,13 +14,14 @@ type TabsLayoutProps = React.PropsWithChildren<{
 	filters?: {
 		date?: false | DateFilterProps;
 		stats?: false | StatsFilterProps;
+		dropdown?: false | DropdownFilterProps | DropdownFilterProps[];
 		className?: string;
 	};
 }>;
 
 export function TabsLayout({ title, children, className, filters = {} }: TabsLayoutProps) {
 	const { toggleOpen } = useMenu();
-	const showFilters = filters.stats || filters.date !== false;
+	const showFilters = filters.stats || filters.date !== false || filters.dropdown !== false;
 	return (
 		<>
 			<header className="sticky top-0 z-10 bg-background">
@@ -33,7 +35,13 @@ export function TabsLayout({ title, children, className, filters = {} }: TabsLay
 					{showFilters && (
 						<div className={cn("flex w-full gap-3 *:flex-1 sm:justify-end sm:*:flex-initial", filters.className)}>
 							{filters.stats && <StatsFilter {...filters.stats} />}
-							<DateFilter {...filters.date} />
+							{filters.dropdown &&
+								(Array.isArray(filters.dropdown) ? (
+									filters.dropdown.map((dropdown, index) => <DropdownFilter key={index} {...dropdown} />)
+								) : (
+									<DropdownFilter {...filters.dropdown} />
+								))}
+							{filters.date !== false && <DateFilter {...filters.date} />}
 						</div>
 					)}
 				</div>

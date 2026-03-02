@@ -45,7 +45,6 @@ model Dates {
   bowling   Bowlers[]
   fielding  Fielders[]
   records   Records[]
-  expenses  Expenses[]
   @@map("dates")
 }
 
@@ -147,10 +146,9 @@ model Records {
 }
 
 model Expenses {
+  date      DateTime @db.Date @id
   groundFee Int      @default(0)
   gearCost  Int      @default(0)
   foodCost  Int      @default(0)
-  dateId    DateTime @db.Date @id
-  date      Dates    @relation(fields: [dateId], references: [date])
   @@map("expenses")
 }
