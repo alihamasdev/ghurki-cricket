@@ -54,3 +54,11 @@ export type TeamStats = {
 	lowestScore: string;
 	highestScore: string;
 };
+
+export type Expense = {
+	dateId: string;
+	groundFee: number;
+	foodCost: number;
+	gearCost: number;
+	total: number;
+};

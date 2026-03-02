@@ -5,8 +5,8 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: string | Date | null | undefined): string | null {
-	if (!date) return null;
+export function formatDate(date: string | Date | null | undefined): string {
+	if (!date) return "All Time";
 	return new Date(date).toLocaleDateString("en-US", {
 		day: "numeric",
 		year: "numeric",

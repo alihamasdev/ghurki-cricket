@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_tab")({
 				<footer className="fixed bottom-0 w-full border-t bg-background">
 					<div className="container mx-auto grid grid-cols-5 px-1 py-2 md:py-3">
 						{tabItems.map((item) => {
-							const isCurrentRoute = pathname === item.url;
+							const isCurrentRoute = pathname.startsWith(item.url);
 							return (
 								<Link to={item.url} key={item.name} className="group flex flex-col items-center px-1">
 									<div
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/_tab")({
 											isCurrentRoute && "bg-blue-700/40 group-hover:bg-blue-700/40",
 										)}
 									>
-										<img src={item.icon} width={20} height={20} alt={item.name} className="aspect-square" />
+										<img src={item.icon} width={20} height={20} alt={item.name} className="aspect-square size-4 md:size-5" />
 									</div>
 									<p className={cn("", isCurrentRoute && "font-medium")} style={{ fontSize: 13 }}>
 										{item.name}

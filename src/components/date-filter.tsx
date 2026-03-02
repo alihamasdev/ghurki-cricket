@@ -38,7 +38,7 @@ export const datesQueryOptions = () => {
 	});
 };
 
-const getDates = createServerFn({ method: "GET" }).handler(async () => {
+export const getDates = createServerFn({ method: "GET" }).handler(async () => {
 	const dates = await db.dates.findMany({ orderBy: { date: "desc" }, select: { date: true, title: true, rivalryId: true } });
 
 	const rivalriesCount = dates.reduce(
@@ -67,12 +67,13 @@ export function DateFilter({ options = "both", side = "end" }: DateFilterProps) 
 	const { pathname } = useLocation();
 	const { data } = useSuspenseQuery(datesQueryOptions());
 	const { date: selectedDate, rivalry: selectedRivalry } = useSearch({ strict: false });
+	const formattedDate = formatDate(selectedDate);
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant="outline">
 					<HugeiconsIcon icon={Calendar02Icon} strokeWidth={2} />
-					{formatDate(selectedDate) ?? selectedRivalry ?? "All Time"}
+					{formattedDate !== "All Time" ? formattedDate : (selectedRivalry ?? "All Time")}
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align={side} className="w-auto">
