@@ -98,18 +98,29 @@ function DropdownMenuRadioGroup({ ...props }: React.ComponentProps<typeof Dropdo
 	return <DropdownMenuPrimitive.RadioGroup data-slot="dropdown-menu-radio-group" {...props} />;
 }
 
-function DropdownMenuRadioItem({ className, children, ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem>) {
+function DropdownMenuRadioItem({
+	className,
+	children,
+	indicatorSide = "end",
+	...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem> & {
+	indicatorSide?: "start" | "end";
+}) {
 	return (
 		<DropdownMenuPrimitive.RadioItem
 			data-slot="dropdown-menu-radio-item"
 			className={cn(
-				"relative flex cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-xs outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				"relative flex cursor-default items-center gap-1.5 rounded-md py-1 text-xs outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+				indicatorSide === "start" ? "pl-8 pr-1.5" : "pr-8 pl-1.5",
 				className,
 			)}
 			{...props}
 		>
 			<span
-				className="pointer-events-none absolute right-2 flex items-center justify-center"
+				className={cn(
+					"pointer-events-none absolute flex items-center justify-center",
+					indicatorSide === "start" ? "left-2" : "right-2",
+				)}
 				data-slot="dropdown-menu-radio-item-indicator"
 			>
 				<DropdownMenuPrimitive.ItemIndicator>

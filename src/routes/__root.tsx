@@ -1,7 +1,5 @@
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
-import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
 
 import { datesQueryOptions } from "@/components/date-filter";
 import { playerQueryOptions } from "@/components/players/query";
@@ -33,11 +31,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 				</head>
 				<body>
 					<QueryClientProvider client={queryClient}>
-						<NuqsAdapter>
-							<MenuProvider>{children}</MenuProvider>
-						</NuqsAdapter>
+						<MenuProvider>{children}</MenuProvider>
 						<Toaster />
-						<ReactQueryDevtools client={queryClient} initialIsOpen={true} />
 					</QueryClientProvider>
 					<Scripts />
 				</body>

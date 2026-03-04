@@ -11,11 +11,13 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuGroup,
-	DropdownMenuLabel,
 	DropdownMenuRadioGroup,
 	DropdownMenuRadioItem,
 	DropdownMenuTrigger,
-	DropdownMenuSeparator,
+	DropdownMenuSub,
+	DropdownMenuSubTrigger,
+	DropdownMenuPortal,
+	DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
@@ -41,19 +43,24 @@ export const datesQueryOptions = () => {
 export const getDates = createServerFn({ method: "GET" }).handler(async () => {
 	const dates = await db.dates.findMany({ orderBy: { date: "desc" }, select: { date: true, title: true, rivalryId: true } });
 
-	const rivalriesCount = dates.reduce(
-		(acc, { rivalryId }) => {
+	const rivalriesGrouped = dates.reduce(
+		(acc, dateObj) => {
+			const { rivalryId } = dateObj;
 			if (rivalryId) {
-				acc[rivalryId] = (acc[rivalryId] || 0) + 1;
+				if (!acc[rivalryId]) acc[rivalryId] = [];
+				acc[rivalryId].push({
+					title: dateObj.title,
+					date: format(dateObj.date, "yyyy-MM-dd"),
+				});
 			}
 			return acc;
 		},
-		{} as Record<string, number>,
+		{} as Record<string, { title: string; date: string }[]>,
 	);
 
 	return {
-		dates: dates.map(({ date, title }) => ({ title, date: format(date, "yyyy-MM-dd") })),
-		rivalries: Object.entries(rivalriesCount).map(([title, series]) => ({ title, series })),
+		rivalries: Object.entries(rivalriesGrouped).map(([title, dates]) => ({ title, dates })),
+		dates: dates.filter((d) => !d.rivalryId).map(({ date, title }) => ({ title, date: format(date, "yyyy-MM-dd") })),
 	};
 });
 
@@ -85,47 +92,62 @@ export function DateFilter({ options = "both", side = "end" }: DateFilterProps) 
 						<DropdownMenuRadioItem value="">All Time</DropdownMenuRadioItem>
 					</DropdownMenuRadioGroup>
 				</DropdownMenuGroup>
-				{(options === "both" || options === "rivalries") && (
-					<>
-						<DropdownMenuSeparator />
-						<DropdownMenuGroup>
-							<DropdownMenuLabel>Rivalries</DropdownMenuLabel>
-							<DropdownMenuRadioGroup
-								value={selectedRivalry}
-								onValueChange={(value) => {
-									navigate({ to: pathname, search: (prev) => ({ ...prev, date: undefined, rivalry: value }) });
-								}}
-							>
-								{data.rivalries.map(({ title, series }) => (
-									<DropdownMenuRadioItem key={title} value={title} className="justify-between">
-										<span>{title}</span>
-										<span className="text-muted-foreground">({series} Series)</span>
-									</DropdownMenuRadioItem>
-								))}
-							</DropdownMenuRadioGroup>
-						</DropdownMenuGroup>
-					</>
+				{options === "both" && (
+					<DropdownMenuGroup>
+						{data.rivalries.map(({ title, dates }) => (
+							<DropdownMenuSub key={title}>
+								<DropdownMenuSubTrigger className="text-xs">{title}</DropdownMenuSubTrigger>
+								<DropdownMenuPortal>
+									<DropdownMenuSubContent>
+										<DropdownMenuRadioGroup
+											value={
+												selectedDate
+													? dates.some((d) => d.date === selectedDate)
+														? selectedDate
+														: undefined
+													: selectedRivalry === title
+														? "all"
+														: undefined
+											}
+											onValueChange={(value) => {
+												if (value === "all") {
+													navigate({ to: pathname, search: (prev) => ({ ...prev, date: undefined, rivalry: title }) });
+												} else {
+													navigate({ to: pathname, search: (prev) => ({ ...prev, date: value, rivalry: undefined }) });
+												}
+											}}
+										>
+											<DropdownMenuRadioItem indicatorSide="start" value="all">
+												{`All ${title}`}
+											</DropdownMenuRadioItem>
+											{dates.map(({ date, title: dateTitle }) => (
+												<DropdownMenuRadioItem key={date} value={date} indicatorSide="start" className="justify-between">
+													<span>{dateTitle}</span>
+													<span className="text-xs text-muted-foreground">({date})</span>
+												</DropdownMenuRadioItem>
+											))}
+										</DropdownMenuRadioGroup>
+									</DropdownMenuSubContent>
+								</DropdownMenuPortal>
+							</DropdownMenuSub>
+						))}
+					</DropdownMenuGroup>
 				)}
-				{(options === "both" || options === "dates") && (
-					<>
-						<DropdownMenuSeparator />
-						<DropdownMenuGroup>
-							<DropdownMenuLabel>Series</DropdownMenuLabel>
-							<DropdownMenuRadioGroup
-								value={selectedDate?.toString()}
-								onValueChange={(value) => {
-									navigate({ to: pathname, search: (prev) => ({ ...prev, date: value, rivalry: undefined }) });
-								}}
-							>
-								{data.dates.map(({ date, title }) => (
-									<DropdownMenuRadioItem key={date} value={date} className="justify-between">
-										<span>{title}</span>
-										<span className="text-muted-foreground">({date})</span>
-									</DropdownMenuRadioItem>
-								))}
-							</DropdownMenuRadioGroup>
-						</DropdownMenuGroup>
-					</>
+				{options === "rivalries" && (
+					<DropdownMenuGroup>
+						<DropdownMenuRadioGroup
+							value={selectedRivalry}
+							onValueChange={(value) =>
+								navigate({ to: pathname, search: (prev) => ({ ...prev, date: undefined, rivalry: value }) })
+							}
+						>
+							{data.rivalries.map(({ title }) => (
+								<DropdownMenuRadioItem key={title} value={title}>
+									{title}
+								</DropdownMenuRadioItem>
+							))}
+						</DropdownMenuRadioGroup>
+					</DropdownMenuGroup>
 				)}
 			</DropdownMenuContent>
 		</DropdownMenu>

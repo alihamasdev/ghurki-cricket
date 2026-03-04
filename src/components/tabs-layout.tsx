@@ -46,8 +46,8 @@ export function TabsLayout({ title, children, className, filters = {} }: TabsLay
 					)}
 				</div>
 			</header>
-			<div className="w-full flex-1 pb-22">
-				<div className={cn("container mx-auto flex flex-col gap-4 px-4", className)}>{children}</div>
+			<div className="flex size-full flex-1 flex-col pb-22">
+				<div className={cn("container mx-auto flex flex-1 flex-col gap-4 px-4", className)}>{children}</div>
 			</div>
 		</>
 	);
