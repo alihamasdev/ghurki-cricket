@@ -28,7 +28,7 @@ export const Route = createFileRoute("/_tab/matches/")({
 	component: () => {
 		const { data } = useSuspenseQuery(matchesQueryOptions());
 		return (
-			<TabsLayout title="Matches" filters={{ date: false }}>
+			<TabsLayout title="Matches" dateFilter={null}>
 				{Object.keys(data)
 					.reverse()
 					.map((date) => {

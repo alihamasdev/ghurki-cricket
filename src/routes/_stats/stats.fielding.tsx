@@ -50,4 +50,3 @@ export const Route = createFileRoute("/_stats/stats/fielding")({
 		);
 	},
 });
-// filters={{ className: "grid-cols-1" }}

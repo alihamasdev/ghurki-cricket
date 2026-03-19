@@ -28,7 +28,7 @@ export const Route = createFileRoute("/_tab/matches/$matchId")({
 	component: () => {
 		const data = Route.useLoaderData();
 		return (
-			<TabsLayout title={data.fullTitle} filters={{ date: false }}>
+			<TabsLayout title={data.fullTitle} dateFilter={null}>
 				{data.scorecardUrl && (
 					<AspectRatio ratio={16 / 9} className="w-full overflow-hidden rounded-md bg-muted md:rounded-lg">
 						<img src={data.scorecardUrl} alt={data.fullTitle} className="h-auto w-full object-cover" />

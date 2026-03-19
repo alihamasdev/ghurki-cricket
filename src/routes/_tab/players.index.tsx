@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_tab/players/")({
 	component: () => {
 		const { data } = useSuspenseQuery(playerQueryOptions());
 		return (
-			<TabsLayout title="Players" filters={{ date: false }}>
+			<TabsLayout title="Players" dateFilter={null}>
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 					{data.map((player) => (
 						<Item key={player.name} variant="outline" className="flex-row" asChild>

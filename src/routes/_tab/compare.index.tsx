@@ -22,29 +22,27 @@ export const Route = createFileRoute("/_tab/compare/")({
 			<TabsLayout
 				title="Compare"
 				className="items-center justify-center"
-				filters={{
-					date: { options: "rivalries" },
-					dropdown: [
-						{
-							icon: CricketBatIcon,
-							value: batter ?? "Select Batter",
-							onValueChange: (value) => navigate({ search: (prev) => ({ ...prev, batter: value }) }),
-							options: players.map((player) => ({
-								label: player.name,
-								value: player.name.toLowerCase(),
-							})),
-						},
-						{
-							icon: TennisBallIcon,
-							value: bowler ?? "Select Bowler",
-							onValueChange: (value) => navigate({ search: (prev) => ({ ...prev, bowler: value }) }),
-							options: players.map((player) => ({
-								label: player.name,
-								value: player.name.toLowerCase(),
-							})),
-						},
-					],
-				}}
+				dateFilter={{ options: "rivalries" }}
+				filters={[
+					{
+						icon: CricketBatIcon,
+						value: batter ?? "Select Batter",
+						onValueChange: (value) => navigate({ search: (prev) => ({ ...prev, batter: value }) }),
+						options: players.map((player) => ({
+							label: player.name,
+							value: player.name.toLowerCase(),
+						})),
+					},
+					{
+						icon: TennisBallIcon,
+						value: bowler ?? "Select Bowler",
+						onValueChange: (value) => navigate({ search: (prev) => ({ ...prev, bowler: value }) }),
+						options: players.map((player) => ({
+							label: player.name,
+							value: player.name.toLowerCase(),
+						})),
+					},
+				]}
 			>
 				<div className="size-100 rounded-md border"></div>
 			</TabsLayout>

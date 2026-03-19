@@ -1,3 +1,4 @@
+import { FilterIcon } from "@hugeicons/core-free-icons";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { type ColumnDef } from "@tanstack/react-table";
@@ -12,7 +13,7 @@ import { db } from "@/lib/db";
 import { type BowlingStats } from "@/lib/types";
 import { ballsToOvers } from "@/lib/utils";
 
-const bowlingFilters = [
+const filters = [
 	"most-wickets",
 	"most-runs-conceded",
 	"best-economy",
@@ -24,7 +25,9 @@ const bowlingFilters = [
 	"most-3fr",
 ] as const;
 
-type BowlingFilter = (typeof bowlingFilters)[number];
+type Filter = (typeof filters)[number];
+
+const filterSchema = z.enum(filters).optional().catch(undefined);
 
 const getBowlingStats = createServerFn({ method: "GET" })
 	.inputValidator(validateDate)
@@ -61,7 +64,7 @@ const getBowlingStats = createServerFn({ method: "GET" })
 		}));
 	});
 
-const bowlingColumns: Record<keyof BowlingStats, ColumnDef<BowlingStats>> = {
+const columns: Record<keyof BowlingStats, ColumnDef<BowlingStats>> = {
 	player: { accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerAvatarCell name={row.original.player} /> },
 	innings: { accessorKey: "innings", header: "Inns" },
 	balls: { accessorKey: "balls", header: "Overs", cell: ({ row }) => Number(ballsToOvers(row.original.balls)) },
@@ -80,16 +83,16 @@ const bowlingColumns: Record<keyof BowlingStats, ColumnDef<BowlingStats>> = {
 	"3fr": { accessorKey: "3fr", header: "3fr" },
 };
 
-const filterColumns: Record<BowlingFilter, (keyof BowlingStats)[]> = {
-	"most-wickets": ["player", "balls", "wickets"],
-	"most-runs-conceded": ["player", "balls", "runs"],
-	"best-economy": ["player", "runs", "balls", "economy"],
-	"best-average": ["player", "runs", "wickets", "average"],
-	"most-dots": ["player", "balls", "dots"],
-	"most-wides": ["player", "balls", "wides"],
-	"most-no-balls": ["player", "balls", "no_balls"],
-	"most-2fr": ["player", "innings", "2fr"],
-	"most-3fr": ["player", "innings", "3fr"],
+const filterColumns: Record<Filter, ColumnDef<BowlingStats>[]> = {
+	"most-wickets": [columns.player, columns.balls, columns.wickets],
+	"most-runs-conceded": [columns.player, columns.balls, columns.runs],
+	"best-economy": [columns.player, columns.runs, columns.balls, columns.economy],
+	"best-average": [columns.player, columns.runs, columns.wickets, columns.average],
+	"most-dots": [columns.player, columns.balls, columns.dots],
+	"most-wides": [columns.player, columns.balls, columns.wides],
+	"most-no-balls": [columns.player, columns.balls, columns.no_balls],
+	"most-2fr": [columns.player, columns.innings, columns["2fr"]],
+	"most-3fr": [columns.player, columns.innings, columns["3fr"]],
 };
 
 const getBowlingColumns = (): ColumnDef<BowlingStats>[] => {
@@ -97,21 +100,32 @@ const getBowlingColumns = (): ColumnDef<BowlingStats>[] => {
 	const { filter } = Route.useSearch();
 
 	if (filter && filter in filterColumns) {
-		return filterColumns[filter].map((col) => (typeof col === "string" ? bowlingColumns[col] : col));
+		return filterColumns[filter];
 	}
 
 	if (isMobile) {
-		return (["player", "innings", "balls", "runs", "wickets", "economy", "average"] as const).map((k) => bowlingColumns[k]);
+		return [columns.player, columns.innings, columns.balls, columns.runs, columns.wickets, columns.economy, columns.average];
 	}
 
-	return (
-		["player", "innings", "balls", "runs", "wickets", "economy", "average", "dots", "wides", "no_balls", "2fr", "3fr"] as const
-	).map((k) => bowlingColumns[k]);
+	return [
+		columns.player,
+		columns.innings,
+		columns.balls,
+		columns.runs,
+		columns.wickets,
+		columns.economy,
+		columns.average,
+		columns.dots,
+		columns.wides,
+		columns.no_balls,
+		columns["2fr"],
+		columns["3fr"],
+	];
 };
 
 export const Route = createFileRoute("/_stats/stats/bowling")({
 	head: () => ({ meta: [{ title: "Bowling Stats" }] }),
-	validateSearch: z.object({ filter: z.enum(bowlingFilters).optional().catch(undefined) }),
+	validateSearch: z.object({ filter: filterSchema }),
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
 		await context.queryClient.ensureQueryData({
@@ -120,8 +134,22 @@ export const Route = createFileRoute("/_stats/stats/bowling")({
 		}),
 	component: () => {
 		const data = Route.useLoaderData();
+		const navigate = Route.useNavigate();
+		const { filter } = Route.useSearch();
 		return (
-			<TabsLayout title="Bowling Stats" filters={{ stats: { options: bowlingFilters } }}>
+			<TabsLayout
+				title="Bowling Stats"
+				filters={{
+					value: filter,
+					icon: FilterIcon,
+					title: "Select Filters",
+					onValueChange: (val) => {
+						const value = filterSchema.parse(val);
+						navigate({ search: (prev) => ({ ...prev, filter: value }) });
+					},
+					options: [{ value: "", label: "All Stats" }, ...filters.map((filter) => ({ value: filter, label: filter }))],
+				}}
+			>
 				<DataTable columns={getBowlingColumns()} data={data} />
 			</TabsLayout>
 		);

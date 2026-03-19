@@ -1,3 +1,4 @@
+import { FilterIcon } from "@hugeicons/core-free-icons";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { type ColumnDef } from "@tanstack/react-table";
@@ -11,7 +12,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { db } from "@/lib/db";
 import { type BattingStats } from "@/lib/types";
 
-const battingFilters = [
+const filters = [
 	"most-runs",
 	"best-strike-rate",
 	"best-average",
@@ -24,7 +25,9 @@ const battingFilters = [
 	"most-hundreds",
 ] as const;
 
-type BattingFilter = (typeof battingFilters)[number];
+type Filter = (typeof filters)[number];
+
+const filterSchema = z.enum(filters).optional().catch(undefined);
 
 const getBattingStats = createServerFn({ method: "GET" })
 	.inputValidator(validateDate)
@@ -63,7 +66,7 @@ const getBattingStats = createServerFn({ method: "GET" })
 		}));
 	});
 
-const battingColumns: Record<keyof BattingStats, ColumnDef<BattingStats>> = {
+const columns: Record<keyof BattingStats, ColumnDef<BattingStats>> = {
 	player: { accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerAvatarCell name={row.original.player} /> },
 	innings: { accessorKey: "innings", header: "Inns" },
 	runs: { accessorKey: "runs", header: "Runs" },
@@ -79,17 +82,17 @@ const battingColumns: Record<keyof BattingStats, ColumnDef<BattingStats>> = {
 	hundreds: { accessorKey: "hundreds", header: "100s" },
 };
 
-const filterColumns: Record<BattingFilter, (keyof BattingStats | ColumnDef<BattingStats>)[]> = {
-	"most-runs": ["player", "innings", "runs", "balls"],
-	"best-strike-rate": ["player", "runs", "balls", "strike_rate"],
-	"best-average": ["player", "runs", "innings", "not_outs", "average"],
-	"most-not-outs": ["player", "innings", { ...battingColumns.not_outs, header: "Not-Outs" }],
-	"highest-score": ["player", "highest_score"],
-	"most-fours": ["player", "balls", "fours"],
-	"most-sixes": ["player", "balls", "sixes"],
-	"most-ducks": ["player", "innings", { ...battingColumns.ducks, header: "Ducks" }],
-	"most-fifties": ["player", "innings", "fifties"],
-	"most-hundreds": ["player", "innings", "hundreds"],
+const filterColumns: Record<Filter, ColumnDef<BattingStats>[]> = {
+	"most-runs": [columns.player, columns.innings, columns.runs, columns.balls],
+	"best-strike-rate": [columns.player, columns.runs, columns.balls, columns.strike_rate],
+	"best-average": [columns.player, columns.runs, columns.innings, columns.not_outs, columns.average],
+	"most-not-outs": [columns.player, columns.innings, { ...columns.not_outs, header: "Not-Outs" }],
+	"highest-score": [columns.player, columns.highest_score],
+	"most-fours": [columns.player, columns.balls, columns.fours],
+	"most-sixes": [columns.player, columns.balls, columns.sixes],
+	"most-ducks": [columns.player, columns.innings, { ...columns.ducks, header: "Ducks" }],
+	"most-fifties": [columns.player, columns.innings, columns.fifties],
+	"most-hundreds": [columns.player, columns.innings, columns.hundreds],
 };
 
 const getBattingColumns = (): ColumnDef<BattingStats>[] => {
@@ -97,35 +100,33 @@ const getBattingColumns = (): ColumnDef<BattingStats>[] => {
 	const { filter } = Route.useSearch();
 
 	if (filter && filter in filterColumns) {
-		return filterColumns[filter].map((col) => (typeof col === "string" ? battingColumns[col] : col));
+		return filterColumns[filter];
 	}
 
 	if (isMobile) {
-		return (["player", "innings", "runs", "balls", "strike_rate", "average"] as const).map((k) => battingColumns[k]);
+		return [columns.player, columns.innings, columns.runs, columns.balls, columns.strike_rate, columns.average];
 	}
 
-	return (
-		[
-			"player",
-			"innings",
-			"runs",
-			"balls",
-			"not_outs",
-			"strike_rate",
-			"average",
-			"highest_score",
-			"fours",
-			"sixes",
-			"ducks",
-			"fifties",
-			"hundreds",
-		] as const
-	).map((k) => battingColumns[k]);
+	return [
+		columns.player,
+		columns.innings,
+		columns.runs,
+		columns.balls,
+		columns.not_outs,
+		columns.strike_rate,
+		columns.average,
+		columns.highest_score,
+		columns.fours,
+		columns.sixes,
+		columns.ducks,
+		columns.fifties,
+		columns.hundreds,
+	];
 };
 
 export const Route = createFileRoute("/_stats/stats/batting")({
 	head: () => ({ meta: [{ title: "Batting Stats" }] }),
-	validateSearch: z.object({ filter: z.enum(battingFilters).optional().catch(undefined) }),
+	validateSearch: z.object({ filter: filterSchema }),
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
 		await context.queryClient.ensureQueryData({
@@ -134,8 +135,22 @@ export const Route = createFileRoute("/_stats/stats/batting")({
 		}),
 	component: () => {
 		const data = Route.useLoaderData();
+		const navigate = Route.useNavigate();
+		const { filter } = Route.useSearch();
 		return (
-			<TabsLayout title="Batting Stats" filters={{ stats: { options: battingFilters } }}>
+			<TabsLayout
+				title="Batting Stats"
+				filters={{
+					value: filter,
+					icon: FilterIcon,
+					title: "Select Filters",
+					onValueChange: (val) => {
+						const value = filterSchema.parse(val);
+						navigate({ search: (prev) => ({ ...prev, filter: value }) });
+					},
+					options: [{ value: "", label: "All Stats" }, ...filters.map((filter) => ({ value: filter, label: filter }))],
+				}}
+			>
 				<DataTable data={data} columns={getBattingColumns()} />
 			</TabsLayout>
 		);

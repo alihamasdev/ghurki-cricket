@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_tab/stats/")({
 	head: () => ({ meta: [{ title: "Stats" }] }),
 	component: () => {
 		return (
-			<TabsLayout title="Stats" filters={{ date: false }}>
+			<TabsLayout title="Stats" dateFilter={null}>
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 					{statsItems.map((item) => (
 						<Item key={item.name} variant="outline" className="flex-row" asChild>

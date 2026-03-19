@@ -1,24 +1,17 @@
-import { Calendar02Icon } from "@hugeicons/core-free-icons";
+import { Calendar02Icon, ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { useLocation, useNavigate, useSearch } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { format } from "date-fns";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuGroup,
-	DropdownMenuRadioGroup,
-	DropdownMenuRadioItem,
-	DropdownMenuTrigger,
-	DropdownMenuSub,
-	DropdownMenuSubTrigger,
-	DropdownMenuPortal,
-	DropdownMenuSubContent,
-} from "@/components/ui/dropdown-menu";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "@/components/ui/sheet";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 
@@ -66,90 +59,104 @@ export const getDates = createServerFn({ method: "GET" }).handler(async () => {
 
 export type DateFilterProps = {
 	options?: "dates" | "rivalries" | "both";
-	side?: "start" | "center" | "end";
 };
 
-export function DateFilter({ options = "both", side = "end" }: DateFilterProps) {
+export function DateFilter({ options = "both" }: DateFilterProps) {
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
+	const [open, setOpen] = useState(false);
+	const [expandedRivalry, setExpandedRivalry] = useState<string | null>(null);
 	const { data } = useSuspenseQuery(datesQueryOptions());
 	const { date: selectedDate, rivalry: selectedRivalry } = useSearch({ strict: false });
+
+	useEffect(() => {
+		if (open) {
+			const activeRivalry = data.rivalries.find(
+				(r) => r.title === selectedRivalry || r.dates.some((d) => d.date === selectedDate),
+			);
+			setExpandedRivalry(activeRivalry?.title ?? null);
+		}
+	}, [open, selectedDate, selectedRivalry, data.rivalries]);
+
 	const formattedDate = formatDate(selectedDate);
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
+		<Sheet open={open} onOpenChange={setOpen}>
+			<SheetTrigger asChild>
 				<Button variant="outline">
 					<HugeiconsIcon icon={Calendar02Icon} strokeWidth={2} />
 					{formattedDate !== "All Time" ? formattedDate : (selectedRivalry ?? "All Time")}
 				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align={side} className="w-auto">
-				<DropdownMenuGroup>
-					<DropdownMenuRadioGroup
+			</SheetTrigger>
+			<SheetContent>
+				<SheetHeader title="Select Date" />
+				<div className="flex-1 space-y-2 overflow-y-auto p-4">
+					<RadioGroup
 						value={!selectedDate && !selectedRivalry ? "" : "none"}
-						onValueChange={() => navigate({ to: pathname, search: (prev) => ({ ...prev, date: undefined, rivalry: undefined }) })}
+						onValueChange={() => {
+							navigate({ to: pathname, search: (prev) => ({ ...prev, date: undefined, rivalry: undefined }) });
+							setOpen(false);
+						}}
 					>
-						<DropdownMenuRadioItem value="">All Time</DropdownMenuRadioItem>
-					</DropdownMenuRadioGroup>
-				</DropdownMenuGroup>
-				{options === "both" && (
-					<DropdownMenuGroup>
-						{data.rivalries.map(({ title, dates }) => (
-							<DropdownMenuSub key={title}>
-								<DropdownMenuSubTrigger className="text-xs">{title}</DropdownMenuSubTrigger>
-								<DropdownMenuPortal>
-									<DropdownMenuSubContent>
-										<DropdownMenuRadioGroup
-											value={
-												selectedDate
-													? dates.some((d) => d.date === selectedDate)
-														? selectedDate
-														: undefined
-													: selectedRivalry === title
-														? "all"
-														: undefined
+						<RadioGroupItem value="">All Time</RadioGroupItem>
+					</RadioGroup>
+					{options === "both" &&
+						data.rivalries.map(({ title, dates }) => (
+							<Collapsible
+								key={title}
+								open={expandedRivalry === title}
+								onOpenChange={(isOpen) => setExpandedRivalry(isOpen ? title : null)}
+								className="space-y-2"
+							>
+								<CollapsibleTrigger
+									className="cursor-pointer rounded-lg px-3 py-2 hover:bg-muted data-[state=open]:bg-muted"
+									asChild
+								>
+									<div className="flex items-center justify-between gap-2 transition-colors [&[data-state=open]>svg]:rotate-180">
+										<Label className="font-medium md:text-[15px]">{title}</Label>
+										<HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} className="size-4 transition-transform duration-200" />
+									</div>
+								</CollapsibleTrigger>
+								<CollapsibleContent className="space-y-1 pl-4">
+									<RadioGroup
+										className="gap-1"
+										value={selectedDate ?? selectedRivalry ?? "none"}
+										onValueChange={(val) => {
+											if (val === title) {
+												navigate({ to: pathname, search: (prev) => ({ ...prev, date: undefined, rivalry: val }) });
+											} else {
+												navigate({ to: pathname, search: (prev) => ({ ...prev, rivalry: undefined, date: val }) });
 											}
-											onValueChange={(value) => {
-												if (value === "all") {
-													navigate({ to: pathname, search: (prev) => ({ ...prev, date: undefined, rivalry: title }) });
-												} else {
-													navigate({ to: pathname, search: (prev) => ({ ...prev, date: value, rivalry: undefined }) });
-												}
-											}}
-										>
-											<DropdownMenuRadioItem indicatorSide="start" value="all">
-												{`All ${title}`}
-											</DropdownMenuRadioItem>
-											{dates.map(({ date, title: dateTitle }) => (
-												<DropdownMenuRadioItem key={date} value={date} indicatorSide="start" className="justify-between">
-													<span>{dateTitle}</span>
-													<span className="text-xs text-muted-foreground">({date})</span>
-												</DropdownMenuRadioItem>
-											))}
-										</DropdownMenuRadioGroup>
-									</DropdownMenuSubContent>
-								</DropdownMenuPortal>
-							</DropdownMenuSub>
+											setOpen(false);
+										}}
+									>
+										<RadioGroupItem value={title}>All {title}</RadioGroupItem>
+										{dates.map((dateObj) => (
+											<RadioGroupItem key={dateObj.date} value={dateObj.date}>
+												<span>{dateObj.title}</span>
+												<span className="text-muted-foreground">{formatDate(dateObj.date)}</span>
+											</RadioGroupItem>
+										))}
+									</RadioGroup>
+								</CollapsibleContent>
+							</Collapsible>
 						))}
-					</DropdownMenuGroup>
-				)}
-				{options === "rivalries" && (
-					<DropdownMenuGroup>
-						<DropdownMenuRadioGroup
+					{options === "rivalries" && (
+						<RadioGroup
 							value={selectedRivalry}
-							onValueChange={(value) =>
-								navigate({ to: pathname, search: (prev) => ({ ...prev, date: undefined, rivalry: value }) })
-							}
+							onValueChange={(value) => {
+								navigate({ to: pathname, search: (prev) => ({ ...prev, date: undefined, rivalry: value }) });
+								setOpen(false);
+							}}
 						>
 							{data.rivalries.map(({ title }) => (
-								<DropdownMenuRadioItem key={title} value={title}>
+								<RadioGroupItem key={title} value={title}>
 									{title}
-								</DropdownMenuRadioItem>
+								</RadioGroupItem>
 							))}
-						</DropdownMenuRadioGroup>
-					</DropdownMenuGroup>
-				)}
-			</DropdownMenuContent>
-		</DropdownMenu>
+						</RadioGroup>
+					)}
+				</div>
+			</SheetContent>
+		</Sheet>
 	);
 }

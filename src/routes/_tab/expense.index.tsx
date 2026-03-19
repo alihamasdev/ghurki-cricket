@@ -68,17 +68,15 @@ export const Route = createFileRoute("/_tab/expense/")({
 		return (
 			<TabsLayout
 				title="Expense"
+				dateFilter={null}
 				filters={{
-					date: false,
-					dropdown: {
-						icon: EyeIcon,
-						value: view,
-						onValueChange: (val) => navigate({ search: { view: val === "chart" ? "chart" : undefined }, replace: true }),
-						options: [
-							{ label: "Table", value: "table" },
-							{ label: "Chart", value: "chart" },
-						],
-					},
+					icon: EyeIcon,
+					value: view,
+					onValueChange: (val) => navigate({ search: { view: val === "chart" ? "chart" : undefined }, replace: true }),
+					options: [
+						{ label: "Table", value: "table" },
+						{ label: "Chart", value: "chart" },
+					],
 				}}
 			>
 				{view === "table" ? (
