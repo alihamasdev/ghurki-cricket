@@ -4,7 +4,10 @@ import {
 	getSortedRowModel,
 	useReactTable,
 	type ColumnDef,
+	type OnChangeFn,
+	type SortingState,
 } from "@tanstack/react-table";
+import { useEffect, useState } from "react";
 
 import { ResizablePanelGroup, ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -14,13 +17,40 @@ type DataTableProps<TData, TValue> = {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
 	minSize?: number;
+	sorting?: SortingState;
+	onSortingChange?: OnChangeFn<SortingState>;
 };
 
-export function DataTable<TData, TValue>({ columns, data, minSize = 50 }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+	columns,
+	data,
+	minSize = 50,
+	sorting: externalSorting,
+	onSortingChange,
+}: DataTableProps<TData, TValue>) {
 	const isMobile = useIsMobile();
+
+	const [internalSorting, setInternalSorting] = useState<SortingState>(externalSorting ?? []);
+
+	useEffect(() => {
+		if (externalSorting) {
+			setInternalSorting(externalSorting);
+		}
+	}, [externalSorting]);
+
 	const table = useReactTable({
 		data,
 		columns,
+		state: {
+			sorting: internalSorting,
+		},
+		onSortingChange: (updater) => {
+			if (onSortingChange) {
+				onSortingChange(updater);
+			} else {
+				setInternalSorting(updater);
+			}
+		},
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 	});

@@ -2,6 +2,7 @@ import { FilterIcon } from "@hugeicons/core-free-icons";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { type ColumnDef } from "@tanstack/react-table";
+import { useMemo } from "react";
 import { z } from "zod";
 
 import { DataTable } from "@/components/data-table";
@@ -23,6 +24,9 @@ const filters = [
 	"most-ducks",
 	"most-fifties",
 	"most-hundreds",
+	"four-ratio",
+	"six-ratio",
+	"duck-ratio",
 ] as const;
 
 type Filter = (typeof filters)[number];
@@ -59,8 +63,11 @@ const getBattingStats = createServerFn({ method: "GET" })
 			strike_rate: _sum.balls ? (_sum.runs / _sum.balls) * 100 : 0,
 			average: _sum.innings - _sum.notOuts ? _sum.runs / (_sum.innings - _sum.notOuts) : 0,
 			fours: _sum.fours,
+			fours_ratio: _sum.fours ? _sum.balls / _sum.fours : 0,
 			sixes: _sum.sixes,
+			six_ratio: _sum.sixes ? _sum.balls / _sum.sixes : 0,
 			ducks: _sum.ducks,
+			ducks_ratio: _sum.ducks ? _sum.innings / _sum.ducks : 0,
 			fifties: _sum.fifties,
 			hundreds: _sum.hundreds,
 		}));
@@ -76,23 +83,29 @@ const columns: Record<keyof BattingStats, ColumnDef<BattingStats>> = {
 	average: { accessorKey: "average", header: "Avg", cell: ({ row }) => row.original.average.toFixed() },
 	highest_score: { accessorKey: "highest_score", header: "HS" },
 	fours: { accessorKey: "fours", header: "4s" },
+	fours_ratio: { accessorKey: "fours_ratio", header: "Balls / Fours", cell: ({ row }) => row.original.fours_ratio.toFixed(1) },
 	sixes: { accessorKey: "sixes", header: "6s" },
+	six_ratio: { accessorKey: "six_ratio", header: "Balls / Sixes", cell: ({ row }) => row.original.six_ratio.toFixed(1) },
 	ducks: { accessorKey: "ducks", header: "0s" },
+	ducks_ratio: { accessorKey: "ducks_ratio", header: "Inns / Ducks", cell: ({ row }) => row.original.ducks_ratio.toFixed(1) },
 	fifties: { accessorKey: "fifties", header: "50s" },
 	hundreds: { accessorKey: "hundreds", header: "100s" },
 };
 
 const filterColumns: Record<Filter, ColumnDef<BattingStats>[]> = {
-	"most-runs": [columns.player, columns.innings, columns.runs, columns.balls],
-	"best-strike-rate": [columns.player, columns.runs, columns.balls, columns.strike_rate],
-	"best-average": [columns.player, columns.runs, columns.innings, columns.not_outs, columns.average],
-	"most-not-outs": [columns.player, columns.innings, { ...columns.not_outs, header: "Not-Outs" }],
-	"highest-score": [columns.player, columns.highest_score],
-	"most-fours": [columns.player, columns.balls, columns.fours],
-	"most-sixes": [columns.player, columns.balls, columns.sixes],
-	"most-ducks": [columns.player, columns.innings, { ...columns.ducks, header: "Ducks" }],
-	"most-fifties": [columns.player, columns.innings, columns.fifties],
-	"most-hundreds": [columns.player, columns.innings, columns.hundreds],
+	"most-runs": [columns.innings, columns.balls, columns.runs],
+	"best-strike-rate": [columns.runs, columns.balls, columns.strike_rate],
+	"best-average": [columns.runs, columns.innings, columns.not_outs, columns.average],
+	"most-not-outs": [columns.innings, { ...columns.not_outs, header: "Not-Outs" }],
+	"highest-score": [columns.highest_score],
+	"most-fours": [columns.balls, columns.fours],
+	"most-sixes": [columns.balls, columns.sixes],
+	"most-ducks": [columns.innings, { ...columns.ducks, header: "Ducks" }],
+	"most-fifties": [columns.innings, columns.fifties],
+	"most-hundreds": [columns.innings, columns.hundreds],
+	"four-ratio": [columns.fours_ratio],
+	"six-ratio": [columns.six_ratio],
+	"duck-ratio": [columns.ducks_ratio],
 };
 
 const getBattingColumns = (): ColumnDef<BattingStats>[] => {
@@ -104,11 +117,10 @@ const getBattingColumns = (): ColumnDef<BattingStats>[] => {
 	}
 
 	if (isMobile) {
-		return [columns.player, columns.innings, columns.runs, columns.balls, columns.strike_rate, columns.average];
+		return [columns.innings, columns.runs, columns.balls, columns.strike_rate, columns.average];
 	}
 
 	return [
-		columns.player,
 		columns.innings,
 		columns.runs,
 		columns.balls,
@@ -124,6 +136,40 @@ const getBattingColumns = (): ColumnDef<BattingStats>[] => {
 	];
 };
 
+const getBattingSorting = (filter?: Filter) => {
+	if (!filter) return [{ id: "runs", desc: true }];
+	switch (filter) {
+		case "most-runs":
+			return [{ id: "runs", desc: true }];
+		case "best-strike-rate":
+			return [{ id: "strike_rate", desc: true }];
+		case "best-average":
+			return [{ id: "average", desc: true }];
+		case "most-not-outs":
+			return [{ id: "not_outs", desc: true }];
+		case "highest-score":
+			return [{ id: "highest_score", desc: true }];
+		case "most-fours":
+			return [{ id: "fours", desc: true }];
+		case "most-sixes":
+			return [{ id: "sixes", desc: true }];
+		case "most-ducks":
+			return [{ id: "ducks", desc: true }];
+		case "most-fifties":
+			return [{ id: "fifties", desc: true }];
+		case "most-hundreds":
+			return [{ id: "hundreds", desc: true }];
+		case "four-ratio":
+			return [{ id: "fours_ratio", desc: false }];
+		case "six-ratio":
+			return [{ id: "six_ratio", desc: false }];
+		case "duck-ratio":
+			return [{ id: "ducks_ratio", desc: false }];
+		default:
+			return [{ id: "runs", desc: true }];
+	}
+};
+
 export const Route = createFileRoute("/_stats/stats/batting")({
 	head: () => ({ meta: [{ title: "Batting Stats" }] }),
 	validateSearch: z.object({ filter: filterSchema }),
@@ -137,6 +183,7 @@ export const Route = createFileRoute("/_stats/stats/batting")({
 		const data = Route.useLoaderData();
 		const navigate = Route.useNavigate();
 		const { filter } = Route.useSearch();
+		const sorting = useMemo(() => getBattingSorting(filter), [filter]);
 		return (
 			<TabsLayout
 				title="Batting Stats"
@@ -151,7 +198,7 @@ export const Route = createFileRoute("/_stats/stats/batting")({
 					options: [{ value: "", label: "All Stats" }, ...filters.map((filter) => ({ value: filter, label: filter }))],
 				}}
 			>
-				<DataTable data={data} columns={getBattingColumns()} />
+				<DataTable data={data} columns={[columns.player, ...getBattingColumns()]} sorting={sorting} />
 			</TabsLayout>
 		);
 	},

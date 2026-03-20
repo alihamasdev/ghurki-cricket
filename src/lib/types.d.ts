@@ -8,8 +8,11 @@ export type BattingStats = {
 	strike_rate: number;
 	average: number;
 	fours: number;
+	fours_ratio: number;
 	sixes: number;
+	six_ratio: number;
 	ducks: number;
+	ducks_ratio: number;
 	fifties: number;
 	hundreds: number;
 };
@@ -23,7 +26,9 @@ export type BowlingStats = {
 	economy: number;
 	average: number;
 	dots: number;
+	dots_ratio: number;
 	wides: number;
+	wides_ratio: number;
 	no_balls: number;
 	"2fr": number;
 	"3fr": number;
