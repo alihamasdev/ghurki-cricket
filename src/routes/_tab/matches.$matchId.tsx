@@ -13,7 +13,10 @@ const getMatchById = createServerFn({ method: "GET" })
 		const match = await db.matches.findUnique({ where: { id: Number(data.id) } });
 		if (!match) throw notFound();
 		const dateId = formatDate(match.dateId);
-		return { ...match, dateId, fullTitle: `${match.title} (${dateId})` };
+		const baseUrl = "https://ikugfeiiqjczdqccfzoe.supabase.co";
+		const matchId = match.title.split(" ").join("_").toLowerCase();
+		const scorecardUrl = `${baseUrl}/storage/v1/object/public/scorecards/${formatDate(match.dateId, "numeric")}/${matchId}.jpeg`;
+		return { ...match, dateId, scorecardUrl, fullTitle: `${match.title} (${dateId})` };
 	});
 
 export const Route = createFileRoute("/_tab/matches/$matchId")({

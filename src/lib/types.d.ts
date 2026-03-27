@@ -63,7 +63,6 @@ export type TeamStats = {
 export type Expense = {
 	date: string;
 	groundFee: number;
-	foodCost: number;
 	gearCost: number;
 	total: number;
 };

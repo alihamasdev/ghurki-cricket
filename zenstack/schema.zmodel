@@ -15,8 +15,6 @@ model Teams {
 model Players {
   name            String     @id
   avatar          String?
-  battingStyle    String?
-  bowlingStyle    String?
   playerOfMatches Matches[]
   batting         Batters[]
   bowling         Bowlers[]
@@ -27,9 +25,7 @@ model Players {
 }
 
 model Rivalries {
-  title String    @id
-  start DateTime  @db.Date @default(now())
-  end   DateTime? @db.Date
+  title String  @id
   dates Dates[]
   @@map("rivalries")
 }
@@ -37,8 +33,8 @@ model Rivalries {
 model Dates {
   date      DateTime   @id @db.Date
   title     String
-  rivalryId String?
-  rivalry   Rivalries? @relation(fields: [rivalryId], references: [title])
+  rivalryId String
+  rivalry   Rivalries  @relation(fields: [rivalryId], references: [title])
   matches   Matches[]
   innings   Innings[]
   batting   Batters[]
@@ -49,19 +45,18 @@ model Dates {
 }
 
 model Matches {
-  id           Int       @id @default(autoincrement())
-  title        String
-  totalOvers   Int
-  winBy        String
-  videoUrl     String?   @url
-  scorecardUrl String?   @url
-  winnerId     String
-  winner       Teams     @relation(fields: [winnerId], references: [name])
-  potmId       String?
-  potm         Players?  @relation(fields: [potmId], references: [name])
-  dateId       DateTime  @db.Date
-  date         Dates     @relation(fields: [dateId], references: [date])
-  innings      Innings[]
+  id         Int       @id @default(autoincrement())
+  title      String
+  totalOvers Int
+  winBy      String
+  videoUrl   String?   @url
+  winnerId   String
+  winner     Teams     @relation(fields: [winnerId], references: [name])
+  potmId     String?
+  potm       Players?  @relation(fields: [potmId], references: [name])
+  dateId     DateTime  @db.Date
+  date       Dates     @relation(fields: [dateId], references: [date])
+  innings    Innings[]
   @@map("matches")
 }
 
@@ -81,6 +76,10 @@ model Innings {
 }
 
 model Batters {
+  dateId       DateTime @db.Date
+  date         Dates    @relation(fields: [dateId], references: [date])
+  playerId     String
+  player       Players  @relation(fields: [playerId], references: [name])
   innings      Int      @default(0)
   runs         Int      @default(0)
   balls        Int      @default(0)
@@ -91,15 +90,15 @@ model Batters {
   ducks        Int      @default(0)
   fifties      Int      @default(0)
   hundreds     Int      @default(0)
-  playerId     String
-  player       Players  @relation(fields: [playerId], references: [name])
-  dateId       DateTime @db.Date
-  date         Dates    @relation(fields: [dateId], references: [date])
   @@id([playerId, dateId])
   @@map("batting")
 }
 
 model Bowlers {
+  dateId   DateTime @db.Date
+  date     Dates    @relation(fields: [dateId], references: [date])
+  playerId String
+  player   Players  @relation(fields: [playerId], references: [name])
   innings  Int      @default(0)
   runs     Int      @default(0)
   balls    Int      @default(0)
@@ -109,22 +108,18 @@ model Bowlers {
   noBalls  Int      @default(0)
   twoFR    Int      @default(0) @map("2fr")
   threeFR  Int      @default(0) @map("3fr")
-  playerId String
-  player   Players  @relation(fields: [playerId], references: [name])
-  dateId   DateTime @db.Date
-  date     Dates    @relation(fields: [dateId], references: [date])
   @@id([playerId, dateId])
   @@map("bowling")
 }
 
 model Fielders {
+  dateId   DateTime @db.Date
+  date     Dates    @relation(fields: [dateId], references: [date])
+  playerId String
+  player   Players  @relation(fields: [playerId], references: [name])
   innings  Int      @default(0)
   catches  Int      @default(0)
   runOuts  Int      @default(0)
-  playerId String
-  player   Players  @relation(fields: [playerId], references: [name])
-  dateId   DateTime @db.Date
-  date     Dates    @relation(fields: [dateId], references: [date])
   @@id([playerId, dateId])
   @@map("fielding")
 }
@@ -149,6 +144,5 @@ model Expenses {
   date      DateTime @db.Date @id
   groundFee Int      @default(0)
   gearCost  Int      @default(0)
-  foodCost  Int      @default(0)
   @@map("expenses")
 }

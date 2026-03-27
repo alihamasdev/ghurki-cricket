@@ -1,17 +1,14 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { format as dateFormatter } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: string | Date | null | undefined): string {
+export function formatDate(date: string | Date | null | undefined, format: "eng" | "numeric" = "eng"): string {
 	if (!date) return "All Time";
-	return new Date(date).toLocaleDateString("en-US", {
-		day: "numeric",
-		year: "numeric",
-		month: "short"
-	});
+	return dateFormatter(new Date(date), format === "eng" ? "MMM dd, yyyy" : "yyyy-MM-dd");
 }
 
 export function ballsToOvers(balls: number): string {

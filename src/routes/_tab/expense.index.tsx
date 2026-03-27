@@ -23,7 +23,7 @@ const getExpense = createServerFn({ method: "GET" }).handler(async () => {
 	return data.map((item) => ({
 		...item,
 		date: formatDate(item.date),
-		total: item.foodCost + item.gearCost + item.groundFee,
+		total: item.gearCost + item.groundFee,
 	}));
 });
 
@@ -40,16 +40,14 @@ const sumColumn = (id: keyof ExpenseRow) => {
 const columns: ColumnDef<ExpenseRow>[] = [
 	{ accessorKey: "date", header: "Date", footer: () => "Total" },
 	{ accessorKey: "groundFee", header: "Ground", footer: sumColumn("groundFee") },
-	{ accessorKey: "foodCost", header: "Food", footer: sumColumn("foodCost") },
 	{ accessorKey: "gearCost", header: "Gear", footer: sumColumn("gearCost") },
 	{ accessorKey: "total", header: "Total", footer: sumColumn("total") },
 ];
 
 const chartConfig: ChartConfig = {
 	groundFee: { label: "Ground Fee", color: "var(--chart-1)" },
-	foodCost: { label: "Food Cost", color: "var(--chart-2)" },
-	gearCost: { label: "Gear Cost", color: "var(--chart-3)" },
-	total: { label: "Total Cost", color: "var(--chart-4)" },
+	gearCost: { label: "Gear Cost", color: "var(--chart-2)" },
+	total: { label: "Total Cost", color: "var(--chart-3)" },
 };
 
 export const Route = createFileRoute("/_tab/expense/")({
@@ -83,8 +81,8 @@ export const Route = createFileRoute("/_tab/expense/")({
 					<DataTable columns={columns} data={data} />
 				) : (
 					<Card className="mt-1 py-0">
-						<CardHeader className="grid grid-cols-2 gap-0 divide-x divide-y border-b px-0 sm:grid-cols-4 md:divide-y-0 [.border-b]:pb-0">
-							{["groundFee", "foodCost", "gearCost", "total"].map((key) => {
+						<CardHeader className="grid grid-cols-2 gap-0 divide-x divide-y border-b px-0 sm:grid-cols-3 md:divide-y-0 [.border-b]:pb-0">
+							{["groundFee", "gearCost", "total"].map((key) => {
 								const chart = key as keyof typeof chartConfig;
 								return (
 									<button
