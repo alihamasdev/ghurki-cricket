@@ -3,7 +3,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { useLocation, useNavigate, useSearch } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -43,7 +42,7 @@ export const getDates = createServerFn({ method: "GET" }).handler(async () => {
 				if (!acc[rivalryId]) acc[rivalryId] = [];
 				acc[rivalryId].push({
 					title: dateObj.title,
-					date: format(dateObj.date, "yyyy-MM-dd"),
+					date: formatDate(dateObj.date, "numeric"),
 				});
 			}
 			return acc;
@@ -53,7 +52,7 @@ export const getDates = createServerFn({ method: "GET" }).handler(async () => {
 
 	return {
 		rivalries: Object.entries(rivalriesGrouped).map(([title, dates]) => ({ title, dates })),
-		dates: dates.filter((d) => !d.rivalryId).map(({ date, title }) => ({ title, date: format(date, "yyyy-MM-dd") })),
+		dates: dates.filter((d) => !d.rivalryId).map(({ date, title }) => ({ title, date: formatDate(date, "numeric") })),
 	};
 });
 
