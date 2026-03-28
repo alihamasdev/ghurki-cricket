@@ -81,11 +81,7 @@ function SelectContent({
 
 function SelectLabel({ className, ...props }: React.ComponentProps<typeof SelectPrimitive.Label>) {
 	return (
-		<SelectPrimitive.Label
-			data-slot="select-label"
-			className={cn("px-1.5 py-1 text-xs text-muted-foreground", className)}
-			{...props}
-		/>
+		<SelectPrimitive.Label data-slot="select-label" className={cn("px-1.5 py-1 text-xs text-muted-foreground", className)} {...props} />
 	);
 }
 
@@ -123,10 +119,7 @@ function SelectScrollUpButton({ className, ...props }: React.ComponentProps<type
 	return (
 		<SelectPrimitive.ScrollUpButton
 			data-slot="select-scroll-up-button"
-			className={cn(
-				"z-10 flex cursor-default items-center justify-center bg-popover py-1 [&_svg:not([class*='size-'])]:size-4",
-				className,
-			)}
+			className={cn("z-10 flex cursor-default items-center justify-center bg-popover py-1 [&_svg:not([class*='size-'])]:size-4", className)}
 			{...props}
 		>
 			<HugeiconsIcon icon={ArrowUp01Icon} strokeWidth={2} />
@@ -138,10 +131,7 @@ function SelectScrollDownButton({ className, ...props }: React.ComponentProps<ty
 	return (
 		<SelectPrimitive.ScrollDownButton
 			data-slot="select-scroll-down-button"
-			className={cn(
-				"z-10 flex cursor-default items-center justify-center bg-popover py-1 [&_svg:not([class*='size-'])]:size-4",
-				className,
-			)}
+			className={cn("z-10 flex cursor-default items-center justify-center bg-popover py-1 [&_svg:not([class*='size-'])]:size-4", className)}
 			{...props}
 		>
 			<HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} />

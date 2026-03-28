@@ -31,14 +31,8 @@ const emptyMediaVariants = cva("mb-2 flex shrink-0 items-center justify-center [
 	},
 });
 
-function EmptyMedia({
-	className,
-	variant = "default",
-	...props
-}: React.ComponentProps<"div"> & VariantProps<typeof emptyMediaVariants>) {
-	return (
-		<div data-slot="empty-icon" data-variant={variant} className={cn(emptyMediaVariants({ variant, className }))} {...props} />
-	);
+function EmptyMedia({ className, variant = "default", ...props }: React.ComponentProps<"div"> & VariantProps<typeof emptyMediaVariants>) {
+	return <div data-slot="empty-icon" data-variant={variant} className={cn(emptyMediaVariants({ variant, className }))} {...props} />;
 }
 
 function EmptyTitle({ className, ...props }: React.ComponentProps<"div">) {
@@ -49,10 +43,7 @@ function EmptyDescription({ className, ...props }: React.ComponentProps<"p">) {
 	return (
 		<div
 			data-slot="empty-description"
-			className={cn(
-				"text-sm/relaxed text-muted-foreground [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
-				className,
-			)}
+			className={cn("text-sm/relaxed text-muted-foreground [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary", className)}
 			{...props}
 		/>
 	);

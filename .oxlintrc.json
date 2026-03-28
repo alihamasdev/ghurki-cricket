@@ -116,15 +116,10 @@
 		"unicorn/prefer-string-starts-ends-with": "warn"
 	},
 	"settings": {
-		"jsx-a11y": {
-			"polymorphicPropName": null,
-			"components": {},
-			"attributes": {}
-		},
 		"react": {
 			"formComponents": [],
 			"linkComponents": [{ "name": "Link", "attribute": "to" }],
-			"version": null
+			"version": "19.2.4"
 		},
 		"jsdoc": {
 			"ignorePrivate": false,

@@ -3,7 +3,6 @@ import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/reac
 
 import { datesQueryOptions } from "@/components/date-filter";
 import { playerQueryOptions } from "@/components/players/query";
-import { Toaster } from "@/components/ui/sonner";
 import { MenuProvider } from "@/context/menu-context";
 
 import appCss from "../styles.css?url";
@@ -60,7 +59,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 				<body>
 					<QueryClientProvider client={queryClient}>
 						<MenuProvider>{children}</MenuProvider>
-						<Toaster />
 					</QueryClientProvider>
 					<Scripts />
 				</body>

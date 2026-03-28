@@ -70,9 +70,7 @@ export function DateFilter({ options = "both" }: DateFilterProps) {
 
 	useEffect(() => {
 		if (open) {
-			const activeRivalry = data.rivalries.find(
-				(r) => r.title === selectedRivalry || r.dates.some((d) => d.date === selectedDate),
-			);
+			const activeRivalry = data.rivalries.find((r) => r.title === selectedRivalry || r.dates.some((d) => d.date === selectedDate));
 			setExpandedRivalry(activeRivalry?.title ?? null);
 		}
 	}, [open, selectedDate, selectedRivalry, data.rivalries]);
@@ -106,10 +104,7 @@ export function DateFilter({ options = "both" }: DateFilterProps) {
 								onOpenChange={(isOpen) => setExpandedRivalry(isOpen ? title : null)}
 								className="space-y-2"
 							>
-								<CollapsibleTrigger
-									className="cursor-pointer rounded-lg px-3 py-2 hover:bg-muted data-[state=open]:bg-muted"
-									asChild
-								>
+								<CollapsibleTrigger className="cursor-pointer rounded-lg px-3 py-2 hover:bg-muted data-[state=open]:bg-muted" asChild>
 									<div className="flex items-center justify-between gap-2 transition-colors [&[data-state=open]>svg]:rotate-180">
 										<Label className="font-medium md:text-[15px]">{title}</Label>
 										<HugeiconsIcon icon={ArrowDown01Icon} strokeWidth={2} className="size-4 transition-transform duration-200" />

@@ -1,6 +1,9 @@
+import type { InningsWhereInput } from "zenstack/output/input";
+
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import type { InningsWhereInput } from "zenstack/output/input";
+
+import type { TeamStats } from "@/lib/types";
 
 import { validateDate } from "@/components/date-filter";
 import { TabsLayout } from "@/components/tabs-layout";
@@ -8,7 +11,6 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { db } from "@/lib/db";
-import type { TeamStats } from "@/lib/types";
 import { ballsToOvers } from "@/lib/utils";
 
 const getTeamStats = createServerFn({ method: "GET" })

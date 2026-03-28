@@ -7,9 +7,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 function RadioGroup({ className, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
-	return (
-		<RadioGroupPrimitive.Root data-slot="radio-group" className={cn("grid w-full cursor-pointer gap-2", className)} {...props} />
-	);
+	return <RadioGroupPrimitive.Root data-slot="radio-group" className={cn("grid w-full cursor-pointer gap-2", className)} {...props} />;
 }
 
 function RadioGroupItem({ className, children, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {

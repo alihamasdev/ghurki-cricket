@@ -1,7 +1,8 @@
+import type { ColumnDef } from "@tanstack/react-table";
+
 import { EyeIcon } from "@hugeicons/core-free-icons";
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import type { ColumnDef } from "@tanstack/react-table";
 import { type Table } from "@tanstack/react-table";
 import { useState } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";

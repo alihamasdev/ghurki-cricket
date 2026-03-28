@@ -8,5 +8,5 @@ import oxlintPlugin from "vite-plugin-oxlint";
 // oxlint-disable no-default-export
 export default defineConfig({
 	resolve: { tsconfigPaths: true },
-	plugins: [nitro(), tailwindcss(), tanstackStart(), viteReact(), oxlintPlugin({ path: "src" })]
+	plugins: [nitro(), tailwindcss(), tanstackStart(), viteReact(), oxlintPlugin({ path: "src" })],
 });
