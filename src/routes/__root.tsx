@@ -1,8 +1,10 @@
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
 
+import { AppSidebar } from "@/components/app-sidebar";
 import { datesQueryOptions } from "@/components/date-filter";
 import { playerQueryOptions } from "@/components/players/query";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { MenuProvider } from "@/context/menu-context";
 
 import appCss from "../styles.css?url";
@@ -56,12 +58,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 				<head>
 					<HeadContent />
 				</head>
-				<body>
+				<SidebarProvider>
 					<QueryClientProvider client={queryClient}>
-						<MenuProvider>{children}</MenuProvider>
+						<MenuProvider>
+							<AppSidebar />
+							<SidebarInset>{children}</SidebarInset>
+						</MenuProvider>
 					</QueryClientProvider>
 					<Scripts />
-				</body>
+				</SidebarProvider>
 			</html>
 		);
 	},
