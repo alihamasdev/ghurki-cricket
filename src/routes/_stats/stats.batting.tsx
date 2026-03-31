@@ -22,8 +22,8 @@ const filters = [
 	"most-fours",
 	"most-sixes",
 	"most-ducks",
+	"most-thirties",
 	"most-fifties",
-	"most-hundreds",
 	"four-ratio",
 	"six-ratio",
 	"duck-ratio",
@@ -49,8 +49,8 @@ const getBattingStats = createServerFn({ method: "GET" })
 				fours: true,
 				sixes: true,
 				ducks: true,
+				thirties: true,
 				fifties: true,
-				hundreds: true,
 			},
 		});
 		return stats.map(({ playerId, _sum, _max }) => ({
@@ -69,7 +69,7 @@ const getBattingStats = createServerFn({ method: "GET" })
 			ducks: _sum.ducks,
 			ducks_ratio: _sum.ducks ? _sum.innings / _sum.ducks : 0,
 			fifties: _sum.fifties,
-			hundreds: _sum.hundreds,
+			thirties: _sum.thirties,
 		}));
 	});
 
@@ -88,8 +88,8 @@ const columns: Record<keyof BattingStats, ColumnDef<BattingStats>> = {
 	six_ratio: { accessorKey: "six_ratio", header: "Balls / Sixes", cell: ({ row }) => row.original.six_ratio.toFixed(1) },
 	ducks: { accessorKey: "ducks", header: "0s" },
 	ducks_ratio: { accessorKey: "ducks_ratio", header: "Inns / Ducks", cell: ({ row }) => row.original.ducks_ratio.toFixed(1) },
+	thirties: { accessorKey: "thirties", header: "30s" },
 	fifties: { accessorKey: "fifties", header: "50s" },
-	hundreds: { accessorKey: "hundreds", header: "100s" },
 };
 
 const filterColumns: Record<Filter, ColumnDef<BattingStats>[]> = {
@@ -101,8 +101,8 @@ const filterColumns: Record<Filter, ColumnDef<BattingStats>[]> = {
 	"most-fours": [columns.balls, columns.fours],
 	"most-sixes": [columns.balls, columns.sixes],
 	"most-ducks": [columns.innings, { ...columns.ducks, header: "Ducks" }],
+	"most-thirties": [columns.innings, columns.thirties],
 	"most-fifties": [columns.innings, columns.fifties],
-	"most-hundreds": [columns.innings, columns.hundreds],
 	"four-ratio": [columns.fours_ratio],
 	"six-ratio": [columns.six_ratio],
 	"duck-ratio": [columns.ducks_ratio],
@@ -131,8 +131,8 @@ const getBattingColumns = (): ColumnDef<BattingStats>[] => {
 		columns.fours,
 		columns.sixes,
 		columns.ducks,
+		columns.thirties,
 		columns.fifties,
-		columns.hundreds,
 	];
 };
 
@@ -155,10 +155,10 @@ const getBattingSorting = (filter?: Filter) => {
 			return [{ id: "sixes", desc: true }];
 		case "most-ducks":
 			return [{ id: "ducks", desc: true }];
+			case "most-thirties":
+				return [{ id: "thirties", desc: true }];
 		case "most-fifties":
 			return [{ id: "fifties", desc: true }];
-		case "most-hundreds":
-			return [{ id: "hundreds", desc: true }];
 		case "four-ratio":
 			return [{ id: "fours_ratio", desc: false }];
 		case "six-ratio":

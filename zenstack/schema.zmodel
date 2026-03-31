@@ -88,8 +88,8 @@ model Batters {
   fours        Int      @default(0)
   sixes        Int      @default(0)
   ducks        Int      @default(0)
+  thirties     Int      @default(0)
   fifties      Int      @default(0)
-  hundreds     Int      @default(0)
   @@id([playerId, dateId])
   @@map("batting")
 }

@@ -31,6 +31,7 @@ const getPlayerDetail = createServerFn({ method: "GET" })
 				fours: acc.fours + curr.fours,
 				sixes: acc.sixes + curr.sixes,
 				ducks: acc.ducks + curr.ducks,
+				thirties: acc.thirties + curr.thirties,
 				fifties: acc.fifties + curr.fifties,
 			}),
 			{
@@ -42,6 +43,7 @@ const getPlayerDetail = createServerFn({ method: "GET" })
 				fours: 0,
 				sixes: 0,
 				ducks: 0,
+				thirties: 0,
 				fifties: 0,
 			},
 		);
@@ -147,8 +149,9 @@ export const Route = createFileRoute("/_tab/players/$playerId")({
 									<StatItem label="Fours" value={batting.fours} />
 									<StatItem label="Sixes" value={batting.sixes} />
 									<StatItem label="Ducks" value={batting.ducks} />
+									<StatItem label="Thirties" value={batting.thirties} />
 									<StatItem label="Fifties" value={batting.fifties} />
-									<StatItem label="Hundreds" value={name === "Hamas" ? 1 : 0} />
+									{/* <StatItem label="Hundreds" value={name === "Hamas" ? 1 : 0} /> */}
 								</div>
 							</div>
 

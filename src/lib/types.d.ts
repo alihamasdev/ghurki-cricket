@@ -13,8 +13,8 @@ export type BattingStats = {
 	six_ratio: number;
 	ducks: number;
 	ducks_ratio: number;
+	thirties: number;
 	fifties: number;
-	hundreds: number;
 };
 
 export type BowlingStats = {
