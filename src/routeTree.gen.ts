@@ -24,6 +24,7 @@ import { Route as StatsStatsPotmRouteImport } from './routes/_stats/stats.potm'
 import { Route as StatsStatsFieldingRouteImport } from './routes/_stats/stats.fielding'
 import { Route as StatsStatsBowlingRouteImport } from './routes/_stats/stats.bowling'
 import { Route as StatsStatsBattingRouteImport } from './routes/_stats/stats.batting'
+import { Route as StatsStatsAttendanceRouteImport } from './routes/_stats/stats.attendance'
 
 const TabRoute = TabRouteImport.update({
   id: '/_tab',
@@ -98,9 +99,15 @@ const StatsStatsBattingRoute = StatsStatsBattingRouteImport.update({
   path: '/stats/batting',
   getParentRoute: () => StatsRoute,
 } as any)
+const StatsStatsAttendanceRoute = StatsStatsAttendanceRouteImport.update({
+  id: '/stats/attendance',
+  path: '/stats/attendance',
+  getParentRoute: () => StatsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/stats/attendance': typeof StatsStatsAttendanceRoute
   '/stats/batting': typeof StatsStatsBattingRoute
   '/stats/bowling': typeof StatsStatsBowlingRoute
   '/stats/fielding': typeof StatsStatsFieldingRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/stats/attendance': typeof StatsStatsAttendanceRoute
   '/stats/batting': typeof StatsStatsBattingRoute
   '/stats/bowling': typeof StatsStatsBowlingRoute
   '/stats/fielding': typeof StatsStatsFieldingRoute
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_stats': typeof StatsRouteWithChildren
   '/_tab': typeof TabRouteWithChildren
+  '/_stats/stats/attendance': typeof StatsStatsAttendanceRoute
   '/_stats/stats/batting': typeof StatsStatsBattingRoute
   '/_stats/stats/bowling': typeof StatsStatsBowlingRoute
   '/_stats/stats/fielding': typeof StatsStatsFieldingRoute
@@ -151,6 +160,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/stats/attendance'
     | '/stats/batting'
     | '/stats/bowling'
     | '/stats/fielding'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/stats/attendance'
     | '/stats/batting'
     | '/stats/bowling'
     | '/stats/fielding'
@@ -183,6 +194,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_stats'
     | '/_tab'
+    | '/_stats/stats/attendance'
     | '/_stats/stats/batting'
     | '/_stats/stats/bowling'
     | '/_stats/stats/fielding'
@@ -310,10 +322,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StatsStatsBattingRouteImport
       parentRoute: typeof StatsRoute
     }
+    '/_stats/stats/attendance': {
+      id: '/_stats/stats/attendance'
+      path: '/stats/attendance'
+      fullPath: '/stats/attendance'
+      preLoaderRoute: typeof StatsStatsAttendanceRouteImport
+      parentRoute: typeof StatsRoute
+    }
   }
 }
 
 interface StatsRouteChildren {
+  StatsStatsAttendanceRoute: typeof StatsStatsAttendanceRoute
   StatsStatsBattingRoute: typeof StatsStatsBattingRoute
   StatsStatsBowlingRoute: typeof StatsStatsBowlingRoute
   StatsStatsFieldingRoute: typeof StatsStatsFieldingRoute
@@ -322,6 +342,7 @@ interface StatsRouteChildren {
 }
 
 const StatsRouteChildren: StatsRouteChildren = {
+  StatsStatsAttendanceRoute: StatsStatsAttendanceRoute,
   StatsStatsBattingRoute: StatsStatsBattingRoute,
   StatsStatsBowlingRoute: StatsStatsBowlingRoute,
   StatsStatsFieldingRoute: StatsStatsFieldingRoute,

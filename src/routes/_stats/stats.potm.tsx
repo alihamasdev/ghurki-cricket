@@ -37,13 +37,13 @@ export const Route = createFileRoute("/_stats/stats/potm")({
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
 		await context.queryClient.ensureQueryData({
-			queryKey: ["player-of-match-stats", deps.date ?? deps.rivalry ?? "all-time"],
+			queryKey: ["player-of-match-stats", deps.rivalry ?? "all-time"],
 			queryFn: () => getPlayerOfMatchStats({ data: deps }),
 		}),
 	component: () => {
 		const data = Route.useLoaderData();
 		return (
-			<TabsLayout title="Player of the Match Stats">
+			<TabsLayout title="Player of the Match Stats" dateFilter={{ options: "rivalries" }}>
 				<DataTable columns={columns} data={data} />
 			</TabsLayout>
 		);

@@ -66,3 +66,10 @@ export type Expense = {
 	gearCost: number;
 	total: number;
 };
+
+export type AttendanceStats = {
+	player: string;
+	matches: number;
+	totalMatches: number;
+	percentage: number;
+};

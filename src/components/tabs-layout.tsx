@@ -50,7 +50,7 @@ export function TabsLayout({ title, children, className, dateFilter, filters }: 
 
 export function Footer({ forStats }: { forStats?: boolean }) {
 	const { pathname } = useLocation();
-	const items = forStats ? statsItems : tabItems;
+	const items = forStats ? statsItems.slice(0, 5) : tabItems;
 	const searchParams = forStats ? useSearch({ strict: false }) : undefined;
 	return (
 		<footer className="fixed bottom-0 w-full border-t bg-background md:hidden">
@@ -92,4 +92,5 @@ export const statsItems = [
 	{ name: "Bowling", url: "/stats/bowling", icon: "/icons/ball.png" },
 	{ name: "Fielding", url: "/stats/fielding", icon: "/icons/fielding.png" },
 	{ name: "POTM", url: "/stats/potm", icon: "/icons/medal.png" },
+	{ name: "Attendance", url: "/stats/attendance", icon: "/icons/attendance.png" },
 ];
