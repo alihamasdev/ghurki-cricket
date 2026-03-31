@@ -4,7 +4,10 @@
 	"type": "module",
 	"scripts": {
 		"build": "vite build",
+		"db:generate": "zen generate",
+		"db:push": "bun run export:csv && bunx zen db push && zen generate",
 		"dev": "vite dev --port 3000",
+		"export:csv": "bun scripts/export-data.ts",
 		"format": "oxfmt",
 		"format:check": "oxfmt --check",
 		"lint": "oxlint",

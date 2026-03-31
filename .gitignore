@@ -10,4 +10,5 @@ dist-ssr
 .output
 .vinxi
 !.env.example
-/zenstack/output
+zenstack/output/
+exports/
