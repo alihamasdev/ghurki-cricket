@@ -41,9 +41,15 @@ export type FieldingStats = {
 	runOuts: number;
 };
 
-export type ManOfMatchStats = {
+export type POTMStats = {
 	player: string;
 	count: number;
+};
+
+export type RankingStats = {
+	player: string;
+	rank: number;
+	rating: number;
 };
 
 export type TeamStats = {
@@ -69,7 +75,6 @@ export type Expense = {
 
 export type AttendanceStats = {
 	player: string;
-	matches: number;
-	totalMatches: number;
+	present: number;
 	percentage: number;
 };

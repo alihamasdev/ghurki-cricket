@@ -7,11 +7,11 @@ import { validateDate } from "@/components/date-filter";
 import { PlayerAvatarCell } from "@/components/players/avatar";
 import { TabsLayout } from "@/components/tabs-layout";
 import { db } from "@/lib/db";
-import { type ManOfMatchStats } from "@/lib/types";
+import { type POTMStats } from "@/lib/types";
 
 const getPlayerOfMatchStats = createServerFn({ method: "GET" })
 	.inputValidator(validateDate)
-	.handler(async ({ data }): Promise<ManOfMatchStats[]> => {
+	.handler(async ({ data }): Promise<POTMStats[]> => {
 		const stats = await db.matches.groupBy({
 			by: ["potmId"],
 			_count: { potmId: true },
@@ -27,7 +27,7 @@ const getPlayerOfMatchStats = createServerFn({ method: "GET" })
 			}));
 	});
 
-const columns: ColumnDef<ManOfMatchStats>[] = [
+const columns: ColumnDef<POTMStats>[] = [
 	{ accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerAvatarCell name={row.original.player} /> },
 	{ accessorKey: "count", header: "Player of Match" },
 ];
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/_stats/stats/potm")({
 		const data = Route.useLoaderData();
 		return (
 			<TabsLayout title="Player of the Match Stats" dateFilter={{ options: "rivalries" }}>
-				<DataTable columns={columns} data={data} />
+				<DataTable columns={columns} data={data} className="table-fixed" />
 			</TabsLayout>
 		);
 	},

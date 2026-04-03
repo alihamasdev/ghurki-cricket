@@ -92,5 +92,6 @@ export const statsItems = [
 	{ name: "Bowling", url: "/stats/bowling", icon: "/icons/ball.png" },
 	{ name: "Fielding", url: "/stats/fielding", icon: "/icons/fielding.png" },
 	{ name: "POTM", url: "/stats/potm", icon: "/icons/medal.png" },
+	{ name: "Rankings", url: "/stats/ranking", icon: "/icons/ranking.png" },
 	{ name: "Attendance", url: "/stats/attendance", icon: "/icons/attendance.png" },
 ];

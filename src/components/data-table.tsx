@@ -17,6 +17,7 @@ type DataTableProps<TData, TValue> = {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
 	minSize?: number;
+	className?: string;
 	sorting?: SortingState;
 	onSortingChange?: OnChangeFn<SortingState>;
 };
@@ -25,6 +26,7 @@ export function DataTable<TData, TValue>({
 	columns,
 	data,
 	minSize = 50,
+	className,
 	sorting: externalSorting,
 	onSortingChange,
 }: DataTableProps<TData, TValue>) {
@@ -59,7 +61,7 @@ export function DataTable<TData, TValue>({
 		<ResizablePanelGroup direction="horizontal">
 			<ResizablePanel defaultSize={100} minSize={isMobile ? 100 : minSize}>
 				<div className="overflow-hidden rounded-md border">
-					<Table>
+					<Table className={className}>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
 								<TableRow key={headerGroup.id}>

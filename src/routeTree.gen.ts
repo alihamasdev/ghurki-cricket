@@ -20,6 +20,7 @@ import { Route as TabCompareIndexRouteImport } from './routes/_tab/compare.index
 import { Route as TabPlayersPlayerIdRouteImport } from './routes/_tab/players.$playerId'
 import { Route as TabMatchesMatchIdRouteImport } from './routes/_tab/matches.$matchId'
 import { Route as StatsStatsTeamsRouteImport } from './routes/_stats/stats.teams'
+import { Route as StatsStatsRankingRouteImport } from './routes/_stats/stats.ranking'
 import { Route as StatsStatsPotmRouteImport } from './routes/_stats/stats.potm'
 import { Route as StatsStatsFieldingRouteImport } from './routes/_stats/stats.fielding'
 import { Route as StatsStatsBowlingRouteImport } from './routes/_stats/stats.bowling'
@@ -79,6 +80,11 @@ const StatsStatsTeamsRoute = StatsStatsTeamsRouteImport.update({
   path: '/stats/teams',
   getParentRoute: () => StatsRoute,
 } as any)
+const StatsStatsRankingRoute = StatsStatsRankingRouteImport.update({
+  id: '/stats/ranking',
+  path: '/stats/ranking',
+  getParentRoute: () => StatsRoute,
+} as any)
 const StatsStatsPotmRoute = StatsStatsPotmRouteImport.update({
   id: '/stats/potm',
   path: '/stats/potm',
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/stats/bowling': typeof StatsStatsBowlingRoute
   '/stats/fielding': typeof StatsStatsFieldingRoute
   '/stats/potm': typeof StatsStatsPotmRoute
+  '/stats/ranking': typeof StatsStatsRankingRoute
   '/stats/teams': typeof StatsStatsTeamsRoute
   '/matches/$matchId': typeof TabMatchesMatchIdRoute
   '/players/$playerId': typeof TabPlayersPlayerIdRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/stats/bowling': typeof StatsStatsBowlingRoute
   '/stats/fielding': typeof StatsStatsFieldingRoute
   '/stats/potm': typeof StatsStatsPotmRoute
+  '/stats/ranking': typeof StatsStatsRankingRoute
   '/stats/teams': typeof StatsStatsTeamsRoute
   '/matches/$matchId': typeof TabMatchesMatchIdRoute
   '/players/$playerId': typeof TabPlayersPlayerIdRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/_stats/stats/bowling': typeof StatsStatsBowlingRoute
   '/_stats/stats/fielding': typeof StatsStatsFieldingRoute
   '/_stats/stats/potm': typeof StatsStatsPotmRoute
+  '/_stats/stats/ranking': typeof StatsStatsRankingRoute
   '/_stats/stats/teams': typeof StatsStatsTeamsRoute
   '/_tab/matches/$matchId': typeof TabMatchesMatchIdRoute
   '/_tab/players/$playerId': typeof TabPlayersPlayerIdRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/stats/bowling'
     | '/stats/fielding'
     | '/stats/potm'
+    | '/stats/ranking'
     | '/stats/teams'
     | '/matches/$matchId'
     | '/players/$playerId'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/stats/bowling'
     | '/stats/fielding'
     | '/stats/potm'
+    | '/stats/ranking'
     | '/stats/teams'
     | '/matches/$matchId'
     | '/players/$playerId'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/_stats/stats/bowling'
     | '/_stats/stats/fielding'
     | '/_stats/stats/potm'
+    | '/_stats/stats/ranking'
     | '/_stats/stats/teams'
     | '/_tab/matches/$matchId'
     | '/_tab/players/$playerId'
@@ -294,6 +306,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StatsStatsTeamsRouteImport
       parentRoute: typeof StatsRoute
     }
+    '/_stats/stats/ranking': {
+      id: '/_stats/stats/ranking'
+      path: '/stats/ranking'
+      fullPath: '/stats/ranking'
+      preLoaderRoute: typeof StatsStatsRankingRouteImport
+      parentRoute: typeof StatsRoute
+    }
     '/_stats/stats/potm': {
       id: '/_stats/stats/potm'
       path: '/stats/potm'
@@ -338,6 +357,7 @@ interface StatsRouteChildren {
   StatsStatsBowlingRoute: typeof StatsStatsBowlingRoute
   StatsStatsFieldingRoute: typeof StatsStatsFieldingRoute
   StatsStatsPotmRoute: typeof StatsStatsPotmRoute
+  StatsStatsRankingRoute: typeof StatsStatsRankingRoute
   StatsStatsTeamsRoute: typeof StatsStatsTeamsRoute
 }
 
@@ -347,6 +367,7 @@ const StatsRouteChildren: StatsRouteChildren = {
   StatsStatsBowlingRoute: StatsStatsBowlingRoute,
   StatsStatsFieldingRoute: StatsStatsFieldingRoute,
   StatsStatsPotmRoute: StatsStatsPotmRoute,
+  StatsStatsRankingRoute: StatsStatsRankingRoute,
   StatsStatsTeamsRoute: StatsStatsTeamsRoute,
 }
 

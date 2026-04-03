@@ -14,7 +14,8 @@ model Teams {
 
 model Players {
   name            String     @id
-  avatar          String?
+  rating          Int        @default(0)
+  attendance      Int        @default(0)
   playerOfMatches Matches[]
   batting         Batters[]
   bowling         Bowlers[]

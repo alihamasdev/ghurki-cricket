@@ -11,15 +11,31 @@ import { ballsToOvers, cn } from "@/lib/utils";
 const getPlayerDetail = createServerFn({ method: "GET" })
 	.inputValidator(z.string())
 	.handler(async ({ data: playerId }) => {
-		const [player, totalDates] = await Promise.all([
+		const [player, higherRatedCount] = await Promise.all([
 			db.players.findFirst({
 				where: { name: { equals: playerId, mode: "insensitive" } },
-				include: { batting: true, bowling: true, fielding: true, _count: { select: { playerOfMatches: true } } },
+				include: {
+					batting: true,
+					bowling: true,
+					fielding: true,
+					_count: { select: { playerOfMatches: true } },
+				},
 			}),
-			db.dates.count(),
+			(async () => {
+				const p = await db.players.findFirst({
+					where: { name: { equals: playerId, mode: "insensitive" } },
+					select: { rating: true },
+				});
+				if (!p) return 0;
+				return db.players.count({
+					where: { rating: { gt: p.rating } },
+				});
+			})(),
 		]);
 
 		if (!player) throw notFound();
+
+		const rank = (higherRatedCount ?? 0) + 1;
 
 		const battingStats = player.batting.reduce(
 			(acc, curr) => ({
@@ -96,14 +112,16 @@ const getPlayerDetail = createServerFn({ method: "GET" })
 			{ innings: 0, catches: 0, runOuts: 0 },
 		);
 
-		const attendedDates = new Set([
-			...player.batting.map((b) => b.dateId.toISOString()),
-			...player.bowling.map((b) => b.dateId.toISOString()),
-			...player.fielding.map((f) => f.dateId.toISOString()),
-		]);
-		const attendance = totalDates > 0 ? Math.round((attendedDates.size / totalDates) * 100) : 0;
-
-		return { name: player.name, potm: player._count.playerOfMatches, attendance, batting, bowling, fielding };
+		return {
+			name: player.name,
+			rank,
+			rating: player.rating,
+			attendance: player.attendance,
+			potm: player._count.playerOfMatches,
+			batting,
+			bowling,
+			fielding,
+		};
 	});
 
 export const Route = createFileRoute("/_tab/players/$playerId")({
@@ -114,78 +132,74 @@ export const Route = createFileRoute("/_tab/players/$playerId")({
 		}),
 	head: ({ loaderData }) => ({ meta: [{ title: loaderData?.name || "Player not Found" }] }),
 	component: () => {
-		const { name, potm, attendance, batting, bowling, fielding } = Route.useLoaderData();
+		const { name, rank, potm, attendance, batting, bowling, fielding } = Route.useLoaderData();
 		return (
 			<TabsLayout title={name} dateFilter={null}>
 				<ResizablePanelGroup direction="horizontal">
-					<ResizablePanel defaultSize={100}>
-						<div className="relative flex flex-col gap-8 rounded-md border bg-linear-to-br from-card to-background py-8">
-							<div className="flex flex-col items-center gap-3 px-8 text-center sm:flex-row sm:items-center sm:text-left md:gap-6">
-								<PlayerAvatar name={name} area={100} className="size-20 shadow-sm" />
-								<div className="flex flex-col gap-1">
-									<h2 className="text-2xl font-bold text-foreground uppercase sm:text-3xl">{name}</h2>
-									<p className="text-sm font-medium tracking-wide text-muted-foreground uppercase opacity-70">All Rounder</p>
+					<ResizablePanel defaultSize={100} minSize={50}>
+						<div className="@container relative flex flex-col gap-8 rounded-md border bg-card py-8">
+							<div className="grid gap-6 @3xl:grid-cols-2">
+								<div className="flex flex-col items-center justify-center gap-3 @3xl:flex-row @3xl:justify-start @3xl:pl-14">
+									<PlayerAvatar name={name} area={100} className="size-20 shadow-sm" />
+									<div className="flex flex-col gap-1">
+										<h2 className="text-2xl font-bold text-foreground uppercase sm:text-3xl">{name}</h2>
+										<p className="text-sm font-medium tracking-wide text-muted-foreground uppercase opacity-70">All Rounder</p>
+									</div>
 								</div>
-								<div className="flex gap-10 md:mr-10 md:ml-auto md:gap-20">
-									<StatItem className="items-center" label="Ranking" value="4" />
-									<StatItem className="items-center" label="POTM" value={potm} />
-									<StatItem className="items-center" label="Attendance" value={`${attendance}%`} />
-								</div>
-							</div>
-
-							<div className="flex flex-col gap-4">
-								<div className="flex items-center justify-center gap-2 bg-muted px-4 py-2">
-									<img src="/icons/bat.png" className="size-5" alt="bat" />
-									<h3 className="text-base font-bold tracking-wide text-primary uppercase">Batting Performance</h3>
-								</div>
-								<div className="grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
-									<StatItem label="Innings" value={batting.innings} />
-									<StatItem label="Runs" value={batting.runs} />
-									<StatItem label="Balls" value={batting.balls} />
-									<StatItem label="Not Outs" value={batting.notOuts} />
-									<StatItem label="Strike Rate" value={batting.strikeRate.toFixed()} />
-									<StatItem label="Average" value={batting.average.toFixed()} />
-									<StatItem label="Highest" value={batting.highestScore} />
-									<StatItem label="Fours" value={batting.fours} />
-									<StatItem label="Sixes" value={batting.sixes} />
-									<StatItem label="Ducks" value={batting.ducks} />
-									<StatItem label="Thirties" value={batting.thirties} />
-									<StatItem label="Fifties" value={batting.fifties} />
-									{/* <StatItem label="Hundreds" value={name === "Hamas" ? 1 : 0} /> */}
+								<div className="grid grid-cols-3 gap-6 @3xl:pr-10 @4xl:pr-4 @5xl:pr-0">
+									<StatItem className="justify-center" label="Ranking" value={rank > 0 ? `#${rank}` : "—"} />
+									<StatItem className="justify-center" label="POTM" value={potm} />
+									<StatItem className="justify-center" label="Attendance" value={`${attendance}%`} />
 								</div>
 							</div>
 
-							<div className="flex flex-col gap-4">
-								<div className="flex items-center justify-center gap-2 bg-muted px-4 py-2">
-									<img src="/icons/ball.png" className="size-5" alt="ball" />
-									<h3 className="text-base font-bold tracking-wide text-primary uppercase">Bowling Performance</h3>
-								</div>
-								<div className="grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
-									<StatItem label="Innings" value={bowling.innings} />
-									<StatItem label="Wickets" value={bowling.wickets} />
-									<StatItem label="Runs" value={bowling.runs} />
-									<StatItem label="Overs" value={ballsToOvers(bowling.balls).split(".")[0]} />
-									<StatItem label="Economy" value={bowling.economy.toFixed(1)} />
-									<StatItem label="Average" value={bowling.average.toFixed(1)} />
-									<StatItem label="Dots" value={bowling.dots} />
-									<StatItem label="Wides" value={bowling.wides} />
-									<StatItem label="No Balls" value={bowling.noBalls} />
-									<StatItem label="Maidens" value={name === "Hamas" ? 2 : 0} />
-									<StatItem label="2 Fer" value={bowling.twoFR} />
-									<StatItem label="3 Fer" value={bowling.threeFR} />
-								</div>
+							<div className="flex items-center justify-center gap-2 bg-muted px-4 py-3">
+								<img src="/icons/bat.png" className="size-5" alt="bat" />
+								<h3 className="text-base font-bold tracking-wide text-primary uppercase">Batting Performance</h3>
+							</div>
+							<div className="grid grid-cols-3 gap-6 @3xl:grid-cols-4 @4xl:grid-cols-5 @5xl:grid-cols-6">
+								<StatItem label="Innings" value={batting.innings} />
+								<StatItem label="Runs" value={batting.runs} />
+								<StatItem label="Balls" value={batting.balls} />
+								<StatItem label="Not Outs" value={batting.notOuts} />
+								<StatItem label="Strike Rate" value={batting.strikeRate.toFixed()} />
+								<StatItem label="Average" value={batting.average.toFixed()} />
+								<StatItem label="Highest" value={batting.highestScore} />
+								<StatItem label="Fours" value={batting.fours} />
+								<StatItem label="Sixes" value={batting.sixes} />
+								<StatItem label="Ducks" value={batting.ducks} />
+								<StatItem label="Thirties" value={batting.thirties} />
+								<StatItem label="Fifties" value={batting.fifties} />
+								{/* <StatItem label="Hundreds" value={name === "Hamas" ? 1 : 0} /> */}
 							</div>
 
-							<div className="flex flex-col gap-4">
-								<div className="flex items-center justify-center gap-2 bg-muted px-4 py-2">
-									<img src="/icons/fielding.png" className="size-5" alt="fielding" />
-									<h3 className="text-base font-bold tracking-wide text-primary uppercase">Fielding Performance</h3>
-								</div>
-								<div className="grid grid-cols-3 gap-x-4 gap-y-6">
-									<StatItem label="Innings" value={fielding.innings} />
-									<StatItem label="Catches" value={fielding.catches} />
-									<StatItem label="Run Outs" value={fielding.runOuts} />
-								</div>
+							<div className="flex items-center justify-center gap-2 bg-muted px-4 py-3">
+								<img src="/icons/ball.png" className="size-5" alt="ball" />
+								<h3 className="text-base font-bold tracking-wide text-primary uppercase">Bowling Performance</h3>
+							</div>
+							<div className="grid grid-cols-3 gap-6 @3xl:grid-cols-4 @4xl:grid-cols-5 @5xl:grid-cols-6">
+								<StatItem label="Innings" value={bowling.innings} />
+								<StatItem label="Wickets" value={bowling.wickets} />
+								<StatItem label="Runs" value={bowling.runs} />
+								<StatItem label="Overs" value={ballsToOvers(bowling.balls).split(".")[0]} />
+								<StatItem label="Economy" value={bowling.economy.toFixed(1)} />
+								<StatItem label="Average" value={bowling.average.toFixed(1)} />
+								<StatItem label="Dots" value={bowling.dots} />
+								<StatItem label="Wides" value={bowling.wides} />
+								<StatItem label="No Balls" value={bowling.noBalls} />
+								<StatItem label="Maidens" value={name === "Hamas" ? 2 : 0} />
+								<StatItem label="2 Fer" value={bowling.twoFR} />
+								<StatItem label="3 Fer" value={bowling.threeFR} />
+							</div>
+
+							<div className="flex items-center justify-center gap-2 bg-muted px-4 py-3">
+								<img src="/icons/fielding.png" className="size-5" alt="fielding" />
+								<h3 className="text-base font-bold tracking-wide text-primary uppercase">Fielding Performance</h3>
+							</div>
+							<div className="grid grid-cols-3 gap-6">
+								<StatItem label="Innings" value={fielding.innings} />
+								<StatItem label="Catches" value={fielding.catches} />
+								<StatItem label="Run Outs" value={fielding.runOuts} />
 							</div>
 						</div>
 					</ResizablePanel>
