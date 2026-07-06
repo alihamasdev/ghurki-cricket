@@ -21,7 +21,7 @@ export function TabsLayout({ title, children, className, dateFilter, filters }: 
 	return (
 		<>
 			<header className="sticky top-0 z-10 bg-background">
-				<div className="container mx-auto grid grid-cols-1 gap-3 px-4 py-3 md:grid-cols-2">
+				<div className="container mx-auto grid grid-cols-1 gap-3 px-2 py-3 md:grid-cols-2">
 					<div className="flex items-center justify-between gap-3">
 						<h1 className="text-xl/9 font-semibold capitalize">{title}</h1>
 						<Button variant="secondary" size="icon" className="md:hidden" onClick={toggleOpen}>
@@ -42,7 +42,7 @@ export function TabsLayout({ title, children, className, dateFilter, filters }: 
 				</div>
 			</header>
 			<main className="flex size-full flex-1 flex-col pb-22 sm:pb-10">
-				<div className={cn("container mx-auto flex flex-1 flex-col gap-4 px-4", className)}>{children}</div>
+				<div className={cn("container mx-auto flex flex-1 flex-col gap-4 px-2", className)}>{children}</div>
 			</main>
 		</>
 	);
