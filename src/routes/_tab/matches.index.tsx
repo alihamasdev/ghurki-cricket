@@ -17,7 +17,7 @@ const matchesQueryOptions = () => {
 const getMatches = createServerFn({ method: "GET" }).handler(async () => {
 	const matches = await db.matches.findMany({
 		orderBy: { id: "asc" },
-		include: { innings: true },
+		include: { innings: { orderBy: { id: "asc" } } },
 	});
 	return Object.groupBy(matches, (match) => String(formatDate(match.dateId)));
 });
@@ -43,9 +43,7 @@ export const Route = createFileRoute("/_tab/matches/")({
 												{innings.map((inning) => (
 													<div key={inning.id} className="flex items-center justify-between gap-3">
 														<ItemTitle>{inning.teamId}</ItemTitle>
-														<ItemDescription>
-															{`${inning.runs}${!inning.allOuts ? `-${inning.wickets}` : ""}  (${ballsToOvers(inning.balls)})`}
-														</ItemDescription>
+														<ItemDescription>{`${inning.runs}${!inning.allOuts ? `-${inning.wickets}` : ""}  (${ballsToOvers(inning.balls)})`}</ItemDescription>
 													</div>
 												))}
 											</ItemContent>

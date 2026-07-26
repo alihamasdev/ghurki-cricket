@@ -11,7 +11,7 @@ import { ballsToOvers, cn } from "@/lib/utils";
 const getPlayerDetail = createServerFn({ method: "GET" })
 	.validator(z.string())
 	.handler(async ({ data: playerId }) => {
-		const [player, higherRatedCount] = await Promise.all([
+		const [player, totalDates] = await Promise.all([
 			db.players.findFirst({
 				where: { name: { equals: playerId, mode: "insensitive" } },
 				include: {
@@ -21,21 +21,10 @@ const getPlayerDetail = createServerFn({ method: "GET" })
 					_count: { select: { playerOfMatches: true } },
 				},
 			}),
-			(async () => {
-				const p = await db.players.findFirst({
-					where: { name: { equals: playerId, mode: "insensitive" } },
-					select: { rating: true },
-				});
-				if (!p) return 0;
-				return db.players.count({
-					where: { rating: { gt: p.rating } },
-				});
-			})(),
+			db.dates.count(),
 		]);
 
 		if (!player) throw notFound();
-
-		const rank = (higherRatedCount ?? 0) + 1;
 
 		const battingStats = player.batting.reduce(
 			(acc, curr) => ({
@@ -114,9 +103,7 @@ const getPlayerDetail = createServerFn({ method: "GET" })
 
 		return {
 			name: player.name,
-			rank,
-			rating: player.rating,
-			attendance: player.attendance,
+			attendance: ((player.attendance / totalDates) * 100).toFixed(),
 			potm: player._count.playerOfMatches,
 			batting,
 			bowling,
@@ -132,7 +119,7 @@ export const Route = createFileRoute("/_tab/players/$playerId")({
 		}),
 	head: ({ loaderData }) => ({ meta: [{ title: loaderData?.name || "Player not Found" }] }),
 	component: () => {
-		const { name, rank, potm, attendance, batting, bowling, fielding } = Route.useLoaderData();
+		const { name, potm, attendance, batting, bowling, fielding } = Route.useLoaderData();
 		return (
 			<TabsLayout title={name} dateFilter={null}>
 				<ResizablePanelGroup direction="horizontal">
@@ -146,8 +133,7 @@ export const Route = createFileRoute("/_tab/players/$playerId")({
 										<p className="text-sm font-medium tracking-wide text-muted-foreground uppercase opacity-70">All Rounder</p>
 									</div>
 								</div>
-								<div className="grid grid-cols-3 gap-6 @3xl:pr-10 @4xl:pr-4 @5xl:pr-0">
-									<StatItem className="justify-center" label="Ranking" value={rank > 0 ? `#${rank}` : "—"} />
+								<div className="grid grid-cols-2 gap-6 @3xl:pr-10 @4xl:pr-4 @5xl:pr-0">
 									<StatItem className="justify-center" label="POTM" value={potm} />
 									<StatItem className="justify-center" label="Attendance" value={`${attendance}%`} />
 								</div>
