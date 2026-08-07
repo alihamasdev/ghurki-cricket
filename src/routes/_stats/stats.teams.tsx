@@ -1,16 +1,16 @@
-import type { InningsWhereInput } from "~/zenstack/output/input";
-
 import { createFileRoute } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
-import { db } from "@/lib/db";
-import { ballsToOvers } from "@/lib/utils";
-import { type TeamStats } from "@/lib/types";
-import { useIsMobile } from "@/hooks/use-mobile";
+import type { InningsWhereInput } from "~/zenstack/output/input";
+
 import { validateDate } from "@/components/date-filter";
 import { TabsLayout } from "@/components/tabs-layout";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { db } from "@/lib/db";
+import { type TeamStats } from "@/lib/types";
+import { ballsToOvers } from "@/lib/utils";
 
 const getTeamStats = createServerFn({ method: "GET" })
 	.validator(validateDate)
@@ -100,7 +100,9 @@ const getTeamStats = createServerFn({ method: "GET" })
 				totalWickets: aggregate.wickets || 0,
 				totalAllOuts: aggregate.allOuts || 0,
 				strikeRate: aggregate.balls ? (aggregate.runs / aggregate.balls) * 100 : 0,
-				lowestScore: lowestScore ? `${lowestScore.runs}${!lowestScore.allOuts ? `-${lowestScore.wickets}` : ""} (${ballsToOvers(lowestScore.balls)})` : "-",
+				lowestScore: lowestScore
+					? `${lowestScore.runs}${!lowestScore.allOuts ? `-${lowestScore.wickets}` : ""} (${ballsToOvers(lowestScore.balls)})`
+					: "-",
 				highestScore: highestScore
 					? `${highestScore.runs}${!highestScore.allOuts ? `-${highestScore.wickets}` : ""} (${ballsToOvers(highestScore.balls)})`
 					: "-",

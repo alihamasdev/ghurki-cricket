@@ -62,9 +62,25 @@ const getExpense = createServerFn({ method: "GET" })
 type ExpenseRow = Awaited<ReturnType<typeof getExpense>>["tableData"][number];
 
 const columns: ColumnDef<ExpenseRow>[] = [
-	{ accessorKey: "ground", header: "Ground" },
-	{ accessorKey: "daysPlayed", header: "Days" },
-	{ accessorKey: "expense", header: "Expense" },
+	{
+		accessorKey: "ground",
+		header: "Ground",
+		footer: "Total",
+	},
+	{
+		accessorKey: "daysPlayed",
+		header: "Days",
+		footer: (info) => info.table.getFilteredRowModel().rows.reduce((sum, row) => sum + row.original.daysPlayed, 0),
+	},
+	{
+		accessorKey: "expense",
+		header: "Expense",
+		footer: (info) =>
+			info.table
+				.getFilteredRowModel()
+				.rows.reduce((sum, row) => sum + row.original.expense, 0)
+				.toLocaleString(),
+	},
 ];
 
 const chartConfig: ChartConfig = {
@@ -123,7 +139,7 @@ export const Route = createFileRoute("/_tab/expense/")({
 						})}
 					</CardHeader>
 					<CardContent className="px-2 sm:p-6">
-						<ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
+						<ChartContainer config={chartConfig} className="aspect-auto h-64 w-full">
 							<BarChart accessibilityLayer data={[...chatData].reverse()} margin={{ left: 12, right: 12 }}>
 								<CartesianGrid vertical={false} />
 								<XAxis
@@ -136,11 +152,7 @@ export const Route = createFileRoute("/_tab/expense/")({
 								/>
 								<ChartTooltip
 									content={
-										<ChartTooltipContent
-											className="w-[150px]"
-											nameKey="views"
-											labelFormatter={(value) => formatDate(value) ?? "All Time"}
-										/>
+										<ChartTooltipContent className="w-40" nameKey="views" labelFormatter={(value) => formatDate(value) ?? "All Time"} />
 									}
 								/>
 								<Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />
