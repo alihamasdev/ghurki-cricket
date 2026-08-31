@@ -15,7 +15,8 @@ import { ballsToOvers } from "@/lib/utils";
 const getTeamStats = createServerFn({ method: "GET" })
 	.validator(validateDate)
 	.handler(async ({ data }): Promise<TeamStats[]> => {
-		const whereClause: InningsWhereInput = { match: { date: data } };
+		const [dateFilter] = data;
+		const whereClause: InningsWhereInput = { match: { date: dateFilter } };
 
 		const teamsWithInnings = await db.innings.findMany({
 			where: whereClause,
@@ -40,7 +41,7 @@ const getTeamStats = createServerFn({ method: "GET" })
 			// Matches won per team
 			db.matches.groupBy({
 				by: ["winnerId"],
-				where: { winnerId: { in: teamIds }, date: data },
+				where: { winnerId: { in: teamIds }, date: dateFilter },
 				_count: { winnerId: true },
 			}),
 
@@ -55,7 +56,7 @@ const getTeamStats = createServerFn({ method: "GET" })
 			Promise.all(
 				teamIds.map((teamId) =>
 					db.innings.findFirst({
-						where: { teamId, allOuts: data?.date ? undefined : 1, ...whereClause },
+						where: { teamId, allOuts: dateFilter?.date ? undefined : 1, ...whereClause },
 						orderBy: { runs: "asc" },
 					}),
 				),

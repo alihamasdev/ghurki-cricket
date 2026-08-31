@@ -22,12 +22,15 @@ export const dateSearchSchema = z.object({
 
 type Attendance = { attendance: { gt: number } } | undefined;
 
-type ValidateDateReturn = [{ date: Date }, Attendance] | [{ rivalryId: string }, Attendance] | [undefined, Attendance];
+type ValidateDateReturn =
+	| [{ date: Date; rivalryId: undefined }, Attendance]
+	| [{ date: undefined; rivalryId: string }, Attendance]
+	| [undefined, Attendance];
 
 export const validateDate = ({ date, rivalry, core }: z.infer<typeof dateSearchSchema>): ValidateDateReturn => {
 	const isCore = core ? { attendance: { gt: 30 } } : undefined;
-	if (date) return [{ date: new Date(date) }, isCore];
-	if (rivalry) return [{ rivalryId: rivalry }, isCore];
+	if (date) return [{ date: new Date(date), rivalryId: undefined }, isCore];
+	if (rivalry) return [{ date: undefined, rivalryId: rivalry }, isCore];
 	return [undefined, isCore];
 };
 
