@@ -24,9 +24,6 @@ const filters = [
 	"most-ducks",
 	"most-thirties",
 	"most-fifties",
-	"four-ratio",
-	"six-ratio",
-	"duck-ratio",
 ] as const;
 
 type Filter = (typeof filters)[number];
@@ -36,9 +33,10 @@ const filterSchema = z.enum(filters).optional().catch(undefined);
 const getBattingStats = createServerFn({ method: "GET" })
 	.validator(validateDate)
 	.handler(async ({ data }): Promise<BattingStats[]> => {
+		const [dateFilter, playerFilter] = data;
 		const stats = await db.batters.groupBy({
 			by: ["playerId"],
-			where: { date: data },
+			where: { date: dateFilter, player: playerFilter },
 			orderBy: { _sum: { runs: "desc" } },
 			_max: { highestScore: true },
 			_sum: {
@@ -96,16 +94,13 @@ const filterColumns: Record<Filter, ColumnDef<BattingStats>[]> = {
 	"most-runs": [columns.innings, columns.balls, columns.runs],
 	"best-strike-rate": [columns.runs, columns.balls, columns.strike_rate],
 	"best-average": [columns.runs, columns.innings, columns.not_outs, columns.average],
-	"most-not-outs": [columns.innings, { ...columns.not_outs, header: "Not-Outs" }],
+	"most-not-outs": [columns.innings, columns.not_outs],
 	"highest-score": [columns.highest_score],
 	"most-fours": [columns.balls, columns.fours],
 	"most-sixes": [columns.balls, columns.sixes],
 	"most-ducks": [columns.innings, { ...columns.ducks, header: "Ducks" }],
 	"most-thirties": [columns.innings, columns.thirties],
 	"most-fifties": [columns.innings, columns.fifties],
-	"four-ratio": [columns.fours_ratio],
-	"six-ratio": [columns.six_ratio],
-	"duck-ratio": [columns.ducks_ratio],
 };
 
 const getBattingColumns = (): ColumnDef<BattingStats>[] => {
@@ -159,12 +154,6 @@ const getBattingSorting = (filter?: Filter) => {
 			return [{ id: "thirties", desc: true }];
 		case "most-fifties":
 			return [{ id: "fifties", desc: true }];
-		case "four-ratio":
-			return [{ id: "fours_ratio", desc: false }];
-		case "six-ratio":
-			return [{ id: "six_ratio", desc: false }];
-		case "duck-ratio":
-			return [{ id: "ducks_ratio", desc: false }];
 		default:
 			return [{ id: "runs", desc: true }];
 	}
@@ -176,7 +165,7 @@ export const Route = createFileRoute("/_stats/stats/batting")({
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
 		await context.queryClient.ensureQueryData({
-			queryKey: ["batting-stats", deps.date ?? deps.rivalry ?? "all-time"],
+			queryKey: ["batting-stats", deps.date ?? deps.rivalry ?? "all-time", deps.core ? "core-players" : "all-players"],
 			queryFn: () => getBattingStats({ data: deps }),
 		}),
 	component: () => {

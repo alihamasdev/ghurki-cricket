@@ -17,12 +17,18 @@ import { formatDate } from "@/lib/utils";
 export const dateSearchSchema = z.object({
 	date: z.string().optional(),
 	rivalry: z.string().optional(),
+	core: z.boolean().optional(),
 });
 
-export const validateDate = ({ date, rivalry }: z.infer<typeof dateSearchSchema>) => {
-	if (date) return { date: new Date(date) };
-	if (rivalry) return { rivalryId: rivalry };
-	return undefined;
+type Attendance = { attendance: { gt: number } } | undefined;
+
+type ValidateDateReturn = [{ date: Date }, Attendance] | [{ rivalryId: string }, Attendance] | [undefined, Attendance];
+
+export const validateDate = ({ date, rivalry, core }: z.infer<typeof dateSearchSchema>): ValidateDateReturn => {
+	const isCore = core ? { attendance: { gt: 30 } } : undefined;
+	if (date) return [{ date: new Date(date) }, isCore];
+	if (rivalry) return [{ rivalryId: rivalry }, isCore];
+	return [undefined, isCore];
 };
 
 export const datesQueryOptions = () => {

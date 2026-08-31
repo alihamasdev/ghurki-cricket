@@ -24,8 +24,6 @@ const filters = [
 	"most-no-balls",
 	"most-2fr",
 	"most-3fr",
-	"dots-ratio",
-	"wides-ratio",
 ] as const;
 
 type Filter = (typeof filters)[number];
@@ -35,9 +33,10 @@ const filterSchema = z.enum(filters).optional().catch(undefined);
 const getBowlingStats = createServerFn({ method: "GET" })
 	.validator(validateDate)
 	.handler(async ({ data }): Promise<BowlingStats[]> => {
+		const [dateFilter, playerFilter] = data;
 		const stats = await db.bowlers.groupBy({
 			by: ["playerId"],
-			where: { date: data },
+			where: { date: dateFilter, player: playerFilter },
 			orderBy: { _sum: { wickets: "desc" } },
 			_sum: {
 				innings: true,
@@ -91,7 +90,7 @@ const columns: Record<keyof BowlingStats, ColumnDef<BowlingStats>> = {
 };
 
 const filterColumns: Record<Filter, ColumnDef<BowlingStats>[]> = {
-	"most-wickets": [columns.balls, columns.wickets],
+	"most-wickets": [{ ...columns.balls, cell: ({ row }) => Number(ballsToOvers(row.original.balls)).toFixed() }, columns.wickets],
 	"most-runs-conceded": [columns.balls, columns.runs],
 	"best-economy": [columns.runs, columns.balls, columns.economy],
 	"best-average": [columns.runs, columns.wickets, columns.average],
@@ -100,8 +99,6 @@ const filterColumns: Record<Filter, ColumnDef<BowlingStats>[]> = {
 	"most-no-balls": [{ ...columns.balls, header: "Balls", cell: ({ row }) => row.original.balls }, columns.no_balls],
 	"most-2fr": [columns.innings, columns["2fr"]],
 	"most-3fr": [columns.innings, columns["3fr"]],
-	"dots-ratio": [columns.dots_ratio],
-	"wides-ratio": [columns.wides_ratio],
 };
 
 const getBowlingColumns = (): ColumnDef<BowlingStats>[] => {
@@ -152,10 +149,6 @@ const getBowlingSorting = (filter?: Filter) => {
 			return [{ id: "2fr", desc: true }];
 		case "most-3fr":
 			return [{ id: "3fr", desc: true }];
-		case "dots-ratio":
-			return [{ id: "dots_ratio", desc: false }];
-		case "wides-ratio":
-			return [{ id: "wides_ratio", desc: false }];
 		default:
 			return [{ id: "wickets", desc: true }];
 	}
@@ -167,7 +160,7 @@ export const Route = createFileRoute("/_stats/stats/bowling")({
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
 		await context.queryClient.ensureQueryData({
-			queryKey: ["bowling-stats", deps.date ?? deps.rivalry ?? "all-time"],
+			queryKey: ["bowling-stats", deps.date ?? deps.rivalry ?? "all-time", deps.core ? "core-players" : "all-players"],
 			queryFn: () => getBowlingStats({ data: deps }),
 		}),
 	component: () => {

@@ -12,10 +12,11 @@ import { type POTMStats } from "@/lib/types";
 const getPlayerOfMatchStats = createServerFn({ method: "GET" })
 	.validator(validateDate)
 	.handler(async ({ data }): Promise<POTMStats[]> => {
+		const [dateFilter, playerFilter] = data;
 		const stats = await db.matches.groupBy({
 			by: ["potmId"],
 			_count: { potmId: true },
-			where: { date: data },
+			where: { date: dateFilter, potm: playerFilter },
 			orderBy: { _count: { potmId: "desc" } },
 		});
 
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/_stats/stats/potm")({
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
 		await context.queryClient.ensureQueryData({
-			queryKey: ["player-of-match-stats", deps.rivalry ?? "all-time"],
+			queryKey: ["player-of-match-stats", deps.rivalry ?? "all-time", deps.core ? "core-players" : "all-players"],
 			queryFn: () => getPlayerOfMatchStats({ data: deps }),
 		}),
 	component: () => {

@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 export function AppSidebar() {
 	const { pathname } = useLocation();
-	const { date, rivalry } = useSearch({ strict: false });
+	const { date, rivalry, core } = useSearch({ strict: false });
 	const { data: players } = useSuspenseQuery(playerQueryOptions());
 	return (
 		<Sidebar className="gap-0">
@@ -52,7 +52,7 @@ export function AppSidebar() {
 							{statsItems.map((item) => (
 								<SidebarMenuItem key={item.name}>
 									<SidebarMenuButton isActive={pathname.endsWith(item.url)} asChild>
-										<Link to={item.url} search={{ date, rivalry }}>
+										<Link to={item.url} search={{ date, rivalry, core }}>
 											<img src={item.icon} width={14} height={14} alt={item.name} className="aspect-square" />
 											<span>{item.name}</span>
 										</Link>

@@ -12,9 +12,10 @@ import { type FieldingStats } from "@/lib/types";
 const getFieldingStats = createServerFn({ method: "GET" })
 	.validator(validateDate)
 	.handler(async ({ data }): Promise<FieldingStats[]> => {
+		const [dateFilter, playerFilter] = data;
 		const stats = await db.fielders.groupBy({
 			by: ["playerId"],
-			where: { date: data },
+			where: { date: dateFilter, player: playerFilter },
 			orderBy: { _sum: { catches: "desc" } },
 			_sum: { innings: true, catches: true, runOuts: true },
 		});
@@ -38,7 +39,7 @@ export const Route = createFileRoute("/_stats/stats/fielding")({
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
 		await context.queryClient.ensureQueryData({
-			queryKey: ["fielding-stats", deps.date ?? deps.rivalry ?? "all-time"],
+			queryKey: ["fielding-stats", deps.date ?? deps.rivalry ?? "all-time", deps.core ? "core-players" : "all-players"],
 			queryFn: () => getFieldingStats({ data: deps }),
 		}),
 	component: () => {
