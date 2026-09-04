@@ -108,6 +108,7 @@ export const Route = createFileRoute("/_tab/expense/")({
 				title="Expense"
 				dateFilter={null}
 				filters={{
+					title: "Select Year",
 					icon: Calendar02Icon,
 					value: year?.toString(),
 					onValueChange: (val) => navigate({ search: { year: val === "" ? undefined : Number(val) }, replace: true }),

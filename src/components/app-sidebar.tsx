@@ -66,16 +66,18 @@ export function AppSidebar() {
 					<SidebarGroupLabel>Players</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{players.map((item) => (
-								<SidebarMenuItem key={item.name}>
-									<SidebarMenuButton isActive={pathname.endsWith(item.name)} asChild>
-										<Link to="/players/$playerId" params={{ playerId: item.name }}>
-											<PlayerAvatar name={item.name} area={20} className="size-5" />
-											<span>{item.name}</span>
-										</Link>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
+							{players
+								.filter((player) => player.attendance > 30)
+								.map((item) => (
+									<SidebarMenuItem key={item.name}>
+										<SidebarMenuButton isActive={pathname.endsWith(item.name)} asChild>
+											<Link to="/players/$playerId" params={{ playerId: item.name }}>
+												<PlayerAvatar name={item.name} area={20} className="size-5" />
+												<span>{item.name}</span>
+											</Link>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								))}
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>
