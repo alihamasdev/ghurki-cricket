@@ -3,13 +3,13 @@ import { createServerFn } from "@tanstack/react-start";
 
 import { db } from "@/lib/db";
 
-export const getPlayer = createServerFn({ method: "GET" }).handler(async () => {
+const getPlayers = createServerFn({ method: "GET" }).handler(async () => {
 	return await db.players.findMany({ orderBy: { name: "asc" } });
 });
 
 export const playerQueryOptions = () => {
 	return queryOptions({
 		queryKey: ["players"],
-		queryFn: () => getPlayer(),
+		queryFn: () => getPlayers(),
 	});
 };

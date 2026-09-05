@@ -1,10 +1,10 @@
 import { CircleIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { cn } from "cn";
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 import { useId } from "react";
 
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 
 function RadioGroup({ className, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
 	return <RadioGroupPrimitive.Root data-slot="radio-group" className={cn("grid w-full cursor-pointer gap-2", className)} {...props} />;

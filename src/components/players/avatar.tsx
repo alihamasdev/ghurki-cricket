@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
+import { cn } from "cn";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
 
 type PlayerAvatarProps = React.ComponentProps<typeof Avatar> & {
 	name: string;

@@ -41,7 +41,7 @@ export const datesQueryOptions = () => {
 	});
 };
 
-export const getDates = createServerFn({ method: "GET" }).handler(async () => {
+const getDates = createServerFn({ method: "GET" }).handler(async () => {
 	const dates = await db.dates.findMany({ orderBy: { date: "desc" }, select: { date: true, title: true, rivalryId: true } });
 
 	const rivalriesGrouped = dates.reduce(

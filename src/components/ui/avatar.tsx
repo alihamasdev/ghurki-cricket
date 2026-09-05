@@ -1,6 +1,5 @@
+import { cn } from "cn";
 import { Avatar as AvatarPrimitive } from "radix-ui";
-
-import { cn } from "@/lib/utils";
 
 function Avatar({
 	className,

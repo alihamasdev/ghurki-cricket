@@ -1,7 +1,5 @@
 import { format as dateFormatter } from "date-fns";
 
-export { cn, type ClassValue } from "cnfast";
-
 export function formatDate(date: string | Date | null | undefined, format: "eng" | "numeric" = "eng"): string {
 	if (!date) return "All Time";
 	return dateFormatter(new Date(date), format === "eng" ? "MMM dd, yyyy" : "yyyy-MM-dd");

@@ -1,12 +1,12 @@
 import { Menu01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Link, useLocation, useSearch } from "@tanstack/react-router";
+import { cn } from "cn";
 
 import { DateFilter, type DateFilterProps } from "@/components/date-filter";
 import { FilterSheet, type FilterSheetProps } from "@/components/filter-sheet";
 import { Button } from "@/components/ui/button";
 import { useMenu } from "@/context/menu-context";
-import { cn } from "@/lib/utils";
 
 type TabsLayoutProps = React.PropsWithChildren<{
 	title: string;

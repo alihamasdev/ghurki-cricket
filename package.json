@@ -26,7 +26,7 @@
 		"@zenstackhq/orm": "^3.9.3",
 		"class-variance-authority": "^0.7.1",
 		"cmdk": "^1.1.1",
-		"cnfast": "^0.2.0",
+		"cn": "^0.2.5",
 		"date-fns": "^4.4.0",
 		"nitro": "^3.0.260903-beta",
 		"pg": "^8.23.0",

@@ -1,12 +1,13 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
+import { cn } from "cn";
 import { z } from "zod";
 
 import { PlayerAvatar } from "@/components/players/avatar";
 import { TabsLayout } from "@/components/tabs-layout";
 import { ResizablePanelGroup, ResizableHandle, ResizablePanel } from "@/components/ui/resizable";
 import { db } from "@/lib/db";
-import { ballsToOvers, cn } from "@/lib/utils";
+import { ballsToOvers } from "@/lib/utils";
 
 const getPlayerDetail = createServerFn({ method: "GET" })
 	.validator(z.string())
