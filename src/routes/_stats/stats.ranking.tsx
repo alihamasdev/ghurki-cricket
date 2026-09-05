@@ -29,7 +29,7 @@ const columns: ColumnDef<RankingStats>[] = [
 export const Route = createFileRoute("/_stats/stats/ranking")({
 	head: () => ({ meta: [{ title: "Ranking Stats" }] }),
 	loader: async ({ context }) =>
-		await context.queryClient.ensureQueryData({
+		await context.queryClient.query({
 			queryKey: ["ranking-stats"],
 			queryFn: () => getRankingStats(),
 		}),

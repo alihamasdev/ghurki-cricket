@@ -38,7 +38,7 @@ export const Route = createFileRoute("/_stats/stats/fielding")({
 	head: () => ({ meta: [{ title: "Fielding Stats" }] }),
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
-		await context.queryClient.ensureQueryData({
+		await context.queryClient.query({
 			queryKey: ["fielding-stats", deps.date ?? deps.rivalry ?? "all-time", deps.core ? "core-players" : "all-players"],
 			queryFn: () => getFieldingStats({ data: deps }),
 		}),

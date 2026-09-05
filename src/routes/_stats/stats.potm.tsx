@@ -37,7 +37,7 @@ export const Route = createFileRoute("/_stats/stats/potm")({
 	head: () => ({ meta: [{ title: "Player of the Match Stats" }] }),
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
-		await context.queryClient.ensureQueryData({
+		await context.queryClient.query({
 			queryKey: ["player-of-match-stats", deps.rivalry ?? "all-time", deps.core ? "core-players" : "all-players"],
 			queryFn: () => getPlayerOfMatchStats({ data: deps }),
 		}),

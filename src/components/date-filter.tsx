@@ -3,7 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { useLocation, useNavigate, useSearch } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ type ValidateDateReturn =
 	| [undefined, Attendance];
 
 export const validateDate = ({ date, rivalry, core }: z.infer<typeof dateSearchSchema>): ValidateDateReturn => {
-	const isCore = core ? { attendance: { gt: 30 } } : undefined;
+	const isCore = core === false ? undefined : { attendance: { gt: 30 } };
 	if (date) return [{ date: new Date(date), rivalryId: undefined }, isCore];
 	if (rivalry) return [{ date: undefined, rivalryId: rivalry }, isCore];
 	return [undefined, isCore];
@@ -76,17 +76,18 @@ export function DateFilter({ options = "both" }: DateFilterProps) {
 	const [expandedRivalry, setExpandedRivalry] = useState<string | null>(null);
 	const { data } = useSuspenseQuery(datesQueryOptions());
 	const { date: selectedDate, rivalry: selectedRivalry } = useSearch({ strict: false });
-
-	useEffect(() => {
-		if (open) {
-			const activeRivalry = data.rivalries.find((r) => r.title === selectedRivalry || r.dates.some((d) => d.date === selectedDate));
-			setExpandedRivalry(activeRivalry?.title ?? null);
-		}
-	}, [open, selectedDate, selectedRivalry, data.rivalries]);
+	const activeRivalry =
+		data.rivalries.find((r) => r.title === selectedRivalry || r.dates.some((d) => d.date === selectedDate))?.title ?? null;
 
 	const formattedDate = formatDate(selectedDate);
 	return (
-		<Sheet open={open} onOpenChange={setOpen}>
+		<Sheet
+			open={open}
+			onOpenChange={(nextOpen) => {
+				setOpen(nextOpen);
+				if (nextOpen) setExpandedRivalry(activeRivalry);
+			}}
+		>
 			<SheetTrigger asChild>
 				<Button variant="outline">
 					<HugeiconsIcon icon={Calendar02Icon} strokeWidth={2} />

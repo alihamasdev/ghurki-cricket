@@ -21,7 +21,7 @@ const getMatchById = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/_tab/matches/$matchId")({
 	loader: async ({ context, params }) =>
-		await context.queryClient.ensureQueryData({
+		await context.queryClient.query({
 			queryKey: ["match", params.matchId],
 			queryFn: () => getMatchById({ data: { id: params.matchId } }),
 		}),

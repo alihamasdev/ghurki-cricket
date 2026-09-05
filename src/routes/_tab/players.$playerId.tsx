@@ -114,7 +114,7 @@ const getPlayerDetail = createServerFn({ method: "GET" })
 
 export const Route = createFileRoute("/_tab/players/$playerId")({
 	loader: ({ context, params }) =>
-		context.queryClient.ensureQueryData({
+		context.queryClient.query({
 			queryKey: ["playerDetail", params.playerId],
 			queryFn: async () => await getPlayerDetail({ data: params.playerId }),
 		}),

@@ -37,7 +37,7 @@ export const Route = createFileRoute("/_stats/stats/attendance")({
 	head: () => ({ meta: [{ title: "Attendance Stats" }] }),
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
-		await context.queryClient.ensureQueryData({
+		await context.queryClient.query({
 			queryKey: ["attendance-stats", deps.core ? "core-players" : "all-players"],
 			queryFn: () => getAttendanceStats({ data: deps }),
 		}),

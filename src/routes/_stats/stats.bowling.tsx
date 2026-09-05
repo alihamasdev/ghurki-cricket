@@ -159,7 +159,7 @@ export const Route = createFileRoute("/_stats/stats/bowling")({
 	validateSearch: z.object({ filter: filterSchema }),
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
-		await context.queryClient.ensureQueryData({
+		await context.queryClient.query({
 			queryKey: ["bowling-stats", deps.date ?? deps.rivalry ?? "all-time", deps.core ? "core-players" : "all-players"],
 			queryFn: () => getBowlingStats({ data: deps }),
 		}),

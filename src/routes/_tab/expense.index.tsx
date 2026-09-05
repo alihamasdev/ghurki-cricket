@@ -94,7 +94,7 @@ export const Route = createFileRoute("/_tab/expense/")({
 	validateSearch: yearSchema,
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
-		await context.queryClient.ensureQueryData({
+		await context.queryClient.query({
 			queryKey: ["expense", deps.year ?? "all-time"],
 			queryFn: () => getExpense({ data: deps }),
 		}),

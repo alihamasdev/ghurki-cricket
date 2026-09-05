@@ -30,6 +30,7 @@ export function DataTable<TData, TValue>({
 	sorting: externalSorting,
 	onSortingChange,
 }: DataTableProps<TData, TValue>) {
+	"use no memo";
 	const isMobile = useIsMobile();
 
 	const [internalSorting, setInternalSorting] = useState<SortingState>(externalSorting ?? []);
@@ -40,6 +41,7 @@ export function DataTable<TData, TValue>({
 		}
 	}, [externalSorting]);
 
+	// oxlint-disable-next-line react/incompatible-library
 	const table = useReactTable({
 		data,
 		columns,

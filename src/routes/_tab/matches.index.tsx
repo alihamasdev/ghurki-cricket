@@ -24,7 +24,7 @@ const getMatches = createServerFn({ method: "GET" }).handler(async () => {
 
 export const Route = createFileRoute("/_tab/matches/")({
 	head: () => ({ meta: [{ title: "Matches" }] }),
-	loader: async ({ context }) => await context.queryClient.ensureQueryData(matchesQueryOptions()),
+	loader: async ({ context }) => await context.queryClient.query(matchesQueryOptions()),
 	component: () => {
 		const { data } = useSuspenseQuery(matchesQueryOptions());
 		return (

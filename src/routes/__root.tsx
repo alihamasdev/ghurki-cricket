@@ -47,8 +47,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 	}),
 	loader: async ({ context }) =>
 		await Promise.all([
-			context.queryClient.ensureQueryData(playerQueryOptions()),
-			context.queryClient.ensureQueryData(datesQueryOptions()),
+			context.queryClient.query(playerQueryOptions()),
+			context.queryClient.query(datesQueryOptions()),
 		]),
 	shellComponent: ({ children }: { children: React.ReactNode }) => {
 		const { queryClient } = Route.useRouteContext();

@@ -115,7 +115,7 @@ export const Route = createFileRoute("/_stats/stats/teams")({
 	head: () => ({ meta: [{ title: "Teams Stats" }] }),
 	loaderDeps: ({ search }) => search,
 	loader: async ({ context, deps }) =>
-		await context.queryClient.ensureQueryData({
+		await context.queryClient.query({
 			queryKey: ["teams-stats", deps.date ?? deps.rivalry ?? "all-time"],
 			queryFn: () => getTeamStats({ data: deps }),
 		}),
