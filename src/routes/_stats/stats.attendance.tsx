@@ -3,11 +3,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { type ColumnDef } from "@tanstack/react-table";
 
 import { DataTable } from "@/components/data-table";
+import { validateDate } from "@/components/date-filter";
 import { PlayerAvatarCell } from "@/components/players/avatar";
 import { TabsLayout } from "@/components/tabs-layout";
 import { db } from "@/lib/db";
 import { type AttendanceStats } from "@/lib/types";
-import { validateDate } from "~/src/components/date-filter";
 
 const getAttendanceStats = createServerFn({ method: "GET" })
 	.validator(validateDate)
