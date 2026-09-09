@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_tab/compare/")({
 					{
 						icon: CricketBatIcon,
 						value: batter ?? "Select Batter",
-						onValueChange: (value) => navigate({ search: (prev) => ({ ...prev, batter: value }) }),
+						onValueChange: (value) => navigate({ search: (prev) => ({ ...prev, batter: String(value) }) }),
 						options: players.map((player) => ({
 							label: player.name,
 							value: player.name.toLowerCase(),
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_tab/compare/")({
 					{
 						icon: TennisBallIcon,
 						value: bowler ?? "Select Bowler",
-						onValueChange: (value) => navigate({ search: (prev) => ({ ...prev, bowler: value }) }),
+						onValueChange: (value) => navigate({ search: (prev) => ({ ...prev, bowler: String(value) }) }),
 						options: players.map((player) => ({
 							label: player.name,
 							value: player.name.toLowerCase(),
@@ -44,7 +44,7 @@ export const Route = createFileRoute("/_tab/compare/")({
 					},
 				]}
 			>
-				<div className="size-100 rounded-md border"></div>
+				<div className="size-100 squircle border"></div>
 			</TabsLayout>
 		);
 	},

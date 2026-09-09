@@ -1,12 +1,9 @@
-import { Menu01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Link, useLocation, useSearch } from "@tanstack/react-router";
 import { cn } from "cn";
 
 import { DateFilter, type DateFilterProps } from "@/components/date-filter";
 import { FilterSheet, type FilterSheetProps } from "@/components/filter-sheet";
-import { Button } from "@/components/ui/button";
-import { useMenu } from "@/context/menu-context";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 type TabsLayoutProps = React.PropsWithChildren<{
 	title: string;
@@ -16,17 +13,14 @@ type TabsLayoutProps = React.PropsWithChildren<{
 }>;
 
 export function TabsLayout({ title, children, className, dateFilter, filters }: TabsLayoutProps) {
-	const { toggleOpen } = useMenu();
 	const showFilters = dateFilter !== null || filters !== undefined;
 	return (
 		<>
 			<header className="sticky top-0 z-10 bg-background">
 				<div className="container mx-auto grid grid-cols-1 gap-3 px-2 py-3 md:grid-cols-2">
-					<div className="flex items-center justify-between gap-3">
+					<div className="flex items-center gap-3">
+						<SidebarTrigger className="xl:hidden" />
 						<h1 className="text-xl/9 font-semibold capitalize">{title}</h1>
-						<Button variant="secondary" size="icon" className="md:hidden" onClick={toggleOpen}>
-							<HugeiconsIcon icon={Menu01Icon} strokeWidth={2} />
-						</Button>
 					</div>
 					{showFilters && (
 						<div className={cn("flex w-full gap-3 *:flex-1 sm:justify-end sm:*:flex-initial")}>
@@ -92,6 +86,5 @@ export const statsItems = [
 	{ name: "Bowling", url: "/stats/bowling", icon: "/icons/ball.png" },
 	{ name: "Fielding", url: "/stats/fielding", icon: "/icons/fielding.png" },
 	{ name: "POTM", url: "/stats/potm", icon: "/icons/medal.png" },
-	// { name: "Rankings", url: "/stats/ranking", icon: "/icons/ranking.png" },
 	{ name: "Attendance", url: "/stats/attendance", icon: "/icons/attendance.png" },
 ];

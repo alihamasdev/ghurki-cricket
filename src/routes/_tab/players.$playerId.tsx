@@ -125,7 +125,7 @@ export const Route = createFileRoute("/_tab/players/$playerId")({
 			<TabsLayout title={name} dateFilter={null}>
 				<ResizablePanelGroup direction="horizontal">
 					<ResizablePanel defaultSize={100} minSize={50}>
-						<div className="@container relative flex flex-col gap-8 rounded-md border bg-card py-8">
+						<div className="@container relative flex flex-col gap-8 squircle border bg-card py-8">
 							<div className="grid gap-6 @3xl:grid-cols-2">
 								<div className="flex flex-col items-center justify-center gap-3 @3xl:flex-row @3xl:justify-start @3xl:pl-14">
 									<PlayerAvatar name={name} area={100} className="size-20 shadow-sm" />

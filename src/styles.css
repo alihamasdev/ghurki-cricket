@@ -127,3 +127,8 @@
 		@apply scroll-smooth font-sans;
 	}
 }
+
+@utility squircle {
+	corner-shape: squircle;
+	border-radius: 28px;
+}

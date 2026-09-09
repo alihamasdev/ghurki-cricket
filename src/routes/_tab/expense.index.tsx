@@ -153,7 +153,11 @@ export const Route = createFileRoute("/_tab/expense/")({
 								/>
 								<ChartTooltip
 									content={
-										<ChartTooltipContent className="w-40" nameKey="views" labelFormatter={(value) => formatDate(value) ?? "All Time"} />
+										<ChartTooltipContent
+											className="w-40"
+											nameKey="views"
+											labelFormatter={(value) => formatDate(value as string) ?? "All Time"}
+										/>
 									}
 								/>
 								<Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} />

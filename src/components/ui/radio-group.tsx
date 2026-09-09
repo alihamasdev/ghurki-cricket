@@ -6,17 +6,14 @@ import { useId } from "react";
 
 import { Label } from "@/components/ui/label";
 
-function RadioGroup({ className, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
+export function RadioGroup({ className, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
 	return <RadioGroupPrimitive.Root data-slot="radio-group" className={cn("grid w-full cursor-pointer gap-2", className)} {...props} />;
 }
 
-function RadioGroupItem({ className, children, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
+export function RadioGroupItem({ className, children, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
 	const id = useId();
 	return (
-		<Label
-			htmlFor={id}
-			className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 transition-colors duration-200 hover:bg-muted"
-		>
+		<Label htmlFor={id} className="flex cursor-pointer items-center gap-2 squircle px-3 py-2 transition-colors duration-200 hover:bg-muted">
 			<RadioGroupPrimitive.Item
 				id={id}
 				data-slot="radio-group-item"
@@ -41,5 +38,3 @@ function RadioGroupItem({ className, children, ...props }: React.ComponentProps<
 		</Label>
 	);
 }
-
-export { RadioGroup, RadioGroupItem };

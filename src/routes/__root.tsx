@@ -5,7 +5,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { datesQueryOptions } from "@/components/date-filter";
 import { playerQueryOptions } from "@/components/players/query";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { MenuProvider } from "@/context/menu-context";
 
 import appCss from "../styles.css?url";
 
@@ -46,10 +45,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 		],
 	}),
 	loader: async ({ context }) =>
-		await Promise.all([
-			context.queryClient.query(playerQueryOptions()),
-			context.queryClient.query(datesQueryOptions()),
-		]),
+		await Promise.all([context.queryClient.query(playerQueryOptions()), context.queryClient.query(datesQueryOptions())]),
 	shellComponent: ({ children }: { children: React.ReactNode }) => {
 		const { queryClient } = Route.useRouteContext();
 		return (
@@ -59,10 +55,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 				</head>
 				<SidebarProvider>
 					<QueryClientProvider client={queryClient}>
-						<MenuProvider>
-							<AppSidebar />
-							<SidebarInset>{children}</SidebarInset>
-						</MenuProvider>
+						<AppSidebar />
+						<SidebarInset>{children}</SidebarInset>
 					</QueryClientProvider>
 					<Scripts />
 				</SidebarProvider>
