@@ -1,0 +1,26 @@
+{
+	"name": "@ghurki-cricket/api",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		},
+		"./*": {
+			"default": "./src/*.ts"
+		}
+	},
+	"scripts": {},
+	"dependencies": {
+		"@ghurki-cricket/db": "workspace:*",
+		"@ghurki-cricket/env": "workspace:*",
+		"@trpc/client": "catalog:",
+		"@trpc/server": "catalog:",
+		"dotenv": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@ghurki-cricket/config": "workspace:*",
+		"@types/express": "catalog:",
+		"typescript": "^6.0.3"
+	}
+}

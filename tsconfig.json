@@ -1,0 +1,3 @@
+{
+	"extends": "@ghurki-cricket/config/tsconfig.base.json"
+}

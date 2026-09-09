@@ -1,0 +1,34 @@
+{
+	"name": "server",
+	"type": "module",
+	"main": "src/index.ts",
+	"scripts": {
+		"build": "tsdown",
+		"check-types": "tsc -b",
+		"compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile server",
+		"dev": "bun run --hot src/index.ts",
+		"start": "bun run dist/index.mjs"
+	},
+	"dependencies": {
+		"@ghurki-cricket/api": "workspace:*",
+		"@ghurki-cricket/db": "workspace:*",
+		"@ghurki-cricket/env": "workspace:*",
+		"@hono/trpc-server": "^0.4.2",
+		"@trpc/server": "catalog:",
+		"cors": "^2.8.6",
+		"dotenv": "catalog:",
+		"express": "^5.2.1",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@ghurki-cricket/config": "workspace:*",
+		"@types/bun": "catalog:",
+		"@types/cors": "^2.8.19",
+		"@types/express": "catalog:",
+		"tsdown": "^0.22.14",
+		"typescript": "^6.0.3"
+	},
+	"trustedDependencies": [
+		"supabase"
+	]
+}

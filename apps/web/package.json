@@ -1,0 +1,45 @@
+{
+	"name": "web",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "vite build",
+		"check-types": "vite build && tsc --noEmit",
+		"dev": "vite dev",
+		"serve": "vite preview",
+		"start": "vite"
+	},
+	"dependencies": {
+		"@ghurki-cricket/api": "workspace:*",
+		"@ghurki-cricket/env": "workspace:*",
+		"@ghurki-cricket/ui": "workspace:*",
+		"@tailwindcss/vite": "^4.3.3",
+		"@tanstack/react-query": "catalog:",
+		"@tanstack/react-router": "^1.170.18",
+		"@trpc/client": "catalog:",
+		"@trpc/server": "catalog:",
+		"@trpc/tanstack-react-query": "catalog:",
+		"dotenv": "catalog:",
+		"lucide-react": "catalog:",
+		"next-themes": "catalog:",
+		"react": "^19.2.8",
+		"react-dom": "^19.2.8",
+		"sonner": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@ghurki-cricket/config": "workspace:*",
+		"@tanstack/react-query-devtools": "^5.101.4",
+		"@tanstack/react-router-devtools": "^1.167.0",
+		"@tanstack/router-plugin": "^1.168.23",
+		"@types/node": "catalog:",
+		"@types/react": "^19.2.17",
+		"@types/react-dom": "catalog:",
+		"@vitejs/plugin-react": "^6.0.4",
+		"postcss": "^8.5.24",
+		"tailwindcss": "catalog:",
+		"typescript": "^6.0.3",
+		"vite": "^8.1.5"
+	}
+}

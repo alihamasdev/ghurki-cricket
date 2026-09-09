@@ -1,0 +1,29 @@
+{
+	"files.watcherExclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"search.exclude": {
+		"**/skills": true,
+		"**/bun.lock": true,
+		"**/routeTree.gen.ts": true
+	},
+	"files.readonlyInclude": {
+		"**/routeTree.gen.ts": true
+	},
+	"files.associations": {
+		"*.css": "tailwindcss"
+	},
+	"oxc.lint.run": "onSave",
+	"npm.packageManager": "bun",
+	"editor.defaultFormatter": "oxc.oxc-vscode",
+	"[tailwindcss]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[javascriptreact]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[css]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[javascript]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+	"[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+	"[html]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[markdown]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[typescriptreact]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"[prisma]": { "editor.defaultFormatter": "Prisma.prisma" }
+}

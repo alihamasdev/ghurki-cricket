@@ -1,0 +1,33 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"tabWidth": 2,
+	"useTabs": true,
+	"printWidth": 140,
+	"singleQuote": false,
+	"trailingComma": "all",
+	"jsxSingleQuote": false,
+	"semi": true,
+	"objectWrap": "preserve",
+	"experimentalTailwindcss": {
+		"stylesheet": "./packages/ui/src/styles/styles.css",
+		"attributes": ["class", "className"],
+		"functions": ["clsx", "cn", "cva"],
+		"preserveDuplicates": false,
+		"preserveWhitespace": false
+	},
+	"experimentalSortImports": {
+		"groups": [
+			"type-import",
+			["value-builtin", "value-external"],
+			"type-internal",
+			"value-internal",
+			["type-parent", "type-sibling", "type-index"],
+			["value-parent", "value-sibling", "value-index"],
+			"unknown"
+		]
+	},
+	"experimentalSortPackageJson": {
+		"sortScripts": true
+	},
+	"ignorePatterns": ["routeTree.gen.ts"]
+}

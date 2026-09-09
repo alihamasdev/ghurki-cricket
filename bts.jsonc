@@ -1,0 +1,28 @@
+// Better-T-Stack project metadata
+//
+// Keep this file to use the `add` command.
+// Add addons: bunx create-better-t-stack@latest add
+//
+// Docs: https://better-t-stack.dev/docs
+// Stack Builder: https://better-t-stack.dev/new
+
+{
+	"$schema": "https://r2.better-t-stack.dev/schema.json",
+	"version": "3.42.2",
+	"createdAt": "2026-09-09T03:26:38.604Z",
+	"reproducibleCommand": "bun create better-t-stack@latest ghurki-cricket --frontend tanstack-router native-bare --backend express --runtime bun --database postgres --orm prisma --api trpc --auth none --payments none --addons mcp oxlint skills turborepo --examples none --db-setup supabase --web-deploy vercel --server-deploy vercel --git --package-manager bun --install",
+	"database": "postgres",
+	"orm": "prisma",
+	"backend": "express",
+	"runtime": "bun",
+	"frontend": ["tanstack-router", "native-bare"],
+	"addons": ["mcp", "oxlint", "skills", "turborepo"],
+	"examples": [],
+	"auth": "none",
+	"payments": "none",
+	"packageManager": "bun",
+	"dbSetup": "supabase",
+	"api": "trpc",
+	"webDeploy": "vercel",
+	"serverDeploy": "vercel"
+}
