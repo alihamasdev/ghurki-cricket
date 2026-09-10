@@ -37,6 +37,7 @@ function getServerUrl(url: string) {
 
 	return `${env.VITE_SERVER_URL}${normalized}`;
 }
+
 export const queryClient = new QueryClient({
 	queryCache: new QueryCache({
 		onError: (error) => {

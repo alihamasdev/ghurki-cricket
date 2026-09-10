@@ -11,7 +11,7 @@
 	"experimentalTailwindcss": {
 		"stylesheet": "./packages/ui/src/styles/styles.css",
 		"attributes": ["class", "className"],
-		"functions": ["clsx", "cn", "cva"],
+		"functions": ["clsx", "cn", "cva", "useRender"],
 		"preserveDuplicates": false,
 		"preserveWhitespace": false
 	},

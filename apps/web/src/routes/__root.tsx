@@ -1,15 +1,13 @@
-import type { QueryClient } from "@tanstack/react-query";
-
-import { Toaster } from "@ghurki-cricket/ui/components/sonner";
+import { SidebarInset, SidebarProvider } from "@ghurki-cricket/ui/components/sidebar";
+import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HeadContent, Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 
-import type { trpc } from "@/utils/trpc";
-
-import Header from "@/components/header";
-import { ThemeProvider } from "@/components/theme-provider";
+import { AppSidebar } from "@/components/app-sidebar";
+import { StumprIcon } from "@/components/icons";
 
 import "../index.css";
+import { type trpc } from "@/utils/trpc";
 
 type RouterContext = {
 	trpc: typeof trpc;
@@ -18,6 +16,7 @@ type RouterContext = {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
 	component: RootComponent,
+	pendingComponent: RootLoading,
 	head: () => ({
 		meta: [
 			{ charSet: "utf-8" },
@@ -33,14 +32,21 @@ function RootComponent() {
 	return (
 		<>
 			<HeadContent />
-			<ThemeProvider attribute="class" defaultTheme="dark" disableTransitionOnChange storageKey="vite-ui-theme">
-				<div className="grid h-svh grid-rows-[auto_1fr]">
-					<Header />
+			<SidebarProvider>
+				<AppSidebar />
+				<SidebarInset>
 					<Outlet />
-				</div>
-				<Toaster richColors />
-			</ThemeProvider>
+				</SidebarInset>
+			</SidebarProvider>
 			<ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
 		</>
+	);
+}
+
+function RootLoading() {
+	return (
+		<div className="flex items-center justify-center h-dvh w-full">
+			<StumprIcon className="size-16 fill-primary" />
+		</div>
 	);
 }
