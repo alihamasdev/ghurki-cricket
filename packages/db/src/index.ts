@@ -10,5 +10,4 @@ export function createPrismaClient() {
 	return new PrismaClient({ adapter });
 }
 
-const prisma = createPrismaClient();
-export default prisma;
+export const db = createPrismaClient();
