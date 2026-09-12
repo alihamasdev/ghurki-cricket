@@ -1,12 +1,12 @@
-import { publicProcedure, router } from "../index";
+import { router } from "../index";
 import { matchesRouter } from "./matches";
+import { teamsRouter } from "./teams";
+import { playerRouter } from "./players";
 
 export const appRouter = router({
-	healthCheck: publicProcedure.query(() => {
-		return "OK";
-	}),
-
 	matches: matchesRouter,
+	teams: teamsRouter,
+	players: playerRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -19,7 +19,7 @@ function Spinner({ className, ...props }: React.ComponentProps<"span">) {
 					{Array.from({ length: 12 }, (_, index) => (
 						<span
 							key={index}
-							className="absolute top-[-3.9%] left-[-10%] block h-[8%] w-[24%] rounded-(--radius) bg-current"
+							className="absolute top-[-3.9%] left-[-10%] block h-[8%] w-[24%] rounded-lg bg-current"
 							style={{
 								transform: `rotate(${index * 30}deg) translate(146%)`,
 								animation: "loading-ui-classic-fade var(--duration, 1.2s) linear infinite",

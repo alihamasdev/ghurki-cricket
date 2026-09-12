@@ -19,7 +19,7 @@ const itemVariants = cva(
 			},
 		},
 		defaultVariants: {
-			variant: "default",
+			variant: "outline",
 			size: "default",
 		},
 	},
@@ -27,7 +27,7 @@ const itemVariants = cva(
 
 function Item({
 	className,
-	variant = "default",
+	variant = "outline",
 	size = "default",
 	render,
 	...props
