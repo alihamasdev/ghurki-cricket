@@ -1,45 +1,40 @@
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { Item, ItemContent, ItemMedia, ItemTitle } from "@ghurki-cricket/ui/components/item";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { trpc } from "@/utils/trpc";
+import { sidebarList } from "@/components/app-sidebar";
+import { PageLayout } from "@/components/page-layout";
 
 export const Route = createFileRoute("/")({
-	component: HomeComponent,
+	component: () => {
+		return (
+			<PageLayout title="Home">
+				<HomeRoute />
+			</PageLayout>
+		);
+	},
 });
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
-
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
-
-function HomeComponent() {
-	const healthCheck = useQuery(trpc.healthCheck.queryOptions());
-
-	return (
-		<div className="container mx-auto max-w-3xl px-4 py-2">
-			<pre className="overflow-x-auto font-mono text-sm">{TITLE_TEXT}</pre>
-			<div className="grid gap-6">
-				<section className="rounded-lg border p-4">
-					<h2 className="mb-2 font-medium">API Status</h2>
-					<div className="flex items-center gap-2">
-						<div className={`h-2 w-2 rounded-full ${healthCheck.data ? "bg-green-500" : "bg-red-500"}`} />
-						<span className="text-sm text-muted-foreground">
-							{healthCheck.isLoading ? "Checking..." : healthCheck.data ? "Connected" : "Disconnected"}
-						</span>
-					</div>
-				</section>
+function HomeRoute() {
+	return sidebarList.map(({ label, items }, index) => (
+		<section key={index} className="space-y-2">
+			{label && <h2 className="font-semibold">{label}</h2>}
+			<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+				{items.map(({ name, href, icon: Icon }) => (
+					<Item
+						key={name}
+						render={
+							<Link to={href}>
+								<ItemMedia variant="icon">
+									<Icon />
+								</ItemMedia>
+								<ItemContent>
+									<ItemTitle>{name}</ItemTitle>
+								</ItemContent>
+							</Link>
+						}
+					/>
+				))}
 			</div>
-		</div>
-	);
+		</section>
+	));
 }

@@ -1,10 +1,9 @@
 import { Item, ItemContent, ItemMedia, ItemTitle } from "@ghurki-cricket/ui/components/item";
-import { Spinner } from "@ghurki-cricket/ui/components/spinner";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { TeamAvatar } from "@/components/avatar";
-import { PageLayout } from "@/components/page-layout";
+import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/teams/")({
@@ -18,18 +17,14 @@ export const Route = createFileRoute("/teams/")({
 });
 
 function TeamsRoute() {
-	const { data, status } = useQuery(trpc.teams.list.queryOptions());
+	const { data, status, error } = useQuery(trpc.teams.list.queryOptions());
 
 	if (status === "pending") {
-		return <Spinner className="mx-auto" />;
+		return <PageLoader />;
 	}
 
 	if (status === "error") {
-		return (
-			<div className="flex-1 flex items-center justify-center">
-				<p>Something went wrong, please try again.</p>
-			</div>
-		);
+		return <PageError error={error.message} />;
 	}
 
 	return (

@@ -34,7 +34,7 @@ type SidebatList = Array<{
 	}>;
 }>;
 
-const sidebarList: SidebatList = [
+export const sidebarList: SidebatList = [
 	{
 		items: [
 			{ name: "Matches", href: "/matches", icon: MatchesIcon },

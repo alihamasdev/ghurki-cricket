@@ -1,5 +1,8 @@
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@ghurki-cricket/ui/components/empty";
 import { SidebarTrigger } from "@ghurki-cricket/ui/components/sidebar";
+import { Spinner } from "@ghurki-cricket/ui/components/spinner";
 import { cn } from "@ghurki-cricket/ui/lib/utils";
+import { AlertTriangleIcon } from "lucide-react";
 
 type PageLayoutProps = React.PropsWithChildren<{
 	title: string;
@@ -21,5 +24,25 @@ export function PageLayout({ title, className, children }: PageLayoutProps) {
 				<div className={cn("container flex flex-1 flex-col gap-4 px-2 pb-4", className)}>{children}</div>
 			</main>
 		</>
+	);
+}
+
+export function PageLoader() {
+	return <Spinner className="mx-auto" />;
+}
+
+export function PageError({ error }: { error?: string }) {
+	return (
+		<Empty>
+			<EmptyHeader>
+				<EmptyMedia variant="icon">
+					<AlertTriangleIcon />
+				</EmptyMedia>
+			</EmptyHeader>
+			<EmptyContent>
+				<EmptyTitle>Something went wrong, please try again</EmptyTitle>
+				{error && <EmptyDescription>{error}</EmptyDescription>}
+			</EmptyContent>
+		</Empty>
 	);
 }
