@@ -14,7 +14,7 @@ function Spinner({ className, ...props }: React.ComponentProps<"span">) {
           }
         }
       `}</style>
-			<span role="status" className={cn("box-border inline-block size-5", className)} {...props}>
+			<span data-slot="spinner" role="status" className={cn("box-border inline-block size-5", className)} {...props}>
 				<span aria-hidden="true" className="relative top-1/2 left-1/2 block size-full">
 					{Array.from({ length: 12 }, (_, index) => (
 						<span

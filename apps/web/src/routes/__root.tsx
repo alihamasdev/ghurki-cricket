@@ -1,13 +1,14 @@
 import { SidebarInset, SidebarProvider } from "@ghurki-cricket/ui/components/sidebar";
+import { TooltipProvider } from "@ghurki-cricket/ui/components/tooltip";
 import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HeadContent, Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { StumprIcon } from "@/components/icons";
+import { type trpc } from "@/utils/trpc";
 
 import "../index.css";
-import { type trpc } from "@/utils/trpc";
 
 type RouterContext = {
 	trpc: typeof trpc;
@@ -30,7 +31,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 
 function RootComponent() {
 	return (
-		<>
+		<TooltipProvider>
 			<HeadContent />
 			<SidebarProvider>
 				<AppSidebar />
@@ -39,7 +40,7 @@ function RootComponent() {
 				</SidebarInset>
 			</SidebarProvider>
 			<ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
-		</>
+		</TooltipProvider>
 	);
 }
 

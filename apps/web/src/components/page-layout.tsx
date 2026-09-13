@@ -1,4 +1,4 @@
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@ghurki-cricket/ui/components/empty";
+import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from "@ghurki-cricket/ui/components/empty";
 import { SidebarTrigger } from "@ghurki-cricket/ui/components/sidebar";
 import { Spinner } from "@ghurki-cricket/ui/components/spinner";
 import { cn } from "@ghurki-cricket/ui/lib/utils";
@@ -20,26 +20,33 @@ export function PageLayout({ title, className, children }: PageLayoutProps) {
 					</div>
 				</div>
 			</header>
-			<main className="flex size-full flex-1 flex-col">
-				<div className={cn("container flex flex-1 flex-col gap-4 px-2 pb-4", className)}>{children}</div>
+			<main className="flex size-full flex-1 flex-col sm:pr-2">
+				<div
+					className={cn(
+						"container flex flex-1 flex-col gap-4 px-2 pb-4",
+						"has-data-[slot=spinner]:items-center has-data-[slot=spinner]:py-4",
+						"has-data-[slot=empty]:",
+						className,
+					)}
+				>
+					{children}
+				</div>
 			</main>
 		</>
 	);
 }
 
 export function PageLoader() {
-	return <Spinner className="mx-auto" />;
+	return <Spinner />;
 }
 
 export function PageError({ error }: { error?: string }) {
 	return (
 		<Empty>
-			<EmptyHeader>
+			<EmptyContent>
 				<EmptyMedia variant="icon">
 					<AlertTriangleIcon />
 				</EmptyMedia>
-			</EmptyHeader>
-			<EmptyContent>
 				<EmptyTitle>Something went wrong, please try again</EmptyTitle>
 				{error && <EmptyDescription>{error}</EmptyDescription>}
 			</EmptyContent>
