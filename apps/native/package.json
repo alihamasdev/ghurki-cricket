@@ -17,6 +17,7 @@
 		"@ghurki-cricket/api": "workspace:*",
 		"@ghurki-cricket/env": "workspace:*",
 		"@tanstack/react-query": "catalog:",
+		"@tanstack/react-table": "catalog:",
 		"@trpc/client": "catalog:",
 		"@trpc/server": "catalog:",
 		"@trpc/tanstack-react-query": "catalog:",

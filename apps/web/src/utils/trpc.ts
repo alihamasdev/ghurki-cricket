@@ -1,10 +1,9 @@
-import type { AppRouter } from "@ghurki-cricket/api/routers/index";
+import { type AppRouter } from "@ghurki-cricket/api/routers/index";
 
 import { env } from "@ghurki-cricket/env/web";
 import { QueryCache, QueryClient } from "@tanstack/react-query";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
-import { toast } from "sonner";
 
 function getServerUrl(url: string) {
 	const processEnv = (
@@ -41,7 +40,7 @@ function getServerUrl(url: string) {
 export const queryClient = new QueryClient({
 	queryCache: new QueryCache({
 		onError: (error) => {
-			toast.error(error.message);
+			console.error(error);
 		},
 	}),
 });
