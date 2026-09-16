@@ -1,5 +1,5 @@
 import { createContext } from "@ghurki-cricket/api/context";
-import { appRouter as router } from "@ghurki-cricket/api/routers/index";
+import { appRouter as router } from "@ghurki-cricket/api/router";
 import { env } from "@ghurki-cricket/env/server";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import cors from "cors";

@@ -1,5 +1,4 @@
-import type { AppRouter } from "@ghurki-cricket/api/routers/index";
-
+import { type AppRouter } from "@ghurki-cricket/api/router";
 import { env } from "@ghurki-cricket/env/native";
 import { QueryClient } from "@tanstack/react-query";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
