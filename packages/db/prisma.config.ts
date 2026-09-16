@@ -3,8 +3,7 @@ import path from "node:path";
 import { defineConfig, env } from "prisma/config";
 
 dotenv.config({
-	path: "../../apps/server/.env",
-	debug: true,
+	path: path.resolve(process.cwd(), "../../apps/server/.env"),
 });
 
 export default defineConfig({
@@ -13,6 +12,6 @@ export default defineConfig({
 		path: path.join("prisma", "migrations"),
 	},
 	datasource: {
-		url: env("DATABASE_URL"),
+		url: process.env.DATABASE_URL ?? env("DATABASE_URL"),
 	},
 });

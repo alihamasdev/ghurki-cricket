@@ -19,7 +19,7 @@
 			"root": "apps/server",
 			"framework": "express",
 			"entrypoint": "src/index.ts",
-			"installCommand": "cd ../.. && bun install",
+			"installCommand": "cd ../.. && bun install && bun run db:generate",
 			"routes": [
 				{
 					"src": "/api/((?!auth(?:/|$)).*)",
