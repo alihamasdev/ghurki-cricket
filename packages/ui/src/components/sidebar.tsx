@@ -351,7 +351,7 @@ function SidebarMenuButton({
 					"hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
 					"active:bg-sidebar-accent active:text-sidebar-accent-foreground active:fill-sidebar-accent-foreground",
 					"disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50",
-					"data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-accent-foreground data-active:fill-sidebar-accent-foreground",
+					"data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground data-active:fill-sidebar-accent-foreground",
 					"data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground",
 					className,
 				),

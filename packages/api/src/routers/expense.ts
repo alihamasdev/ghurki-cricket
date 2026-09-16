@@ -1,8 +1,9 @@
 import { db } from "@ghurki-cricket/db";
 import { publicProcedure, router } from "../index";
+import { type ExpenseStats } from "../lib/types";
 
 export const expenseRouter = router({
-	list: publicProcedure.query(async () => {
+	list: publicProcedure.query(async (): Promise<ExpenseStats[]> => {
 		const expense = await db.expenses.groupBy({
 			by: "ground",
 			_count: true,

@@ -10,7 +10,7 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@ghurki-cricket/ui/components/sidebar";
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useLocation, useSearch } from "@tanstack/react-router";
 
 import {
 	BallIcon,
@@ -46,11 +46,11 @@ export const sidebarList: SidebatList = [
 	{
 		label: "Stats",
 		items: [
-			{ name: "Batting", href: "/batting", icon: BatIcon },
-			{ name: "Bowling", href: "/bowling", icon: BallIcon },
-			{ name: "Fielding", href: "/fielding", icon: StumpsIcon },
-			{ name: "POTM", href: "/potm", icon: MedalIcon },
-			{ name: "Attendance", href: "/fielding", icon: CalendarIcon },
+			{ name: "Batting", href: "/stats/batting", icon: BatIcon },
+			{ name: "Bowling", href: "/stats/bowling", icon: BallIcon },
+			{ name: "Fielding", href: "/stats/fielding", icon: StumpsIcon },
+			{ name: "POTM", href: "/stats/potm", icon: MedalIcon },
+			{ name: "Attendance", href: "/stats/attendance", icon: CalendarIcon },
 		],
 	},
 ];
@@ -58,6 +58,7 @@ export const sidebarList: SidebatList = [
 export function AppSidebar() {
 	const { state } = useSidebar();
 	const { pathname } = useLocation();
+	const search = useSearch({ strict: false });
 
 	return (
 		<Sidebar variant="floating" collapsible="icon">
@@ -78,7 +79,7 @@ export function AppSidebar() {
 											tooltip={name}
 											isActive={pathname.endsWith(href)}
 											render={
-												<Link to={href}>
+												<Link to={href} search={label === "Stats" ? search : {}}>
 													<Icon />
 													{name}
 												</Link>

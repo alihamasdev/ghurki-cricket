@@ -1,3 +1,4 @@
+import { type ExpenseStats } from "@ghurki-cricket/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { type ColumnDef } from "@tanstack/react-table";
@@ -6,13 +7,7 @@ import { DataTable } from "@/components/data-table";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
-type Expense = {
-	ground: string;
-	days: number;
-	expense: number;
-};
-
-const columns: ColumnDef<Expense>[] = [
+const columns: ColumnDef<ExpenseStats>[] = [
 	{
 		accessorKey: "ground",
 		header: "Ground",

@@ -5,10 +5,10 @@ import { groupSchema } from "../lib/schemas";
 import { getGroup } from "../lib/helpers";
 
 export const playerRouter = router({
-	list: publicProcedure.input(groupSchema).query(async ({ input: { group } }) => {
+	list: publicProcedure.input(groupSchema).query(async ({ input }) => {
 		return await db.players.findMany({
 			orderBy: { name: "asc" },
-			where: { group: getGroup({ group }) },
+			where: { group: getGroup(input) },
 			select: { name: true, role: true, avatar: true },
 		});
 	}),

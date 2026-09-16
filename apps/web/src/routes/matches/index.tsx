@@ -40,12 +40,12 @@ function HomeRoute() {
 									{match.innings.map((inning) => (
 										<div key={inning.id} className="flex items-center justify-between gap-3">
 											<ItemTitle>{inning.team}</ItemTitle>
-											<ItemDescription>{inning.score}</ItemDescription>
+											<ItemDescription className="text-sm">{inning.score}</ItemDescription>
 										</div>
 									))}
 								</ItemContent>
 								<ItemFooter>
-									<ItemDescription>{match.result}</ItemDescription>
+									<ItemDescription className="text-sm">{match.result}</ItemDescription>
 								</ItemFooter>
 							</Item>
 						))}

@@ -19,6 +19,9 @@
 		},
 		"./schema": {
 			"default": "./src/lib/schemas.ts"
+		},
+		"./types": {
+			"default": "./src/lib/types.ts"
 		}
 	},
 	"scripts": {},
