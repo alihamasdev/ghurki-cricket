@@ -13,3 +13,9 @@ export function formatDate(inputDate: Date) {
 		year: "numeric",
 	}).format(date);
 }
+
+export function formatMatchScore(data: { runs: number; balls: number; wickets: number; allOuts: number }) {
+	const overs = ballsToOvers(data.balls);
+	if (data.allOuts) return `${data.runs} (${overs})`;
+	return `${data.runs}-${data.wickets} (${overs})`;
+}

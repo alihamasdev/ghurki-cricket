@@ -74,7 +74,7 @@ function ItemContent({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			data-slot="item-content"
-			className={cn("flex flex-1 flex-col gap-1 group-data-[size=xs]/item:gap-0 [&+[data-slot=item-content]]:flex-none", className)}
+			className={cn("flex flex-1 flex-col group-data-[size=xs]/item:gap-0 [&+[data-slot=item-content]]:flex-none", className)}
 			{...props}
 		/>
 	);
@@ -95,7 +95,7 @@ function ItemDescription({ className, ...props }: React.ComponentProps<"p">) {
 		<p
 			data-slot="item-description"
 			className={cn(
-				"line-clamp-2 text-left text-sm/relaxed font-normal text-muted-foreground group-data-[size=xs]/item:text-xs/relaxed [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
+				"line-clamp-1 text-left text-xs/relaxed font-normal text-muted-foreground group-data-[size=xs]/item:text-xs/relaxed [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
 				className,
 			)}
 			{...props}

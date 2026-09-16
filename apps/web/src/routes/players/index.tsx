@@ -1,4 +1,5 @@
-import { Item, ItemContent, ItemMedia, ItemTitle } from "@ghurki-cricket/ui/components/item";
+import { groupSchema } from "@ghurki-cricket/api/schema";
+import { Item, ItemContent, ItemMedia, ItemTitle, ItemDescription } from "@ghurki-cricket/ui/components/item";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -7,6 +8,7 @@ import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/players/")({
+	validateSearch: groupSchema,
 	component: () => {
 		return (
 			<PageLayout title="Players">
@@ -17,7 +19,8 @@ export const Route = createFileRoute("/players/")({
 });
 
 function PlayersRoute() {
-	const { data, status, error } = useQuery(trpc.players.list.queryOptions());
+	const search = Route.useSearch();
+	const { data, status, error } = useQuery(trpc.players.list.queryOptions(search));
 
 	if (status === "pending") {
 		return <PageLoader />;
@@ -32,10 +35,11 @@ function PlayersRoute() {
 			{data.map((player) => (
 				<Item key={player.name}>
 					<ItemMedia>
-						<PlayerAvatar src={player.image} name={player.name} />
+						<PlayerAvatar src={player.avatar} name={player.name} />
 					</ItemMedia>
 					<ItemContent>
 						<ItemTitle>{player.name}</ItemTitle>
+						<ItemDescription>{player.role}</ItemDescription>
 					</ItemContent>
 				</Item>
 			))}

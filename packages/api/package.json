@@ -10,6 +10,15 @@
 		},
 		"./context": {
 			"default": "./src/context.ts"
+		},
+		"./filters": {
+			"default": "./src/lib/filters.ts"
+		},
+		"./utils": {
+			"default": "./src/lib/utils.ts"
+		},
+		"./schema": {
+			"default": "./src/lib/schemas.ts"
 		}
 	},
 	"scripts": {},

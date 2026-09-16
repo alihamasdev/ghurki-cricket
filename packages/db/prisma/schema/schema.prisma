@@ -9,32 +9,45 @@ datasource db {
   provider = "postgresql"
 }
 
+enum PlayerGroup {
+  core
+  family
+  friends
+}
+
 model Teams {
-  name    String    @id
-  avatar  String?
-  wins    Matches[]
-  innings Innings[]
+  name      String    @id
+  slug      String
+  avatar    String?
+  dateWins  Dates[]
+  matchWins Matches[]
+  innings   Innings[]
 
   @@map("teams")
 }
 
 model Players {
-  name            String     @id
-  rating          Int        @default(0)
-  attendance      Int        @default(0)
-  playerOfMatches Matches[]
-  batting         Batters[]
-  bowling         Bowlers[]
-  fielding        Fielders[]
-  battingRecords  Records[]  @relation("BattingRecord")
-  bowlingRecords  Records[]  @relation("BowlingRecord")
+  name           String      @id
+  role           String
+  group          PlayerGroup
+  avatar         String?
+  potm           Matches[]
+  batting        Batters[]
+  bowling        Bowlers[]
+  fielding       Fielders[]
+  battingRecords Records[]   @relation("BattingRecord")
+  bowlingRecords Records[]   @relation("BowlingRecord")
 
+  @@index([role])
   @@map("players")
 }
 
 model Rivalries {
-  title String  @id
-  dates Dates[]
+  title     String    @id
+  startedAt DateTime  @db.Date
+  endedAt   DateTime? @db.Date
+  dates     Dates[]
+  records   Records[]
 
   @@map("rivalries")
 }
@@ -44,30 +57,34 @@ model Dates {
   title     String
   rivalryId String
   rivalry   Rivalries  @relation(fields: [rivalryId], references: [title])
+  winnerId  String?
+  winner    Teams?     @relation(fields: [winnerId], references: [name])
   matches   Matches[]
   innings   Innings[]
   batting   Batters[]
   bowling   Bowlers[]
   fielding  Fielders[]
-  records   Records[]
 
+  @@index([rivalryId])
   @@map("dates")
 }
 
 model Matches {
-  id         Int       @id @default(autoincrement())
-  title      String
-  totalOvers Int
-  winBy      String
-  videoUrl   String?
-  winnerId   String
-  winner     Teams     @relation(fields: [winnerId], references: [name])
-  potmId     String?
-  potm       Players?  @relation(fields: [potmId], references: [name])
-  dateId     DateTime  @db.Date
-  date       Dates     @relation(fields: [dateId], references: [date])
-  innings    Innings[]
+  id       Int       @id @default(autoincrement())
+  title    String
+  overs    Int
+  winBy    String
+  videoUrl String?
+  winnerId String
+  winner   Teams     @relation(fields: [winnerId], references: [name])
+  potmId   String?
+  potm     Players?  @relation(fields: [potmId], references: [name])
+  dateId   DateTime  @db.Date
+  date     Dates     @relation(fields: [dateId], references: [date])
+  innings  Innings[]
 
+  @@index([potmId])
+  @@index([winnerId])
   @@map("matches")
 }
 
@@ -84,6 +101,8 @@ model Innings {
   dateId  DateTime @db.Date
   date    Dates    @relation(fields: [dateId], references: [date])
 
+  @@index([matchId])
+  @@index([teamId])
   @@map("innings")
 }
 
@@ -104,6 +123,7 @@ model Batters {
   fifties      Int      @default(0)
 
   @@id([playerId, dateId])
+  @@index([playerId])
   @@map("batting")
 }
 
@@ -123,6 +143,7 @@ model Bowlers {
   threeFR  Int      @default(0) @map("3fr")
 
   @@id([playerId, dateId])
+  @@index([playerId])
   @@map("bowling")
 }
 
@@ -136,31 +157,34 @@ model Fielders {
   runOuts  Int      @default(0)
 
   @@id([playerId, dateId])
+  @@index([playerId])
   @@map("fielding")
 }
 
 model Records {
-  id       Int      @id @default(autoincrement())
-  runs     Int      @default(0)
-  wickets  Int      @default(0)
-  fours    Int      @default(0)
-  sixes    Int      @default(0)
-  dots     Int      @default(0)
-  batterId String
-  batter   Players  @relation("BattingRecord", fields: [batterId], references: [name])
-  bowlerId String
-  bowler   Players  @relation("BowlingRecord", fields: [bowlerId], references: [name])
-  dateId   DateTime @db.Date
-  date     Dates    @relation(fields: [dateId], references: [date])
+  runs      Int       @default(0)
+  wickets   Int       @default(0)
+  fours     Int       @default(0)
+  sixes     Int       @default(0)
+  dots      Int       @default(0)
+  batterId  String
+  batter    Players   @relation("BattingRecord", fields: [batterId], references: [name])
+  bowlerId  String
+  bowler    Players   @relation("BowlingRecord", fields: [bowlerId], references: [name])
+  rivalryId String
+  rivalry   Rivalries @relation(fields: [rivalryId], references: [title])
 
+  @@id([batterId, bowlerId, rivalryId])
+  @@index([batterId, bowlerId])
   @@map("records")
 }
 
 model Expenses {
   date      DateTime @id @db.Date
+  ground    String   @default("Mithu Indoor")
   groundFee Int      @default(0)
   gearCost  Int      @default(0)
-  ground    String   @default("Mithu Indoor")
 
+  @@index([ground])
   @@map("expenses")
 }

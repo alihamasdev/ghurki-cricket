@@ -1,13 +1,15 @@
 import { db } from "@ghurki-cricket/db";
 
 import { publicProcedure, router } from "../index";
+import { groupSchema } from "../lib/schemas";
+import { getGroup } from "../lib/helpers";
 
 export const playerRouter = router({
-	list: publicProcedure.query(async () => {
-		const players = await db.players.findMany({
+	list: publicProcedure.input(groupSchema).query(async ({ input: { group } }) => {
+		return await db.players.findMany({
 			orderBy: { name: "asc" },
-			select: { name: true },
+			where: { group: getGroup({ group }) },
+			select: { name: true, role: true, avatar: true },
 		});
-		return players.map((player) => ({ name: player.name, image: `https://stats.alihamas.pk/players/${player.name.toLowerCase()}.png` }));
 	}),
 });

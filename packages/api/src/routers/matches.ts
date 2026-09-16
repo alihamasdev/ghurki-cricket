@@ -1,25 +1,30 @@
 import { db } from "@ghurki-cricket/db";
-import { ballsToOvers, formatDate } from "../lib/utils";
+import { formatDate, formatMatchScore } from "../lib/utils";
 import { publicProcedure, router } from "../index";
 
 export const matchesRouter = router({
 	list: publicProcedure.query(async () => {
 		const matches = await db.matches.findMany({
-			include: { innings: { orderBy: { id: "asc" } } },
+			include: {
+				innings: {
+					orderBy: { id: "asc" },
+					select: { id: true, teamId: true, runs: true, balls: true, wickets: true, allOuts: true },
+				},
+			},
 		});
 
 		const formattedMatches = matches.map((match) => ({
 			id: match.id,
-			date: match.dateId,
-			result: `${match.winnerId} won by ${match.winBy}`,
 			potm: match.potmId,
+			date: formatDate(match.dateId),
+			result: `${match.winnerId} won by ${match.winBy}`,
 			innings: match.innings.map((inning) => ({
 				id: inning.id,
 				team: inning.teamId,
-				score: inning.allOuts ? `${inning.runs} (${ballsToOvers(inning.balls)})` : `${inning.runs}-${inning.wickets} (${ballsToOvers(inning.balls)})`,
+				score: formatMatchScore(inning),
 			})),
 		}));
 
-		return Object.groupBy(formattedMatches, (match) => formatDate(match.date));
+		return Object.groupBy(formattedMatches, (match) => match.date);
 	}),
 });

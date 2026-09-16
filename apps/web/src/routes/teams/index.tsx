@@ -1,4 +1,4 @@
-import { Item, ItemContent, ItemMedia, ItemTitle } from "@ghurki-cricket/ui/components/item";
+import { Item, ItemContent, ItemMedia, ItemTitle, ItemDescription } from "@ghurki-cricket/ui/components/item";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -32,10 +32,11 @@ function TeamsRoute() {
 			{data.map((team) => (
 				<Item key={team.name}>
 					<ItemMedia>
-						<TeamAvatar />
+						<TeamAvatar name={team.name} src={team.avatar} />
 					</ItemMedia>
 					<ItemContent>
 						<ItemTitle>{team.name}</ItemTitle>
+						<ItemDescription className="uppercase">{team.slug}</ItemDescription>
 					</ItemContent>
 				</Item>
 			))}
