@@ -64,7 +64,11 @@ export function AppSidebar() {
 		<Sidebar variant="floating" collapsible="icon">
 			<SidebarHeader className="px-4 py-3">
 				<Link to="/">
-					{state === "expanded" ? <h1 className="text-center text-xl font-semibold">Ghurki Cricket</h1> : <StumprIcon className="size-4" />}
+					{state === "expanded" ? (
+						<h1 className="text-center text-xl font-semibold">Ghurki Cricket</h1>
+					) : (
+						<StumprIcon className="size-4 fill-primary" />
+					)}
 				</Link>
 			</SidebarHeader>
 			<SidebarContent>

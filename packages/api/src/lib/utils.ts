@@ -5,13 +5,18 @@ export function ballsToOvers(balls: number): string {
 	return `${completedOvers}.${remainingBalls}`;
 }
 
-export function formatDate(inputDate: Date) {
+export function formatDate(inputDate: Date, type: "short" | "numeric" = "numeric") {
 	const date = new Date(inputDate);
-	return Intl.DateTimeFormat("us", {
-		month: "short",
-		day: "2-digit",
-		year: "numeric",
-	}).format(date);
+
+	if (type === "short") {
+		return Intl.DateTimeFormat("us", {
+			month: "short",
+			day: "2-digit",
+			year: "numeric",
+		}).format(date);
+	}
+
+	return date.toISOString().split("T")[0];
 }
 
 export function formatMatchScore(data: { runs: number; balls: number; wickets: number; allOuts: number }) {

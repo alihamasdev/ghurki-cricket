@@ -4,6 +4,8 @@ import { Spinner } from "@ghurki-cricket/ui/components/spinner";
 import { cn } from "@ghurki-cricket/ui/lib/utils";
 import { AlertTriangleIcon } from "lucide-react";
 
+import { DateFilter } from "@/components/date-filter";
+
 type PageLayoutProps = React.PropsWithChildren<{
 	title: string;
 	className?: string;
@@ -12,11 +14,14 @@ type PageLayoutProps = React.PropsWithChildren<{
 export function PageLayout({ title, className, children }: PageLayoutProps) {
 	return (
 		<>
-			<header className="sticky top-0 z-10 bg-background">
+			<header className="sticky top-0 z-10 bg-background sm:pr-2">
 				<div className="container grid grid-cols-1 gap-3 px-2 py-3 md:grid-cols-2">
 					<div className="flex items-center gap-3">
 						<SidebarTrigger className="xl:hidden" />
 						<h1 className="text-xl/9 font-semibold capitalize">{title}</h1>
+					</div>
+					<div className="flex sm:justify-end">
+						<DateFilter />
 					</div>
 				</div>
 			</header>
@@ -36,8 +41,8 @@ export function PageLayout({ title, className, children }: PageLayoutProps) {
 	);
 }
 
-export function PageLoader() {
-	return <Spinner />;
+export function PageLoader({ ...props }: React.ComponentProps<typeof Spinner>) {
+	return <Spinner {...props} />;
 }
 
 export function PageError({ error }: { error?: string }) {

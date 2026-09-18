@@ -25,7 +25,7 @@ function HomeRoute() {
 						render={
 							<Link to={href}>
 								<ItemMedia variant="icon">
-									<Icon />
+									<Icon className="fill-primary" />
 								</ItemMedia>
 								<ItemContent>
 									<ItemTitle>{name}</ItemTitle>

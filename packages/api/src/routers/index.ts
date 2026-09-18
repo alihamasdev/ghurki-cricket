@@ -8,6 +8,7 @@ import { bowlingRouter } from "./bowling";
 import { fieldingRouter } from "./fielding";
 import { potmRouter } from "./potm";
 import { attendanceRouter } from "./attendance";
+import { datesRouter } from "./dates";
 
 export const appRouter = router({
 	matches: matchesRouter,
@@ -19,6 +20,7 @@ export const appRouter = router({
 	bowling: bowlingRouter,
 	fielding: fieldingRouter,
 	potm: potmRouter,
+	dates: datesRouter,
 });
 
 export type AppRouter = typeof appRouter;
