@@ -1,8 +1,8 @@
 import { db } from "@ghurki-cricket/db";
 
 import { publicProcedure, router } from "../index";
-import { type DateSchema, statSchema } from "../lib/schemas";
 import { getStatWhere } from "../lib/helpers";
+import { type DateSchema, statSchema } from "../lib/schemas";
 import { type AttendanceStats } from "../lib/types";
 
 const getDateFilter = ({ date, year, rivalry }: DateSchema) => {

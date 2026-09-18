@@ -46,7 +46,7 @@ function RootComponent() {
 
 function RootLoading() {
 	return (
-		<div className="flex items-center justify-center h-dvh w-full">
+		<div className="flex h-dvh w-full items-center justify-center">
 			<StumprIcon className="size-16 fill-primary" />
 		</div>
 	);

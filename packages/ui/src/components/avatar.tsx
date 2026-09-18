@@ -13,7 +13,7 @@ export function Avatar({
 			data-slot="avatar"
 			data-size={size}
 			className={cn(
-				"group/avatar relative flex items-center justify-center size-8 shrink-0 overflow-hidden squircle bg-muted select-none",
+				"group/avatar relative flex size-8 shrink-0 items-center justify-center overflow-hidden squircle bg-muted select-none",
 				"data-[size=lg]:size-10 data-[size=sm]:size-6",
 				className,
 			)}

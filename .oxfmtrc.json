@@ -9,7 +9,7 @@
 	"semi": true,
 	"objectWrap": "preserve",
 	"experimentalTailwindcss": {
-		"stylesheet": "./packages/ui/src/styles/styles.css",
+		"stylesheet": "./packages/ui/src/styles/globals.css",
 		"attributes": ["class", "className"],
 		"functions": ["clsx", "cn", "cva", "useRender"],
 		"preserveDuplicates": false,
@@ -29,5 +29,5 @@
 	"experimentalSortPackageJson": {
 		"sortScripts": true
 	},
-	"ignorePatterns": ["routeTree.gen.ts"]
+	"ignorePatterns": ["routeTree.gen.ts", "bts.jsonc"]
 }

@@ -1,8 +1,8 @@
 import { db } from "@ghurki-cricket/db";
 
 import { publicProcedure, router } from "../index";
-import { groupSchema } from "../lib/schemas";
 import { getGroup } from "../lib/helpers";
+import { groupSchema } from "../lib/schemas";
 
 export const playerRouter = router({
 	list: publicProcedure.input(groupSchema).query(async ({ input }) => {

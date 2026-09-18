@@ -1,6 +1,7 @@
 import { db } from "@ghurki-cricket/db";
-import { formatDate, formatMatchScore } from "../lib/utils";
+
 import { publicProcedure, router } from "../index";
+import { formatDate, formatMatchScore } from "../lib/utils";
 
 export const matchesRouter = router({
 	list: publicProcedure.query(async () => {

@@ -1,5 +1,5 @@
-import type { GroupSchema, DateSchema, StatSchema } from "./schemas";
 import type { GroupFilter } from "./filters";
+import type { GroupSchema, DateSchema, StatSchema } from "./schemas";
 
 type GetGroupReturn = { in: GroupFilter[] } | undefined;
 
