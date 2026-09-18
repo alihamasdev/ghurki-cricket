@@ -1,11 +1,15 @@
 import { db } from "@ghurki-cricket/db";
 
 import { publicProcedure, router } from "../index";
+import { getDate } from "../lib/helpers";
+import { dateSchema } from "../lib/schemas";
 import { formatDate, formatMatchScore } from "../lib/utils";
 
 export const matchesRouter = router({
-	list: publicProcedure.query(async () => {
+	list: publicProcedure.input(dateSchema).query(async ({ input }) => {
 		const matches = await db.matches.findMany({
+			where: getDate(input),
+			orderBy: { id: "desc" },
 			include: {
 				innings: {
 					orderBy: { id: "asc" },
@@ -26,6 +30,6 @@ export const matchesRouter = router({
 			})),
 		}));
 
-		return Object.groupBy(formattedMatches, (match) => match.date);
+		return Object.groupBy(formattedMatches.reverse(), (match) => match.date);
 	}),
 });

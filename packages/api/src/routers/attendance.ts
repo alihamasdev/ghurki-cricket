@@ -13,7 +13,7 @@ const getDateFilter = ({ date, year, rivalry }: DateSchema) => {
 
 export const attendanceRouter = router({
 	list: publicProcedure.input(statSchema).query(async ({ input }): Promise<AttendanceStats[]> => {
-		const [data, total] = await Promise.all([
+		const [data, total] = await db.$transaction([
 			db.fielders.groupBy({
 				by: ["playerId"],
 				where: getStatWhere(input),

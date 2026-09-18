@@ -1,14 +1,24 @@
+import { dateSchema } from "@ghurki-cricket/api/schema";
 import { Item, ItemContent, ItemDescription, ItemFooter, ItemTitle } from "@ghurki-cricket/ui/components/item";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { DateFilter } from "@/components/date-filter";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/matches/")({
+	validateSearch: dateSchema,
 	component: () => {
 		return (
-			<PageLayout title="Matches">
+			<PageLayout
+				title="Matches"
+				headerRight={
+					<div className="flex sm:justify-end">
+						<DateFilter />
+					</div>
+				}
+			>
 				<HomeRoute />
 			</PageLayout>
 		);
@@ -16,7 +26,8 @@ export const Route = createFileRoute("/matches/")({
 });
 
 function HomeRoute() {
-	const { data, status, error } = useQuery(trpc.matches.list.queryOptions());
+	const search = Route.useSearch();
+	const { data, status, error } = useQuery(trpc.matches.list.queryOptions(search));
 
 	if (status === "pending") {
 		return <PageLoader />;

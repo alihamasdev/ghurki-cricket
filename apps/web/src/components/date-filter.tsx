@@ -32,14 +32,14 @@ function DateOptions({ setOpen }: { setOpen: (open: boolean) => void }) {
 	const navigate = useNavigate();
 	const search = useSearch({ strict: false });
 
-	const { data, status } = useQuery(trpc.dates.list.queryOptions());
+	const { data, status, error } = useQuery(trpc.dates.list.queryOptions());
 
 	if (status === "pending") {
 		return <PageLoader className="mx-auto mt-4" />;
 	}
 
 	if (status === "error") {
-		return <PageError />;
+		return <PageError error={error.message} />;
 	}
 
 	return (
@@ -51,7 +51,7 @@ function DateOptions({ setOpen }: { setOpen: (open: boolean) => void }) {
 					setOpen(false);
 				}}
 			>
-				<RadioGroupItem value="" label="All Time" description={`${data?.dates.length} days`} />
+				<RadioGroupItem value="" label="All Time" description={`${data.totalDates} days`} />
 			</RadioGroup>
 
 			<RadioGroup
@@ -61,8 +61,8 @@ function DateOptions({ setOpen }: { setOpen: (open: boolean) => void }) {
 					setOpen(false);
 				}}
 			>
-				{data?.years?.map((year) => (
-					<RadioGroupItem value={year.year} label={`Year ${year.year}`} description={`${year.count} days`} />
+				{data.years.map((year) => (
+					<RadioGroupItem key={year.year} value={year.year} label={`Year ${year.year}`} description={`${year.count} days`} />
 				))}
 			</RadioGroup>
 
@@ -73,8 +73,8 @@ function DateOptions({ setOpen }: { setOpen: (open: boolean) => void }) {
 					setOpen(false);
 				}}
 			>
-				{data?.rivalries?.map((rivalry) => (
-					<RadioGroupItem value={rivalry.name} label={rivalry.name} description={`${rivalry.count} days`} />
+				{data.rivalries.map((rivalry) => (
+					<RadioGroupItem key={rivalry.name} value={rivalry.name} label={rivalry.name} description={`${rivalry.count} days`} />
 				))}
 			</RadioGroup>
 		</>

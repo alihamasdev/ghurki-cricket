@@ -32,7 +32,7 @@ function TeamsRoute() {
 			{data.map((team) => (
 				<Item key={team.name}>
 					<ItemMedia>
-						<TeamAvatar name={team.name} src={team.avatar} />
+						<TeamAvatar name={team.name} />
 					</ItemMedia>
 					<ItemContent>
 						<ItemTitle>{team.name}</ItemTitle>

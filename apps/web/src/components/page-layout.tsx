@@ -4,14 +4,13 @@ import { Spinner } from "@ghurki-cricket/ui/components/spinner";
 import { cn } from "@ghurki-cricket/ui/lib/utils";
 import { AlertTriangleIcon } from "lucide-react";
 
-import { DateFilter } from "@/components/date-filter";
-
 type PageLayoutProps = React.PropsWithChildren<{
 	title: string;
 	className?: string;
+	headerRight?: React.ReactNode;
 }>;
 
-export function PageLayout({ title, className, children }: PageLayoutProps) {
+export function PageLayout({ title, headerRight, className, children }: PageLayoutProps) {
 	return (
 		<>
 			<header className="sticky top-0 z-10 bg-background sm:pr-2">
@@ -20,15 +19,13 @@ export function PageLayout({ title, className, children }: PageLayoutProps) {
 						<SidebarTrigger className="xl:hidden" />
 						<h1 className="text-xl/9 font-semibold capitalize">{title}</h1>
 					</div>
-					<div className="flex sm:justify-end">
-						<DateFilter />
-					</div>
+					{headerRight}
 				</div>
 			</header>
 			<main className="flex size-full flex-1 flex-col sm:pr-2">
 				<div
 					className={cn(
-						"container flex flex-1 flex-col gap-4 px-2 pb-4",
+						"container flex flex-1 scroll-fade-y flex-col gap-4 px-2 pb-4",
 						"has-data-[slot=spinner]:items-center has-data-[slot=spinner]:py-4",
 						"has-data-[slot=empty]:",
 						className,
