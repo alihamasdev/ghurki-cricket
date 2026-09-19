@@ -14,7 +14,7 @@ const itemVariants = cva(
 			},
 			size: {
 				default: "gap-2.5 px-3 py-2.5",
-				sm: "gap-2.5 px-3 py-2.5",
+				sm: "gap-1 px-3 py-2.5",
 				xs: "gap-2 px-2.5 py-2 in-data-[slot=dropdown-menu-content]:p-0",
 			},
 		},
@@ -95,7 +95,7 @@ function ItemDescription({ className, ...props }: React.ComponentProps<"p">) {
 		<p
 			data-slot="item-description"
 			className={cn(
-				"line-clamp-1 text-left text-xs/relaxed font-normal text-muted-foreground group-data-[size=xs]/item:text-xs/relaxed [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
+				"line-clamp-1 text-left text-xs/relaxed font-normal text-muted-foreground group-data-[size=sm]/item:text-sm/relaxed [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
 				className,
 			)}
 			{...props}

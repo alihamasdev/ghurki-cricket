@@ -46,17 +46,17 @@ function HomeRoute() {
 					<h2 className="font-semibold">{date}</h2>
 					<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
 						{matches.map((match) => (
-							<Item key={match.id} variant="outline" className="items-start gap-1">
+							<Item key={match.id} size="sm" className="items-start">
 								<ItemContent>
 									{match.innings.map((inning) => (
 										<div key={inning.id} className="flex items-center justify-between gap-3">
 											<ItemTitle>{inning.team}</ItemTitle>
-											<ItemDescription className="text-sm">{inning.score}</ItemDescription>
+											<ItemDescription>{inning.score}</ItemDescription>
 										</div>
 									))}
 								</ItemContent>
 								<ItemFooter>
-									<ItemDescription className="text-sm">{match.result}</ItemDescription>
+									<ItemDescription>{match.result}</ItemDescription>
 								</ItemFooter>
 							</Item>
 						))}

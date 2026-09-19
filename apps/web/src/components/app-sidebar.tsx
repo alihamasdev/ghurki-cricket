@@ -62,7 +62,7 @@ export function AppSidebar() {
 
 	return (
 		<Sidebar variant="floating" collapsible="icon">
-			<SidebarHeader className="px-4 py-3">
+			<SidebarHeader>
 				<Link to="/">
 					{state === "expanded" ? (
 						<h1 className="text-center text-xl font-semibold">Ghurki Cricket</h1>

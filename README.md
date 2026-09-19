@@ -32,7 +32,6 @@ This project uses PostgreSQL with Prisma.
 
 1. Make sure you have a PostgreSQL database set up.
 2. Update your `apps/server/.env` file with your PostgreSQL connection details.
-
 3. Apply the schema to your database:
 
 ```bash
@@ -108,10 +107,10 @@ ghurki-cricket/
 │   └── server/      # Backend API (Express, TRPC)
 ├── packages/
 │   ├── api/         # API layer / business logic (TRPC)
-│   └── db/          # Database schema & queries (Prisma)
-│   └── config/      # Project configuration (Typescript)
-│   └── env/         # Typesafe environmental variables (@t3/env)
-│   ├── ui/          # Shared shadcn/ui components and styles
+│   ├── db/          # Database schema & queries (Prisma)
+│   ├── config/      # Project configuration (Typescript)
+│   ├── env/         # Typesafe environmental variables (@t3/env)
+│   └── ui/          # Shared shadcn/ui components and styles
 ```
 
 ## Available Scripts

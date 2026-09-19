@@ -36,7 +36,7 @@ function TeamsRoute() {
 					</ItemMedia>
 					<ItemContent>
 						<ItemTitle>{team.name}</ItemTitle>
-						<ItemDescription className="uppercase">{team.slug}</ItemDescription>
+						<ItemDescription>{team.slug}</ItemDescription>
 					</ItemContent>
 				</Item>
 			))}

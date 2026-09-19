@@ -58,6 +58,7 @@ export function DataTable<TData, TValue>({ columns, data, minSize = 50, classNam
 								))
 							) : (
 								<TableRow>
+									{/* oxlint-disable */}
 									<TableCell colSpan={columns.length} className="h-50 text-center text-sm first:text-center hover:bg-background">
 										No results found
 									</TableCell>
@@ -69,7 +70,7 @@ export function DataTable<TData, TValue>({ columns, data, minSize = 50, classNam
 								{table.getFooterGroups().map((footerGroup) => (
 									<TableRow key={footerGroup.id}>
 										{footerGroup.headers.map((header) => (
-											<TableCell key={header.id} className="font-medium">
+											<TableCell key={header.id}>
 												{header.isPlaceholder ? null : flexRender(header.column.columnDef.footer, header.getContext())}
 											</TableCell>
 										))}
