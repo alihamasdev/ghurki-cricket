@@ -11,11 +11,10 @@ import { type FieldingStats } from "@/lib/types";
 
 const getFieldingStats = createServerFn({ method: "GET" })
 	.validator(validateDate)
-	.handler(async ({ data }): Promise<FieldingStats[]> => {
-		const [dateFilter, playerFilter] = data;
+	.handler(async ({ data: dateFilter }): Promise<FieldingStats[]> => {
 		const stats = await db.fielders.groupBy({
 			by: ["playerId"],
-			where: { date: dateFilter, player: playerFilter },
+			where: { date: dateFilter },
 			orderBy: { _sum: { catches: "desc" } },
 			_sum: { innings: true, catches: true, runOuts: true },
 		});

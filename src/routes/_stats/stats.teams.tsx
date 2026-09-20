@@ -14,8 +14,7 @@ import { ballsToOvers } from "@/lib/utils";
 
 const getTeamStats = createServerFn({ method: "GET" })
 	.validator(validateDate)
-	.handler(async ({ data }): Promise<TeamStats[]> => {
-		const [dateFilter] = data;
+	.handler(async ({ data: dateFilter }): Promise<TeamStats[]> => {
 		const whereClause: InningsWhereInput = { match: { date: dateFilter } };
 
 		const teamsWithInnings = await db.innings.findMany({

@@ -12,14 +12,14 @@ import { ballsToOvers } from "@/lib/utils";
 const getPlayerDetail = createServerFn({ method: "GET" })
 	.validator(z.string())
 	.handler(async ({ data: playerId }) => {
-		const [player, totalDates] = await Promise.all([
+		const [player] = await Promise.all([
 			db.players.findFirst({
 				where: { name: { equals: playerId, mode: "insensitive" } },
 				include: {
 					batting: true,
 					bowling: true,
 					fielding: true,
-					_count: { select: { playerOfMatches: true } },
+					_count: { select: { potm: true } },
 				},
 			}),
 			db.dates.count(),
@@ -104,8 +104,7 @@ const getPlayerDetail = createServerFn({ method: "GET" })
 
 		return {
 			name: player.name,
-			attendance: ((player.attendance / totalDates) * 100).toFixed(),
-			potm: player._count.playerOfMatches,
+			potm: player._count.potm,
 			batting,
 			bowling,
 			fielding,
@@ -120,7 +119,7 @@ export const Route = createFileRoute("/_tab/players/$playerId")({
 		}),
 	head: ({ loaderData }) => ({ meta: [{ title: loaderData?.name || "Player not Found" }] }),
 	component: () => {
-		const { name, potm, attendance, batting, bowling, fielding } = Route.useLoaderData();
+		const { name, potm, batting, bowling, fielding } = Route.useLoaderData();
 		return (
 			<TabsLayout title={name} dateFilter={null}>
 				<ResizablePanelGroup direction="horizontal">
@@ -136,7 +135,6 @@ export const Route = createFileRoute("/_tab/players/$playerId")({
 								</div>
 								<div className="grid grid-cols-2 gap-6 @3xl:pr-10 @4xl:pr-4 @5xl:pr-0">
 									<StatItem className="justify-center" label="POTM" value={potm} />
-									<StatItem className="justify-center" label="Attendance" value={`${attendance}%`} />
 								</div>
 							</div>
 

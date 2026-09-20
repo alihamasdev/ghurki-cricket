@@ -20,18 +20,12 @@ export const dateSearchSchema = z.object({
 	core: z.boolean().optional(),
 });
 
-type Attendance = { attendance: { gt: number } } | undefined;
+type ValidateDateReturn = { date: Date; rivalryId: undefined } | { date: undefined; rivalryId: string } | undefined;
 
-type ValidateDateReturn =
-	| [{ date: Date; rivalryId: undefined }, Attendance]
-	| [{ date: undefined; rivalryId: string }, Attendance]
-	| [undefined, Attendance];
-
-export const validateDate = ({ date, rivalry, core }: z.infer<typeof dateSearchSchema>): ValidateDateReturn => {
-	const isCore = core === false ? undefined : { attendance: { gt: 30 } };
-	if (date) return [{ date: new Date(date), rivalryId: undefined }, isCore];
-	if (rivalry) return [{ date: undefined, rivalryId: rivalry }, isCore];
-	return [undefined, isCore];
+export const validateDate = ({ date, rivalry }: z.infer<typeof dateSearchSchema>): ValidateDateReturn => {
+	if (date) return { date: new Date(date), rivalryId: undefined };
+	if (rivalry) return { date: undefined, rivalryId: rivalry };
+	return undefined;
 };
 
 export const datesQueryOptions = () => {

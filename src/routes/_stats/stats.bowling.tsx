@@ -32,11 +32,10 @@ const filterSchema = z.enum(filters).optional().catch(undefined);
 
 const getBowlingStats = createServerFn({ method: "GET" })
 	.validator(validateDate)
-	.handler(async ({ data }): Promise<BowlingStats[]> => {
-		const [dateFilter, playerFilter] = data;
+	.handler(async ({ data: dateFilter }): Promise<BowlingStats[]> => {
 		const stats = await db.bowlers.groupBy({
 			by: ["playerId"],
-			where: { date: dateFilter, player: playerFilter },
+			where: { date: dateFilter },
 			orderBy: { _sum: { wickets: "desc" } },
 			_sum: {
 				innings: true,

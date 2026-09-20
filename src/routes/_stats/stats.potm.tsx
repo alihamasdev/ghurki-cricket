@@ -11,12 +11,11 @@ import { type POTMStats } from "@/lib/types";
 
 const getPlayerOfMatchStats = createServerFn({ method: "GET" })
 	.validator(validateDate)
-	.handler(async ({ data }): Promise<POTMStats[]> => {
-		const [dateFilter, playerFilter] = data;
+	.handler(async ({ data: dateFilter }): Promise<POTMStats[]> => {
 		const stats = await db.matches.groupBy({
 			by: ["potmId"],
 			_count: { potmId: true },
-			where: { date: dateFilter, potm: playerFilter },
+			where: { date: dateFilter },
 			orderBy: { _count: { potmId: "desc" } },
 		});
 

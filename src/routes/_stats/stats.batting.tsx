@@ -32,11 +32,10 @@ const filterSchema = z.enum(filters).optional().catch(undefined);
 
 const getBattingStats = createServerFn({ method: "GET" })
 	.validator(validateDate)
-	.handler(async ({ data }): Promise<BattingStats[]> => {
-		const [dateFilter, playerFilter] = data;
+	.handler(async ({ data: dateFilter }): Promise<BattingStats[]> => {
 		const stats = await db.batters.groupBy({
 			by: ["playerId"],
-			where: { date: dateFilter, player: playerFilter },
+			where: { date: dateFilter },
 			orderBy: { _sum: { runs: "desc" } },
 			_max: { highestScore: true },
 			_sum: {

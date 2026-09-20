@@ -1,8 +1,5 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, useLocation, useSearch } from "@tanstack/react-router";
 
-import { PlayerAvatar } from "@/components/players/avatar";
-import { playerQueryOptions } from "@/components/players/query";
 import { tabItems, statsItems } from "@/components/tabs-layout";
 import {
 	Sidebar,
@@ -18,7 +15,6 @@ import {
 export function AppSidebar() {
 	const { pathname } = useLocation();
 	const { date, rivalry, core } = useSearch({ strict: false });
-	const { data: players } = useSuspenseQuery(playerQueryOptions());
 	return (
 		<Sidebar className="gap-0">
 			<SidebarHeader className="px-4 py-3">
@@ -59,25 +55,6 @@ export function AppSidebar() {
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							))}
-						</SidebarMenu>
-					</SidebarGroupContent>
-				</SidebarGroup>
-				<SidebarGroup>
-					<SidebarGroupLabel>Players</SidebarGroupLabel>
-					<SidebarGroupContent>
-						<SidebarMenu>
-							{players
-								.filter((player) => player.attendance > 30)
-								.map((item) => (
-									<SidebarMenuItem key={item.name}>
-										<SidebarMenuButton isActive={pathname.endsWith(item.name)} asChild>
-											<Link to="/players/$playerId" params={{ playerId: item.name }}>
-												<PlayerAvatar name={item.name} area={20} className="size-5" />
-												<span>{item.name}</span>
-											</Link>
-										</SidebarMenuButton>
-									</SidebarMenuItem>
-								))}
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>
