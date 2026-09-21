@@ -3,12 +3,12 @@ import { RadioGroup, RadioGroupItem } from "@ghurki-cricket/ui/components/radio-
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { type ColumnDef } from "@tanstack/react-table";
-import { CalendarDaysIcon } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
 import { DataTable } from "@/components/data-table";
 import { FilterSheet } from "@/components/filter-sheet";
+import { CalendarIcon } from "@/components/icons";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
@@ -86,7 +86,7 @@ function YearFilter() {
 	}
 
 	return (
-		<FilterSheet title="Select Year" icon={CalendarDaysIcon} value={year ?? "All Time"} open={open} onOpenChange={setOpen}>
+		<FilterSheet title="Select Year" icon={CalendarIcon} value={year ?? "All Time"} open={open} onOpenChange={setOpen}>
 			<RadioGroup
 				value={year ?? ""}
 				onValueChange={() => {

@@ -1,10 +1,11 @@
 import { Button } from "@ghurki-cricket/ui/components/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@ghurki-cricket/ui/components/sheet";
-import { type LucideIcon } from "lucide-react";
+
+import { type Icon } from "@/components/icons";
 
 type FilterSheetProps = React.ComponentProps<typeof Sheet> & {
 	title: string;
-	icon: LucideIcon;
+	icon: Icon;
 	value: string | number;
 	children?: React.ReactNode;
 	triggerProps?: React.ComponentProps<typeof Button>;

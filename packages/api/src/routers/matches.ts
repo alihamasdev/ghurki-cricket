@@ -21,7 +21,7 @@ export const matchesRouter = router({
 		const formattedMatches = matches.map((match) => ({
 			id: match.id,
 			potm: match.potmId,
-			date: formatDate(match.dateId),
+			date: formatDate(match.dateId, "short"),
 			result: `${match.winnerId} won by ${match.winBy}`,
 			innings: match.innings.map((inning) => ({
 				id: inning.id,

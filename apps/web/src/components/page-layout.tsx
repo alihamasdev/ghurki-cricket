@@ -17,7 +17,7 @@ export function PageLayout({ title, headerRight, className, children }: PageLayo
 				<div className="container grid grid-cols-1 gap-3 px-2 py-3 md:grid-cols-2">
 					<div className="flex items-center gap-3">
 						<SidebarTrigger className="xl:hidden" />
-						<h1 className="text-xl/9 font-semibold capitalize">{title}</h1>
+						<h1 className="text-xl/9 font-semibold">{title}</h1>
 					</div>
 					{headerRight}
 				</div>

@@ -11,6 +11,7 @@ import {
 	useSidebar,
 } from "@ghurki-cricket/ui/components/sidebar";
 import { Link, useLocation, useSearch } from "@tanstack/react-router";
+import { type LucideIcon } from "lucide-react";
 
 import {
 	BallIcon,
@@ -23,6 +24,8 @@ import {
 	StumpsIcon,
 	TeamsIcon,
 	WalletIcon,
+	TeamVsTeamIcon,
+	type Icon,
 } from "@/components/icons";
 
 type SidebatList = Array<{
@@ -30,7 +33,7 @@ type SidebatList = Array<{
 	items: Array<{
 		name: string;
 		href: string;
-		icon: (props: React.SVGProps<SVGSVGElement>) => React.ReactElement;
+		icon: Icon | LucideIcon;
 	}>;
 }>;
 
@@ -52,6 +55,10 @@ export const sidebarList: SidebatList = [
 			{ name: "POTM", href: "/stats/potm", icon: MedalIcon },
 			{ name: "Attendance", href: "/stats/attendance", icon: CalendarIcon },
 		],
+	},
+	{
+		label: "Compare",
+		items: [{ name: "Team vs Team", href: "/compare/teams", icon: TeamVsTeamIcon }],
 	},
 ];
 
@@ -81,7 +88,7 @@ export function AppSidebar() {
 									<SidebarMenuItem key={name}>
 										<SidebarMenuButton
 											tooltip={name}
-											isActive={pathname.endsWith(href)}
+											isActive={pathname.startsWith(href)}
 											render={
 												<Link to={href} search={label === "Stats" ? search : {}}>
 													<Icon />
