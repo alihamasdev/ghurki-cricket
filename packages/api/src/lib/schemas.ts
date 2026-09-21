@@ -12,9 +12,10 @@ export const groupSchema = z.object({
 export type GroupSchema = z.infer<typeof groupSchema>;
 
 export const dateSchema = z.object({
-	date: z.iso.date().optional().catch(undefined),
 	rivalry: z.string().optional().catch(undefined),
-	year: z.number().optional().catch(undefined),
+	starts: z.iso.date().optional().catch(undefined),
+	ends: z.iso.date().optional().catch(undefined),
+	date: z.iso.date().optional().catch(undefined),
 });
 
 export type DateSchema = z.infer<typeof dateSchema>;

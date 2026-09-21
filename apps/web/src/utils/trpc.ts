@@ -37,6 +37,12 @@ function getServerUrl(url: string) {
 }
 
 export const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			retry: 3,
+			staleTime: 10 * 1000 * 60,
+		},
+	},
 	queryCache: new QueryCache({
 		onError: (error) => {
 			console.error(error);

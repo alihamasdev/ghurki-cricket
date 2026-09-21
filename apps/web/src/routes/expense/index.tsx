@@ -15,7 +15,7 @@ import { trpc } from "@/utils/trpc";
 const columns: ColumnDef<ExpenseStats>[] = [
 	{
 		accessorKey: "ground",
-		header: "Ground",
+		header: "Ground Name",
 		footer: "Total",
 	},
 	{
@@ -25,7 +25,7 @@ const columns: ColumnDef<ExpenseStats>[] = [
 	},
 	{
 		accessorKey: "expense",
-		header: "Expense",
+		header: "Ground Expense",
 		footer: ({ table }) =>
 			table
 				.getFilteredRowModel()
@@ -66,7 +66,7 @@ function ExpenseRoute() {
 		return <PageError error={error.message} />;
 	}
 
-	return <DataTable columns={columns} data={data} />;
+	return <DataTable columns={columns} data={data} className="[&_table]:table-fixed" />;
 }
 
 function YearFilter() {

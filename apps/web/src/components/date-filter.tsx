@@ -15,9 +15,11 @@ export function DateFilter() {
 	const [open, setOpen] = useState(false);
 
 	const getValue = () => {
-		if (search.date) return formatDate(new Date(search.date));
+		if (search.date) return formatDate(search.date, "short");
 		if (search.rivalry) return search.rivalry;
-		if (search.year) return search.year;
+		if (search.starts && search.ends) return `${formatDate(search.starts, "short")} - ${formatDate(search.ends, "short")}`;
+		if (search.starts) return `${formatDate(search.starts, "short")} - Present`;
+		if (search.ends) return `Start - ${formatDate(search.ends, "short")}`;
 		return "All Time";
 	};
 
@@ -32,6 +34,8 @@ function DateOptions({ setOpen }: { setOpen: (open: boolean) => void }) {
 	const navigate = useNavigate();
 	const search = useSearch({ strict: false });
 
+	const periodKey = (p: { starts: string; ends: string }) => `${p.starts}|${p.ends}`;
+
 	const { data, status, error } = useQuery(trpc.dates.list.queryOptions());
 
 	if (status === "pending") {
@@ -45,9 +49,12 @@ function DateOptions({ setOpen }: { setOpen: (open: boolean) => void }) {
 	return (
 		<>
 			<RadioGroup
-				value={!search.date && !search.rivalry && !search.year ? "" : "all-time"}
+				value={!search.date && !search.rivalry && !search.starts && !search.ends ? "" : "all-time"}
 				onValueChange={() => {
-					navigate({ to: ".", search: (prev) => ({ ...prev, date: undefined, rivalry: undefined, year: undefined }) });
+					navigate({
+						to: ".",
+						search: (prev) => ({ ...prev, date: undefined, rivalry: undefined, starts: undefined, ends: undefined, year: undefined }),
+					});
 					setOpen(false);
 				}}
 			>
@@ -55,21 +62,27 @@ function DateOptions({ setOpen }: { setOpen: (open: boolean) => void }) {
 			</RadioGroup>
 
 			<RadioGroup
-				value={search.year}
-				onValueChange={(value: number) => {
-					navigate({ to: ".", search: (prev) => ({ ...prev, year: value, date: undefined, rivalry: undefined }) });
+				value={search.starts && search.ends ? periodKey({ starts: search.starts, ends: search.ends }) : undefined}
+				onValueChange={(key: string) => {
+					const [starts, ends] = key.split("|");
+					navigate({ to: ".", search: (prev) => ({ ...prev, starts, ends, date: undefined, rivalry: undefined }) });
 					setOpen(false);
 				}}
 			>
-				{data.years.map((year) => (
-					<RadioGroupItem key={year.year} value={year.year} label={`Year ${year.year}`} description={`${year.count} days`} />
+				{data.periods.map((period) => (
+					<RadioGroupItem
+						key={period.starts}
+						value={periodKey(period)}
+						label={`${formatDate(period.starts, "short")} - ${formatDate(period.ends, "short")}`}
+						description={`${period.count} days`}
+					/>
 				))}
 			</RadioGroup>
 
 			<RadioGroup
 				value={search.rivalry}
 				onValueChange={(value: string) => {
-					navigate({ to: ".", search: (prev) => ({ ...prev, rivalry: value, date: undefined, year: undefined }) });
+					navigate({ to: ".", search: (prev) => ({ ...prev, rivalry: value, date: undefined, starts: undefined, ends: undefined }) });
 					setOpen(false);
 				}}
 			>

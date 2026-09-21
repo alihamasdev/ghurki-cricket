@@ -17,7 +17,7 @@ const columns: ColumnDef<BattingStats>[] = [
 	{ accessorKey: "balls", header: "Balls" },
 	{ accessorKey: "notOuts", header: "NO" },
 	{ accessorKey: "strikeRate", header: "SR", cell: ({ row }) => row.original.strikeRate?.toFixed() },
-	{ accessorKey: "average", header: "Avg", cell: ({ row }) => row.original.average?.toFixed() },
+	{ accessorKey: "average", header: "Avg", cell: ({ row }) => row.original.average?.toFixed(1) },
 	{ accessorKey: "highestScore", header: "HS" },
 	{ accessorKey: "fours", header: "4s" },
 	{ accessorKey: "sixes", header: "6s" },

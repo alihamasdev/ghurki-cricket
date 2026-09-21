@@ -5,9 +5,11 @@ import { getStatWhere } from "../lib/helpers";
 import { type DateSchema, statSchema } from "../lib/schemas";
 import { type AttendanceStats } from "../lib/types";
 
-const getDateFilter = ({ date, year, rivalry }: DateSchema) => {
+const getDateFilter = ({ date, rivalry, starts, ends }: DateSchema) => {
 	if (rivalry) return { rivalryId: rivalry };
-	if (year) return { date: { gte: new Date(year, 0, 0), lte: new Date(year, 11, 31) } };
+	if (starts && ends) return { date: { gte: new Date(starts), lte: new Date(ends) } };
+	if (starts) return { date: { gte: new Date(starts) } };
+	if (ends) return { date: { lte: new Date(ends) } };
 	if (date) return { date };
 };
 

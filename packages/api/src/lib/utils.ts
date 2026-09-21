@@ -5,7 +5,7 @@ export function ballsToOvers(balls: number): string {
 	return `${completedOvers}.${remainingBalls}`;
 }
 
-export function formatDate(inputDate: Date, type: "short" | "numeric" = "numeric"): string {
+export function formatDate(inputDate: Date | string, type: "short" | "numeric" = "numeric"): string {
 	const date = new Date(inputDate);
 
 	if (type === "short") {
