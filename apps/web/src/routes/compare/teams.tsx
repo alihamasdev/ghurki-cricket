@@ -1,10 +1,10 @@
 import { dateSchema } from "@ghurki-cricket/api/schema";
-import { ResizablePanelGroup, ResizableHandle, ResizablePanel } from "@ghurki-cricket/ui/components/resizable";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@ghurki-cricket/ui/components/table";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { DateFilter } from "@/components/date-filter";
+import { ImageCapture } from "@/components/image-capture";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
@@ -55,34 +55,28 @@ function TeamCompareRoute() {
 	];
 
 	return (
-		<ResizablePanelGroup direction="horizontal">
-			<ResizablePanel defaultSize={100} minSize={40}>
-				<div className="overflow-hidden rounded-md border">
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead>Stats</TableHead>
-								{data.map((val) => (
-									<TableHead key={val.team}>{val.team}</TableHead>
-								))}
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{rows.map((row) => (
-								<TableRow key={row.label}>
-									<TableCell>{row.label}</TableCell>
-									<TableCell>{row.val1}</TableCell>
-									<TableCell>{row.val2}</TableCell>
-								</TableRow>
+		<ImageCapture width={40}>
+			<div className="overflow-hidden rounded-md border">
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead>Stats</TableHead>
+							{data.map((val) => (
+								<TableHead key={val.team}>{val.team}</TableHead>
 							))}
-						</TableBody>
-					</Table>
-				</div>
-			</ResizablePanel>
-			<ResizableHandle />
-			<ResizablePanel defaultSize={0}>
-				<div />
-			</ResizablePanel>
-		</ResizablePanelGroup>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{rows.map((row) => (
+							<TableRow key={row.label}>
+								<TableCell>{row.label}</TableCell>
+								<TableCell>{row.val1}</TableCell>
+								<TableCell>{row.val2}</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</div>
+		</ImageCapture>
 	);
 }
