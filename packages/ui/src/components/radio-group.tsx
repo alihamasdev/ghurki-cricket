@@ -1,10 +1,25 @@
 import { Radio as RadioPrimitive } from "@base-ui/react/radio";
 import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group";
+import { Skeleton } from "@ghurki-cricket/ui/components/skeleton";
 import { cn } from "cn";
 import { useId } from "react";
 
-function RadioGroup({ side = "left", className, ...props }: RadioGroupPrimitive.Props & { side?: "left" | "right" }) {
-	return <RadioGroupPrimitive data-slot="radio-group" data-side={side} className={cn("group/radio-group grid", className)} {...props} />;
+type RadioGroupProps = RadioGroupPrimitive.Props & {
+	side?: "left" | "right";
+	isLoading?: boolean;
+};
+
+function RadioGroup({ isLoading, side = "left", className, children, ...props }: RadioGroupProps) {
+	return (
+		<RadioGroupPrimitive
+			data-slot="radio-group"
+			data-side={side}
+			className={cn("group/radio-group grid", isLoading && "mt-2 gap-2 px-2", className)}
+			{...props}
+		>
+			{isLoading ? [1, 2, 4].map((i) => <Skeleton key={i} className="h-9" />) : children}
+		</RadioGroupPrimitive>
+	);
 }
 
 type RadioGroupItemProps = RadioPrimitive.Root.Props & {
@@ -20,7 +35,7 @@ function RadioGroupItem({ label, description, orientation = "horizontal", classN
 			data-slot="radio-group-item"
 			htmlFor={id}
 			className={cn(
-				"group/radio-group-item flex w-full cursor-pointer flex-wrap items-center gap-2.5 rounded-md px-4 py-2 text-sm transition-colors duration-100 hover:bg-muted",
+				"group/radio-group-item flex w-full cursor-pointer flex-wrap items-center gap-2.5 rounded-md px-4 py-2 text-sm transition-colors duration-200 hover:bg-muted/60",
 				className,
 			)}
 		>

@@ -18,6 +18,7 @@
 		"cors": "^2.8.6",
 		"dotenv": "catalog:",
 		"express": "^5.2.1",
+		"helmet": "^8.0.0",
 		"zod": "catalog:"
 	},
 	"devDependencies": {

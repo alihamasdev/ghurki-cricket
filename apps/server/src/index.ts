@@ -4,9 +4,11 @@ import { env } from "@ghurki-cricket/env/server";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import cors from "cors";
 import express from "express";
+import helmet from "helmet";
 
 const app = express();
 
+app.use(helmet());
 app.use(cors({ origin: env.CORS_ORIGIN, methods: ["GET", "POST", "OPTIONS"] }));
 
 app.use(express.json());

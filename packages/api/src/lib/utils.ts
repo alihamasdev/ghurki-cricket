@@ -40,16 +40,16 @@ export function calcStrikeRate(data: { runs: number | null; balls: number | null
 	return (runs / balls) * 100;
 }
 
-export function calcBowlingAverage(data: { runs: number | null; wickets: number | null }): number {
+export function calcBowlingAverage(data: { runs: number | null; wickets: number | null }): number | null {
 	const runs = data.runs ?? 0;
 	const wickets = data.wickets ?? 0;
-	if (wickets === 0) return Infinity;
+	if (wickets === 0) return null;
 	return runs / wickets;
 }
 
-export function calcBowlingEconomy(data: { runs: number | null; balls: number | null }): number {
+export function calcBowlingEconomy(data: { runs: number | null; balls: number | null }): number | null {
 	const runs = data.runs ?? 0;
 	const balls = data.balls ?? 0;
-	if (balls === 0) return Infinity;
+	if (balls === 0) return null;
 	return (runs / balls) * 6;
 }

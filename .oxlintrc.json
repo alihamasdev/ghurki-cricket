@@ -6,7 +6,7 @@
 		"correctness": "warn"
 	},
 	"rules": {
-		"shadcn/no-restyle": ["error", { "allow": ["layout", "item"] }]
+		"shadcn/no-restyle": ["error", { "allow": ["layout"] }]
 	},
 	"env": {
 		"builtin": true

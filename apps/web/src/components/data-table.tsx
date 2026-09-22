@@ -15,6 +15,7 @@ export function DataTable<TData, TValue>({ columns, data, minSize = 50, classNam
 	"use no memo";
 	const isMobile = useIsMobile();
 
+	// oxlint-disable-next-line react/incompatible-library
 	const table = useReactTable({
 		data,
 		columns,

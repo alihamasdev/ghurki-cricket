@@ -25,8 +25,8 @@ export type BowlingStats = {
 	noBalls?: number;
 	twoFR?: number;
 	threeFR?: number;
-	economy?: number;
-	average?: number;
+	economy?: number | null;
+	average?: number | null;
 };
 
 export type FieldingStats = {

@@ -28,7 +28,7 @@ export const attendanceRouter = router({
 
 		return data
 			.map((val) => {
-				const percentage = (val._count / total) * 100;
+				const percentage = total > 0 ? (val._count / total) * 100 : 0;
 				const roundPercentage = percentage.toFixed();
 				return {
 					player: val.playerId,
