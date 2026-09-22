@@ -1,6 +1,5 @@
 {
 	"$schema": "https://openapi.vercel.sh/vercel.json",
-	"bunVersion": "1.x",
 	"regions": ["bom1"],
 	"services": {
 		"web": {
@@ -18,8 +17,9 @@
 		"server": {
 			"root": "apps/server",
 			"framework": "express",
-			"entrypoint": "src/index.ts",
+			"entrypoint": "dist/index.mjs",
 			"installCommand": "cd ../.. && bun install && bun run db:generate",
+			"buildCommand": "bun run build",
 			"routes": [
 				{
 					"src": "/api/((?!auth(?:/|$)).*)",

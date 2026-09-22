@@ -15,13 +15,13 @@ const vercelOrigin = getVercelOrigin();
 
 const runtimeEnv = {
 	...process.env,
-	CORS_ORIGIN: process.env.CORS_ORIGIN ?? vercelOrigin,
+	CORS_ORIGIN: process.env.CORS_ORIGIN ?? vercelOrigin ?? "*",
 };
 
 export const env = createEnv({
 	server: {
 		DATABASE_URL: z.string().min(1),
-		CORS_ORIGIN: z.url(),
+		CORS_ORIGIN: z.string().default("*"),
 		PORT: z
 			.string()
 			.optional()

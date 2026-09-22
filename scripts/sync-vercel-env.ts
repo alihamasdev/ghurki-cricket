@@ -6,7 +6,7 @@ const DEFAULT_ENVIRONMENT = "preview";
 const VALID_ENVIRONMENTS = new Set(["development", "preview", "production"]);
 const VERCEL_COMMAND = ["bunx", "vercel"] as const;
 const DEFAULT_FILES = ["apps/web/.env", "apps/server/.env"];
-const SKIP_KEYS = new Set(["BETTER_AUTH_URL", "CORS_ORIGIN", "NODE_ENV"]);
+const SKIP_KEYS = new Set(["BETTER_AUTH_URL", "NODE_ENV"]);
 const OVERRIDE_KEYS = new Map([
 	["NEXT_PUBLIC_SERVER_URL", "/api"],
 	["NUXT_PUBLIC_SERVER_URL", "/api"],
