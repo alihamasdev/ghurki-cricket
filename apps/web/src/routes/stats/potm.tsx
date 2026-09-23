@@ -17,6 +17,12 @@ const columns: ColumnDef<POTMStats>[] = [
 
 export const Route = createFileRoute("/stats/potm")({
 	validateSearch: statSchema,
+	head: () => ({
+		meta: [
+			{ title: "Player of the Match Stats | Ghurki Cricket" },
+			{ name: "description", content: "Player of the Match (POTM) awards tally and leaderboards for Ghurki Cricket." },
+		],
+	}),
 	component: () => {
 		return (
 			<PageLayout

@@ -9,6 +9,12 @@ import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/players/")({
 	validateSearch: groupSchema,
+	head: () => ({
+		meta: [
+			{ title: "Players | Ghurki Cricket" },
+			{ name: "description", content: "View all player profiles and squad rosters for Ghurki Cricket." },
+		],
+	}),
 	component: () => {
 		return (
 			<PageLayout title="Players">

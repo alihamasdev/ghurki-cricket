@@ -23,7 +23,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			{ charSet: "utf-8" },
 			{ title: "Ghurki Cricket" },
 			{ name: "viewport", content: "width=device-width, initial-scale=1" },
-			{ name: "description", content: "Comprehensive cricket stats, match scoring, and player management for Ghurki Cricket" },
+			{ name: "description", content: "Overview and quick access to Ghurki Cricket stats, matches, players, and teams." },
 		],
 		links: [{ rel: "icon", href: "/favicon.ico" }],
 	}),

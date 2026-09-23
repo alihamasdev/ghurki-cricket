@@ -19,6 +19,12 @@ const columns: ColumnDef<FieldingStats>[] = [
 
 export const Route = createFileRoute("/stats/fielding")({
 	validateSearch: fieldingStatSchema,
+	head: () => ({
+		meta: [
+			{ title: "Fielding Stats | Ghurki Cricket" },
+			{ name: "description", content: "Fielding statistics including catches and run-outs for Ghurki Cricket." },
+		],
+	}),
 	component: () => {
 		return (
 			<PageLayout

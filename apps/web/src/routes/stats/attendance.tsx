@@ -18,6 +18,12 @@ const columns: ColumnDef<AttendanceStats>[] = [
 
 export const Route = createFileRoute("/stats/attendance")({
 	validateSearch: statSchema,
+	head: () => ({
+		meta: [
+			{ title: "Attendance Stats | Ghurki Cricket" },
+			{ name: "description", content: "Player attendance tracking and participation statistics for Ghurki Cricket." },
+		],
+	}),
 	component: () => {
 		return (
 			<PageLayout

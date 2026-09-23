@@ -38,6 +38,12 @@ export const Route = createFileRoute("/expense/")({
 	validateSearch: z.object({
 		year: z.number().optional().catch(undefined),
 	}),
+	head: () => ({
+		meta: [
+			{ title: "Expense | Ghurki Cricket" },
+			{ name: "description", content: "Track and review ground expenses and match costs for Ghurki Cricket." },
+		],
+	}),
 	component: () => {
 		return (
 			<PageLayout

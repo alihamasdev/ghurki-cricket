@@ -7,6 +7,12 @@ import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/teams/")({
+	head: () => ({
+		meta: [
+			{ title: "Teams | Ghurki Cricket" },
+			{ name: "description", content: "Explore teams, team logos, and squad information for Ghurki Cricket." },
+		],
+	}),
 	component: () => {
 		return (
 			<PageLayout title="Teams">

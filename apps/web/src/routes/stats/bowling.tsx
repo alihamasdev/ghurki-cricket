@@ -28,6 +28,12 @@ const columns: ColumnDef<BowlingStats>[] = [
 
 export const Route = createFileRoute("/stats/bowling")({
 	validateSearch: bowlingStatSchema,
+	head: () => ({
+		meta: [
+			{ title: "Bowling Stats | Ghurki Cricket" },
+			{ name: "description", content: "Bowling leaderboards, overs, wickets, economy, and bowling averages for Ghurki Cricket." },
+		],
+	}),
 	component: () => {
 		return (
 			<PageLayout

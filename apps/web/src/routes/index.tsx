@@ -5,6 +5,12 @@ import { sidebarList } from "@/components/app-sidebar";
 import { PageLayout } from "@/components/page-layout";
 
 export const Route = createFileRoute("/")({
+	head: () => ({
+		meta: [
+			{ title: "Home | Ghurki Cricket" },
+			{ name: "description", content: "Overview and quick access to Ghurki Cricket stats, matches, players, and teams." },
+		],
+	}),
 	component: () => {
 		return (
 			<PageLayout title="Home">

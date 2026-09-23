@@ -28,6 +28,12 @@ const columns: ColumnDef<BattingStats>[] = [
 
 export const Route = createFileRoute("/stats/batting")({
 	validateSearch: battingStatSchema,
+	head: () => ({
+		meta: [
+			{ title: "Batting Stats | Ghurki Cricket" },
+			{ name: "description", content: "Batting leaderboards, runs, strike rates, averages, and boundaries for Ghurki Cricket." },
+		],
+	}),
 	component: () => {
 		return (
 			<PageLayout
