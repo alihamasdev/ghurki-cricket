@@ -72,7 +72,7 @@ export function AppSidebar() {
 			<SidebarHeader>
 				<Link to="/">
 					{state === "expanded" ? (
-						<h1 className="text-center text-xl font-semibold">Ghurki Cricket</h1>
+						<h1 className="text-center text-xl/9 font-semibold">Ghurki Cricket</h1>
 					) : (
 						<StumprIcon className="size-4 fill-primary" />
 					)}

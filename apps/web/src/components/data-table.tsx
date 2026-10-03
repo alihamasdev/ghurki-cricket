@@ -1,6 +1,7 @@
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@ghurki-cricket/ui/components/table";
 import { cn } from "@ghurki-cricket/ui/lib/utils";
-import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
+import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable, type ColumnDef, type SortingState } from "@tanstack/react-table";
+import { useEffect, useState } from "react";
 
 import { ImageCapture } from "@/components/image-capture";
 
@@ -9,13 +10,29 @@ type DataTableProps<TData, TValue> = {
 	data: TData[];
 	minSize?: number;
 	className?: string;
+	defaultSort?: { id: string; desc?: boolean };
 };
 
-export function DataTable<TData, TValue>({ columns, data, className }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, className, defaultSort }: DataTableProps<TData, TValue>) {
+	const defaultSortId = defaultSort?.id;
+	const defaultSortDesc = defaultSort?.desc;
+
+	const [sorting, setSorting] = useState<SortingState>(() => (defaultSortId ? [{ id: defaultSortId, desc: defaultSortDesc ?? true }] : []));
+
+	useEffect(() => {
+		if (defaultSortId) {
+			setSorting([{ id: defaultSortId, desc: defaultSortDesc ?? true }]);
+		}
+	}, [defaultSortId, defaultSortDesc]);
+
 	// oxlint-disable-next-line react/incompatible-library
 	const table = useReactTable({
 		data,
 		columns,
+		state: {
+			sorting,
+		},
+		onSortingChange: setSorting,
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 	});
@@ -32,7 +49,7 @@ export function DataTable<TData, TValue>({ columns, data, className }: DataTable
 										<TableHead key={header.id}>
 											<button
 												type="button"
-												className="cursor-pointer"
+												className="cursor-pointer select-none"
 												onClick={() => header.column.toggleSorting(true)}
 												onDoubleClick={() => header.column.toggleSorting(false)}
 											>
@@ -49,7 +66,9 @@ export function DataTable<TData, TValue>({ columns, data, className }: DataTable
 							table.getRowModel().rows.map((row) => (
 								<TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
 									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+										<TableCell key={cell.id} data-sorted={cell.column.getIsSorted() ? "true" : undefined}>
+											{flexRender(cell.column.columnDef.cell, cell.getContext())}
+										</TableCell>
 									))}
 								</TableRow>
 							))

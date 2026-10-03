@@ -41,7 +41,7 @@ function PlayersRoute() {
 			{data.map((player) => (
 				<Item key={player.name}>
 					<ItemMedia>
-						<PlayerAvatar name={player.name} size="default" />
+						<PlayerAvatar name={player.name} size="default" variant="profiles" />
 					</ItemMedia>
 					<ItemContent>
 						<ItemTitle>{player.name}</ItemTitle>

@@ -62,5 +62,5 @@ function BowlingRoute() {
 		return <PageError error={error.message} />;
 	}
 
-	return <DataTable columns={columns} data={data} />;
+	return <DataTable columns={columns} data={data} defaultSort={{ id: "wickets", desc: true }} />;
 }

@@ -45,7 +45,11 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
 
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
 	return (
-		<td data-slot="table-cell" className={cn("p-2 text-center align-middle whitespace-nowrap first:text-start", className)} {...props} />
+		<td
+			data-slot="table-cell"
+			className={cn("p-2 text-center align-middle whitespace-nowrap first:text-start data-[sorted=true]:font-medium", className)}
+			{...props}
+		/>
 	);
 }
 

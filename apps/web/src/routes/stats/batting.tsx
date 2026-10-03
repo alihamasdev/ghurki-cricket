@@ -62,5 +62,5 @@ function BattingRoute() {
 		return <PageError error={error.message} />;
 	}
 
-	return <DataTable columns={columns} data={data} />;
+	return <DataTable columns={columns} data={data} defaultSort={{ id: "runs", desc: true }} />;
 }
