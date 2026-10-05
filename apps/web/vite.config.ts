@@ -7,6 +7,12 @@ export default defineConfig({
 	server: {
 		port: 3000,
 		host: true,
+		proxy: {
+			"^/players/.*\\.webp$": {
+				target: process.env.VITE_SERVER_URL || "http://localhost:8000",
+				changeOrigin: true,
+			},
+		},
 	},
 	resolve: {
 		tsconfigPaths: true,

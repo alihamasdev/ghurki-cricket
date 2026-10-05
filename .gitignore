@@ -54,6 +54,9 @@ coverage
 # Supabase
 supabase/.temp/
 
+# Players local assets
+/players/
+
 # Misc
 *.tgz
 .cache

@@ -7,7 +7,10 @@ export const env = createEnv({
 	clientPrefix: "VITE_",
 	client: {
 		VITE_SERVER_URL: serverUrlSchema,
-		VITE_STORAGE_URL: z.url().optional(),
+		VITE_STORAGE_URL: z
+			.url()
+			.transform((val) => val.replace(/\/+$/, ""))
+			.optional(),
 	},
 	runtimeEnv: (import.meta as any).env,
 	emptyStringAsUndefined: true,

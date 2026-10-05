@@ -28,6 +28,7 @@ export const env = createEnv({
 			.default("8000")
 			.transform((val) => Number(val)),
 		NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+		SUPABASE_STORAGE_URL: z.url().transform((val) => val.replace(/\/+$/, "")),
 	},
 	runtimeEnv: runtimeEnv,
 	skipValidation: !!process.env.SKIP_ENV_VALIDATION,

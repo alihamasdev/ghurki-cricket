@@ -2,11 +2,16 @@ import { env } from "@ghurki-cricket/env/web";
 import { Avatar, AvatarFallback, AvatarImage } from "@ghurki-cricket/ui/components/avatar";
 import { ShieldIcon, UserIcon } from "lucide-react";
 
-export type AvatarVariant = "avatars" | "profiles";
+export type AvatarVariant = "avatar" | "profile";
 
-export function getPlayerImageUrl(name: string, variant: AvatarVariant = "avatars"): string | null {
-	if (!name || !env.VITE_STORAGE_URL) return null;
-	return `${env.VITE_STORAGE_URL}/${variant}/${encodeURIComponent(name.trim().toLowerCase())}.webp`;
+export function getPlayerImageUrl(name: string, variant: AvatarVariant = "avatar"): string {
+	if (!name) return "";
+	const normalizedName = encodeURIComponent(name.trim().toLowerCase());
+	if (env.VITE_STORAGE_URL) {
+		const folder = variant === "avatar" ? "avatars" : "profiles";
+		return `${env.VITE_STORAGE_URL}/${folder}/${normalizedName}.webp`;
+	}
+	return `/players/${normalizedName}/${variant}.webp`;
 }
 
 export type PlayerAvatarProps = React.ComponentProps<typeof Avatar> & {
@@ -14,7 +19,7 @@ export type PlayerAvatarProps = React.ComponentProps<typeof Avatar> & {
 	variant?: AvatarVariant;
 };
 
-export function PlayerAvatar({ name, variant = "avatars", ...props }: PlayerAvatarProps) {
+export function PlayerAvatar({ name, variant = "avatar", ...props }: PlayerAvatarProps) {
 	const src = getPlayerImageUrl(name, variant);
 	return (
 		<Avatar size="sm" {...props} data-name={src}>
@@ -24,7 +29,7 @@ export function PlayerAvatar({ name, variant = "avatars", ...props }: PlayerAvat
 	);
 }
 
-export function PlayerCell({ name, variant = "avatars", ...props }: PlayerAvatarProps) {
+export function PlayerCell({ name, variant = "avatar", ...props }: PlayerAvatarProps) {
 	return (
 		<div className="flex items-center gap-2">
 			<PlayerAvatar name={name} variant={variant} {...props} />

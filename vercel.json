@@ -22,6 +22,9 @@
 			"buildCommand": "bun run build",
 			"routes": [
 				{
+					"src": "/players/(.*)"
+				},
+				{
 					"src": "/api/((?!auth(?:/|$)).*)",
 					"transforms": [
 						{
@@ -37,6 +40,12 @@
 	"rewrites": [
 		{
 			"source": "/api/(.*)",
+			"destination": {
+				"service": "server"
+			}
+		},
+		{
+			"source": "/players/(.*\\.webp)",
 			"destination": {
 				"service": "server"
 			}

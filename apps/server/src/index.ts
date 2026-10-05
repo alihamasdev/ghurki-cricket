@@ -33,7 +33,8 @@ const isAllowedOrigin = (origin: string | undefined): boolean => {
 	return false;
 };
 
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+
 app.use(
 	cors({
 		origin: (origin, callback) => {
@@ -50,6 +51,34 @@ app.use(
 app.use(express.json());
 
 app.use(["/trpc", "/api/trpc"], createExpressMiddleware({ router, createContext }));
+
+app.get(
+	["/players/:playerId.webp", "/api/players/:playerId.webp", "/players/:playerId/:variant.webp", "/api/players/:playerId/:variant.webp"],
+	async (req, res) => {
+		const { playerId, variant } = req.params;
+		if (typeof playerId !== "string" || !playerId) {
+			res.status(400).send("Invalid playerId");
+			return;
+		}
+
+		const folder = variant === "avatar" ? "avatars" : "profiles";
+		const upstreamUrl = `${env.SUPABASE_STORAGE_URL}/${folder}/${encodeURIComponent(playerId.trim().toLowerCase())}.webp`;
+		try {
+			const upstream = await fetch(upstreamUrl);
+			if (!upstream.ok) {
+				res.status(upstream.status).send(upstream.statusText);
+				return;
+			}
+
+			res.setHeader("Content-Type", "image/webp");
+			res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+			const arrayBuffer = await upstream.arrayBuffer();
+			res.status(200).send(Buffer.from(arrayBuffer));
+		} catch {
+			res.status(500).send("Error fetching image");
+		}
+	},
+);
 
 app.get(["/", "/api"], (_req, res) => {
 	res.status(200).send("OK");
