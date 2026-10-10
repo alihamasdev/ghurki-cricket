@@ -1,16 +1,13 @@
-import { Column, Host, Text as ExpoUIText } from "@expo/ui";
-import { useQuery } from "@tanstack/react-query";
+import { Host, Text as ExpoUIText } from "@expo/ui";
 import { View, ScrollView, StyleSheet } from "react-native";
 
 import { Container } from "@/components/container";
 import { NAV_THEME } from "@/lib/constants";
 import { useColorScheme } from "@/lib/use-color-scheme";
-import { trpc } from "@/utils/trpc";
 
 export default function Home() {
 	const { colorScheme } = useColorScheme();
 	const theme = colorScheme === "dark" ? NAV_THEME.dark : NAV_THEME.light;
-	const healthCheck = useQuery(trpc.healthCheck.queryOptions());
 
 	return (
 		<Container>
@@ -28,26 +25,6 @@ export default function Home() {
 							BETTER T STACK
 						</ExpoUIText>
 					</Host>
-
-					<View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.border }]}>
-						<View style={styles.statusRow}>
-							<View style={[styles.statusIndicator, { backgroundColor: healthCheck.data ? "#10b981" : "#f59e0b" }]} />
-							<View style={styles.statusContent}>
-								<Host matchContents={{ vertical: true }}>
-									<Column spacing={4}>
-										<ExpoUIText textStyle={{ color: theme.text, fontSize: 14, fontWeight: "bold" }}>TRPC</ExpoUIText>
-										<ExpoUIText textStyle={{ color: theme.text, fontSize: 12 }} style={{ opacity: 0.7 }}>
-											{healthCheck.isLoading
-												? "Checking connection..."
-												: healthCheck.data
-													? "All systems operational"
-													: "Service unavailable"}
-										</ExpoUIText>
-									</Column>
-								</Host>
-							</View>
-						</View>
-					</View>
 				</View>
 			</ScrollView>
 		</Container>

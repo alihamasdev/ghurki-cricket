@@ -3,7 +3,6 @@ import { attendanceRouter } from "./attendance";
 import { battingRouter } from "./batting";
 import { bowlingRouter } from "./bowling";
 import { datesRouter } from "./dates";
-import { expenseRouter } from "./expense";
 import { fieldingRouter } from "./fielding";
 import { matchesRouter } from "./matches";
 import { playerRouter } from "./players";
@@ -14,7 +13,6 @@ export const appRouter = router({
 	matches: matchesRouter,
 	teams: teamsRouter,
 	players: playerRouter,
-	expense: expenseRouter,
 	attendance: attendanceRouter,
 	batting: battingRouter,
 	bowling: bowlingRouter,

@@ -55,8 +55,12 @@ model Rivalries {
 model Dates {
   date      DateTime   @id @db.Date
   title     String
-  rivalryId String
-  rivalry   Rivalries  @relation(fields: [rivalryId], references: [title])
+  hasStats  Boolean    @default(true)
+  ground    String     @default("Mithu Indoor")
+  groundFee Int        @default(1000)
+  gearCost  Int        @default(0)
+  rivalryId String?
+  rivalry   Rivalries? @relation(fields: [rivalryId], references: [title])
   winnerId  String?
   winner    Teams?     @relation(fields: [winnerId], references: [name])
   matches   Matches[]
@@ -65,6 +69,8 @@ model Dates {
   bowling   Bowlers[]
   fielding  Fielders[]
 
+  @@index([hasStats])
+  @@index([ground])
   @@index([rivalryId])
   @@map("dates")
 }
@@ -177,14 +183,4 @@ model Records {
   @@id([batterId, bowlerId, rivalryId])
   @@index([batterId, bowlerId])
   @@map("records")
-}
-
-model Expenses {
-  date      DateTime @id @db.Date
-  ground    String   @default("Mithu Indoor")
-  groundFee Int      @default(0)
-  gearCost  Int      @default(0)
-
-  @@index([ground])
-  @@map("expenses")
 }

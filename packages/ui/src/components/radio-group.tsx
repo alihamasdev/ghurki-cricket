@@ -17,7 +17,7 @@ function RadioGroup({ isLoading, side = "left", className, children, ...props }:
 			className={cn("group/radio-group grid", isLoading && "mt-2 gap-2 px-2", className)}
 			{...props}
 		>
-			{isLoading ? [1, 2, 4].map((i) => <Skeleton key={i} className="h-9" />) : children}
+			{isLoading ? [1, 2, 3].map((i) => <Skeleton key={i} className="h-9" />) : children}
 		</RadioGroupPrimitive>
 	);
 }

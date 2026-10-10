@@ -45,12 +45,18 @@ export const Route = createFileRoute("/expense/")({
 		],
 	}),
 	component: () => {
+		const { year } = Route.useSearch();
+
+		const [open, setOpen] = useState(false);
+
 		return (
 			<PageLayout
 				title="Expense"
 				headerRight={
 					<div className="flex sm:justify-end">
-						<YearFilter />
+						<FilterSheet title="Select Year" icon={CalendarIcon} value={year ?? "All Time"} open={open} onOpenChange={setOpen}>
+							<YearFilter setOpen={setOpen} />
+						</FilterSheet>
 					</div>
 				}
 			>
@@ -62,7 +68,7 @@ export const Route = createFileRoute("/expense/")({
 
 function ExpenseRoute() {
 	const { year } = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.expense.list.queryOptions({ year }));
+	const { data, status, error } = useQuery(trpc.dates.listExpense.queryOptions({ year }));
 
 	if (status === "pending") {
 		return <PageLoader />;
@@ -75,44 +81,40 @@ function ExpenseRoute() {
 	return <DataTable columns={columns} data={data} className="[&_table]:table-fixed" />;
 }
 
-function YearFilter() {
+function YearFilter({ setOpen }: { setOpen: (open: boolean) => void }) {
 	const { year } = Route.useSearch();
 	const naviagte = Route.useNavigate();
 
-	const [open, setOpen] = useState(false);
+	const { data, isPending, isError, error } = useQuery(trpc.dates.listYears.queryOptions());
 
-	const { data, status, error } = useQuery(trpc.expense.listYears.queryOptions());
-
-	if (status === "pending") {
-		return <PageLoader />;
-	}
-
-	if (status === "error") {
+	if (isError) {
 		return <PageError error={error.message} />;
 	}
 
 	return (
-		<FilterSheet title="Select Year" icon={CalendarIcon} value={year ?? "All Time"} open={open} onOpenChange={setOpen}>
+		<>
 			<RadioGroup
 				value={year ?? ""}
+				isLoading={isPending}
 				onValueChange={() => {
 					naviagte({ search: (prev) => ({ ...prev, year: undefined }) });
 					setOpen(false);
 				}}
 			>
-				<RadioGroupItem value="" label="All Time" description={`${data.totalDays} days`} />
+				<RadioGroupItem value="" label="All Time" description={`${data?.totalDays} days`} />
 			</RadioGroup>
 			<RadioGroup
 				value={year}
+				isLoading={isPending}
 				onValueChange={(val: number) => {
 					naviagte({ search: (prev) => ({ ...prev, year: val }) });
 					setOpen(false);
 				}}
 			>
-				{data.years.map((year) => (
+				{data?.years.map((year) => (
 					<RadioGroupItem key={year.year} value={year.year} label={`Year ${year.year}`} description={`${year.count} days`} />
 				))}
 			</RadioGroup>
-		</FilterSheet>
+		</>
 	);
 }
