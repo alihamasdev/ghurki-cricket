@@ -1,7 +1,7 @@
 import { type AppRouter } from "@ghurki-cricket/api/router";
 import { env } from "@ghurki-cricket/env/web";
 import { QueryCache, QueryClient } from "@tanstack/react-query";
-import { createTRPCClient, httpBatchLink } from "@trpc/client";
+import { createTRPCClient, httpBatchStreamLink } from "@trpc/client";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 
 function getServerUrl(url: string) {
@@ -52,7 +52,7 @@ export const queryClient = new QueryClient({
 
 export const trpcClient = createTRPCClient<AppRouter>({
 	links: [
-		httpBatchLink({
+		httpBatchStreamLink({
 			url: `${getServerUrl(env.VITE_SERVER_URL)}/trpc`,
 		}),
 	],

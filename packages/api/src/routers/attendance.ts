@@ -22,7 +22,7 @@ export const attendanceRouter = router({
 				_count: true,
 			}),
 			db.dates.count({
-				where: getDateFilter(input),
+				where: { ...getDateFilter(input), hasStats: true },
 			}),
 		]);
 

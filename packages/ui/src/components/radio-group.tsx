@@ -7,9 +7,10 @@ import { useId } from "react";
 type RadioGroupProps = RadioGroupPrimitive.Props & {
 	side?: "left" | "right";
 	isLoading?: boolean;
+	length?: number;
 };
 
-function RadioGroup({ isLoading, side = "left", className, children, ...props }: RadioGroupProps) {
+function RadioGroup({ isLoading, length = 3, side = "left", className, children, ...props }: RadioGroupProps) {
 	return (
 		<RadioGroupPrimitive
 			data-slot="radio-group"
@@ -17,7 +18,7 @@ function RadioGroup({ isLoading, side = "left", className, children, ...props }:
 			className={cn("group/radio-group grid", isLoading && "mt-2 gap-2 px-2", className)}
 			{...props}
 		>
-			{isLoading ? [1, 2, 3].map((i) => <Skeleton key={i} className="h-9" />) : children}
+			{isLoading ? Array.from({ length }).map((_, i) => <Skeleton key={i} className="h-9" />) : children}
 		</RadioGroupPrimitive>
 	);
 }

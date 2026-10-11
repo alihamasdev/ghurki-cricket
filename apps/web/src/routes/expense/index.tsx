@@ -94,6 +94,7 @@ function YearFilter({ setOpen }: { setOpen: (open: boolean) => void }) {
 	return (
 		<>
 			<RadioGroup
+				length={1}
 				value={year ?? ""}
 				isLoading={isPending}
 				onValueChange={() => {

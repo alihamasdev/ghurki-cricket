@@ -1,6 +1,6 @@
 import { formatDate } from "@ghurki-cricket/api/utils";
 import { RadioGroup, RadioGroupItem } from "@ghurki-cricket/ui/components/radio-group";
-import { useQueries } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -47,9 +47,9 @@ function DateOptions({
 
 	const periodKey = (p: { starts: string; ends: string }) => `${p.starts}|${p.ends}`;
 
-	const [totalDates, rivalries, periods] = useQueries({
-		queries: [trpc.dates.getTotalCount.queryOptions(), trpc.dates.listRivalries.queryOptions(), trpc.dates.listPeriods.queryOptions()],
-	});
+	const totalDates = useQuery(trpc.dates.getTotalCount.queryOptions());
+	const rivalries = useQuery(trpc.dates.listRivalries.queryOptions());
+	const periods = useQuery(trpc.dates.listPeriods.queryOptions());
 
 	if (totalDates.isError || rivalries.isError || periods.isError) {
 		return <PageError error={totalDates.error?.message || rivalries.error?.message || periods.error?.message} />;
@@ -59,6 +59,7 @@ function DateOptions({
 		<>
 			{hasAllTime && (
 				<RadioGroup
+					length={1}
 					isLoading={totalDates.isPending}
 					value={!search.date && !search.rivalry && !search.starts && !search.ends ? "" : "all-time"}
 					onValueChange={() => {
