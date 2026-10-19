@@ -11,7 +11,6 @@ import {
 	useSidebar,
 } from "@ghurki-cricket/ui/components/sidebar";
 import { Link, useLocation, useSearch } from "@tanstack/react-router";
-import { type LucideIcon } from "lucide-react";
 
 import {
 	BallIcon,
@@ -33,7 +32,7 @@ type SidebatList = Array<{
 	items: Array<{
 		name: string;
 		href: string;
-		icon: Icon | LucideIcon;
+		icon: Icon;
 	}>;
 }>;
 
@@ -70,9 +69,9 @@ export function AppSidebar() {
 	return (
 		<Sidebar variant="floating" collapsible="icon">
 			<SidebarHeader>
-				<Link to="/">
+				<Link to="/" className="flex h-9 items-center justify-center">
 					{state === "expanded" ? (
-						<h1 className="text-center text-xl/9 font-semibold">Ghurki Cricket</h1>
+						<h1 className="text-center text-xl font-semibold">Ghurki Cricket</h1>
 					) : (
 						<StumprIcon className="size-4 fill-primary" />
 					)}

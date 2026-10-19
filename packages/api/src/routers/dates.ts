@@ -11,12 +11,24 @@ const yearSchema = z.object({
 
 export const datesRouter = router({
 	getTotalCount: publicProcedure.query(async () => {
-		return db.dates.count();
+		return db.dates.count({
+			where: { hasStats: true },
+		});
 	}),
 	listRivalries: publicProcedure.query(async () => {
 		const data = await db.rivalries.findMany({
+			where: { dates: { some: { hasStats: true } } },
 			orderBy: { startedAt: "desc" },
-			select: { title: true, _count: { select: { dates: true } } },
+			select: {
+				title: true,
+				_count: {
+					select: {
+						dates: {
+							where: { hasStats: true },
+						},
+					},
+				},
+			},
 		});
 		return data.map((rivalry) => ({ name: rivalry.title, count: rivalry._count.dates }));
 	}),
@@ -35,6 +47,7 @@ export const datesRouter = router({
   		  END AS ends,
   		  COUNT(*)::int AS count
   		FROM dates
+  		WHERE "hasStats" = true
   		GROUP BY 1, 2
   		ORDER BY 1 DESC
 		`;

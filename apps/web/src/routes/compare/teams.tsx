@@ -9,7 +9,7 @@ import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/compare/teams")({
-	validateSearch: dateSchema,
+	validateSearch: dateSchema.pick({ rivalry: true, date: true }).optional(),
 	head: () => ({
 		meta: [
 			{ title: "Team vs Team | Ghurki Cricket" },
@@ -48,9 +48,11 @@ function TeamCompareRoute() {
 	const team2 = data?.[1];
 
 	const rows = [
-		{ label: "Matches Played", val1: team1?.matchesPlayed ?? 0, val2: team2?.matchesPlayed ?? 0 },
+		...(!search?.date
+			? [{ label: "Series Won", val1: team1?.seriesWon ?? 0, val2: team2?.seriesWon ?? 0 }]
+			: [{ label: "Matches Played", val1: team1?.matchesPlayed ?? 0, val2: team2?.matchesPlayed ?? 0 }]),
 		{ label: "Matches Won", val1: team1?.matchesWon ?? 0, val2: team2?.matchesWon ?? 0 },
-		{ label: "Win Percentage", val1: `${team1?.winPercentage}%`, val2: `${team2?.winPercentage}%` },
+		{ label: "Win Percentage", val1: `${team1?.winPercentage ?? 0}%`, val2: `${team2?.winPercentage ?? 0}%` },
 		{ label: "Total Runs Scored", val1: team1?.totalRuns ?? 0, val2: team2?.totalRuns ?? 0 },
 		{ label: "Total Balls Played", val1: team1?.totalBalls ?? 0, val2: team2?.totalBalls ?? 0 },
 		{ label: "Total Wickets Fallen", val1: team1?.totalWickets ?? 0, val2: team2?.totalWickets ?? 0 },

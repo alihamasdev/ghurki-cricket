@@ -16,7 +16,7 @@ type DateFilterProps = {
 };
 
 export function DateFilter(props: DateFilterProps) {
-	const search = useSearch({ strict: false });
+	const search = useSearch({ strict: false }) ?? {};
 
 	const [open, setOpen] = useState(false);
 
@@ -43,7 +43,7 @@ function DateOptions({
 	setOpen,
 }: DateFilterProps & { setOpen: (open: boolean) => void }) {
 	const navigate = useNavigate();
-	const search = useSearch({ strict: false });
+	const search = useSearch({ strict: false }) ?? {};
 
 	const periodKey = (p: { starts: string; ends: string }) => `${p.starts}|${p.ends}`;
 

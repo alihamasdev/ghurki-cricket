@@ -12,8 +12,8 @@ export const teamsRouter = router({
 			select: { name: true, slug: true, avatar: true },
 		});
 	}),
-	compare: publicProcedure.input(dateSchema.optional()).query(async ({ input }) => {
-		let dateWhere = input && getDate({ date: input.date, rivalry: input.rivalry });
+	compare: publicProcedure.input(dateSchema.pick({ rivalry: true, date: true }).optional()).query(async ({ input }) => {
+		let dateWhere = input && getDate(input);
 
 		if (!input?.date && !input?.rivalry) {
 			const lastRivalry = await db.rivalries.findFirst({
@@ -24,7 +24,14 @@ export const teamsRouter = router({
 			}
 		}
 
-		const [matchStats, winStats, aggregateStats, highestScores, lowestScores] = await db.$transaction([
+		const rivalryId = dateWhere && "date" in dateWhere && dateWhere.date?.rivalryId ? dateWhere.date.rivalryId : undefined;
+
+		const [seriesStats, matchStats, winStats, aggregateStats, highestScores, lowestScores] = await db.$transaction([
+			db.dates.groupBy({
+				by: ["winnerId"],
+				where: { winnerId: { not: null }, hasStats: true, ...(rivalryId ? { rivalryId } : {}) },
+				_count: { winnerId: true },
+			}),
 			db.innings.groupBy({
 				by: ["teamId", "matchId"],
 				where: dateWhere,
@@ -62,6 +69,7 @@ export const teamsRouter = router({
 
 		return teams
 			.map((teamId) => {
+				const seriesWins = seriesStats.find((s) => s.winnerId === teamId)?._count.winnerId ?? 0;
 				const played = matchesPlayedMap[teamId] ?? 0;
 				const wins = winStats.find((w) => w.winnerId === teamId)?._count.winnerId ?? 0;
 				const agg = aggregateStats.find((a) => a.teamId === teamId)?._sum;
@@ -73,6 +81,7 @@ export const teamsRouter = router({
 
 				return {
 					team: teamId,
+					...(!input?.date ? { seriesWon: seriesWins } : {}),
 					matchesPlayed: played,
 					matchesWon: wins,
 					winPercentage: played ? Math.round((wins / played) * 100) : 0,
