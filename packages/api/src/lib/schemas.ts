@@ -8,7 +8,6 @@ export const groupSchema = z.object({
 		.optional()
 		.catch(undefined),
 });
-
 export type GroupSchema = z.infer<typeof groupSchema>;
 
 export const dateSchema = z.object({
@@ -17,27 +16,30 @@ export const dateSchema = z.object({
 	ends: z.iso.date().optional().catch(undefined),
 	date: z.iso.date().optional().catch(undefined),
 });
-
 export type DateSchema = z.infer<typeof dateSchema>;
 
 export const statSchema = dateSchema.extend(groupSchema.shape);
-
 export type StatSchema = z.infer<typeof statSchema>;
 
 export const battingStatSchema = statSchema.extend({
 	filter: z.enum(battingFilters).optional().catch(undefined),
 });
-
 export type BattingStatSchema = z.infer<typeof battingStatSchema>;
 
 export const bowlingStatSchema = statSchema.extend({
 	filter: z.enum(bowlingFilters).optional().catch(undefined),
 });
-
 export type BowlingStatSchema = z.infer<typeof bowlingStatSchema>;
 
 export const fieldingStatSchema = statSchema.extend({
 	filter: z.enum(fieldingFilters).optional().catch(undefined),
 });
-
 export type FieldingStatSchema = z.infer<typeof fieldingStatSchema>;
+
+export const matchSchema = dateSchema.extend({
+	potm: z.string().optional().catch(undefined),
+});
+export type MatchSchema = z.infer<typeof matchSchema>;
+
+export const compareTeamSchema = dateSchema.pick({ rivalry: true, date: true }).optional();
+export type CompareTeamSchema = z.infer<typeof compareTeamSchema>;

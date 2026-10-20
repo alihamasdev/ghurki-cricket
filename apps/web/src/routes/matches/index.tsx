@@ -1,4 +1,4 @@
-import { dateSchema } from "@ghurki-cricket/api/schema";
+import { matchSchema } from "@ghurki-cricket/api/schema";
 import { Item, ItemContent, ItemDescription, ItemFooter, ItemTitle } from "@ghurki-cricket/ui/components/item";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -8,7 +8,7 @@ import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/matches/")({
-	validateSearch: dateSchema,
+	validateSearch: matchSchema,
 	head: () => ({
 		meta: [
 			{ title: "Matches | Ghurki Cricket" },

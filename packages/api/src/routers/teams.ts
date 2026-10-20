@@ -2,7 +2,7 @@ import { db } from "@ghurki-cricket/db";
 
 import { publicProcedure, router } from "../index";
 import { getDate } from "../lib/helpers";
-import { dateSchema } from "../lib/schemas";
+import { compareTeamSchema } from "../lib/schemas";
 import { formatMatchScore } from "../lib/utils";
 
 export const teamsRouter = router({
@@ -12,7 +12,7 @@ export const teamsRouter = router({
 			select: { name: true, slug: true, avatar: true },
 		});
 	}),
-	compare: publicProcedure.input(dateSchema.pick({ rivalry: true, date: true }).optional()).query(async ({ input }) => {
+	compare: publicProcedure.input(compareTeamSchema).query(async ({ input }) => {
 		let dateWhere = input && getDate(input);
 
 		if (!input?.date && !input?.rivalry) {

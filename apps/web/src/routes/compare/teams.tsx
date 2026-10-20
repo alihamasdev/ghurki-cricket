@@ -1,4 +1,4 @@
-import { dateSchema } from "@ghurki-cricket/api/schema";
+import { compareTeamSchema } from "@ghurki-cricket/api/schema";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@ghurki-cricket/ui/components/table";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -9,7 +9,7 @@ import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/compare/teams")({
-	validateSearch: dateSchema.pick({ rivalry: true, date: true }).optional(),
+	validateSearch: compareTeamSchema,
 	head: () => ({
 		meta: [
 			{ title: "Team vs Team | Ghurki Cricket" },
