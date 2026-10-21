@@ -13,7 +13,6 @@
 		"@ghurki-cricket/api": "workspace:*",
 		"@ghurki-cricket/db": "workspace:*",
 		"@ghurki-cricket/env": "workspace:*",
-		"@hono/trpc-server": "^0.4.2",
 		"@trpc/server": "catalog:",
 		"cors": "^2.8.6",
 		"dotenv": "catalog:",

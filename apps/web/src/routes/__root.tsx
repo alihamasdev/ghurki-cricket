@@ -1,7 +1,6 @@
 import { SidebarInset, SidebarProvider } from "@ghurki-cricket/ui/components/sidebar";
 import { TooltipProvider } from "@ghurki-cricket/ui/components/tooltip";
 import { type QueryClient } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { HeadContent, Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 
 import { AppSidebar } from "@/components/app-sidebar";
@@ -39,7 +38,6 @@ function RootComponent() {
 					<Outlet />
 				</SidebarInset>
 			</SidebarProvider>
-			<ReactQueryDevtools position="bottom" buttonPosition="bottom-right" />
 		</TooltipProvider>
 	);
 }

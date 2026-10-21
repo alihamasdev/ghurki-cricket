@@ -69,7 +69,7 @@ export const datesRouter = router({
 		return { totalDays, years };
 	}),
 	listExpense: publicProcedure.input(yearSchema).query(async ({ input }): Promise<ExpenseData> => {
-		const where = input.year ? { date: { gte: new Date(input.year, 0, 0), lte: new Date(input.year, 11, 31) } } : undefined;
+		const where = input.year ? { date: { gte: new Date(input.year, 0, 1), lte: new Date(input.year, 11, 31) } } : undefined;
 
 		const [expense, totals] = await db.$transaction([
 			db.dates.groupBy({

@@ -10,7 +10,7 @@ const getDateFilter = ({ date, rivalry, starts, ends }: DateSchema) => {
 	if (starts && ends) return { date: { gte: new Date(starts), lte: new Date(ends) } };
 	if (starts) return { date: { gte: new Date(starts) } };
 	if (ends) return { date: { lte: new Date(ends) } };
-	if (date) return { date };
+	if (date) return { date: new Date(date) };
 };
 
 export const attendanceRouter = router({
