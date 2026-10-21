@@ -3,7 +3,9 @@ import { attendanceRouter } from "./attendance";
 import { battingRouter } from "./batting";
 import { bowlingRouter } from "./bowling";
 import { datesRouter } from "./dates";
+import { expenseRouter } from "./expense";
 import { fieldingRouter } from "./fielding";
+import { filtersRouter } from "./filters";
 import { matchesRouter } from "./matches";
 import { playerRouter } from "./players";
 import { potmRouter } from "./potm";
@@ -19,6 +21,8 @@ export const appRouter = router({
 	fielding: fieldingRouter,
 	potm: potmRouter,
 	dates: datesRouter,
+	expense: expenseRouter,
+	filters: filtersRouter,
 });
 
 export type AppRouter = typeof appRouter;

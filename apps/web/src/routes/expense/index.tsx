@@ -1,3 +1,4 @@
+import { expenseSchema } from "@ghurki-cricket/api/schema";
 import { type ExpenseStats, type ExpenseSummary } from "@ghurki-cricket/api/types";
 import { FilterSheet } from "@ghurki-cricket/ui/components/filter-sheet";
 import { RadioGroup, RadioGroupItem } from "@ghurki-cricket/ui/components/radio-group";
@@ -5,7 +6,6 @@ import { cn } from "@ghurki-cricket/ui/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { type ColumnDef } from "@tanstack/react-table";
-import { z } from "zod";
 
 import { DataTable } from "@/components/data-table";
 import { CalendarIcon } from "@/components/icons";
@@ -19,9 +19,7 @@ const columns: ColumnDef<ExpenseStats>[] = [
 ];
 
 export const Route = createFileRoute("/expense/")({
-	validateSearch: z.object({
-		year: z.number().optional().catch(undefined),
-	}),
+	validateSearch: expenseSchema,
 	head: () => ({
 		meta: [
 			{ title: "Expense | Ghurki Cricket" },
@@ -79,7 +77,7 @@ function ExpenseSummaryBoxes({ summary }: { summary: ExpenseSummary }) {
 
 function ExpenseRoute() {
 	const { year } = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.dates.listExpense.queryOptions({ year }));
+	const { data, status, error } = useQuery(trpc.expense.list.queryOptions({ year }));
 
 	if (status === "pending") {
 		return <PageLoader />;
@@ -100,7 +98,7 @@ function YearFilter() {
 	const { year } = Route.useSearch();
 	const naviagte = Route.useNavigate();
 
-	const { data, isPending, isError, error } = useQuery(trpc.dates.listYears.queryOptions());
+	const { data, isPending, isError, error } = useQuery(trpc.filters.listYears.queryOptions());
 
 	if (isError) {
 		return <PageError error={error.message} />;

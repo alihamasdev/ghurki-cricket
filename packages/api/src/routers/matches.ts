@@ -2,28 +2,10 @@ import { db } from "@ghurki-cricket/db";
 
 import { publicProcedure, router } from "../index";
 import { getDate } from "../lib/helpers";
-import { dateSchema, matchSchema } from "../lib/schemas";
+import { matchSchema } from "../lib/schemas";
 import { formatDate, formatMatchScore } from "../lib/utils";
 
 export const matchesRouter = router({
-	listOvers: publicProcedure.input(dateSchema.optional()).query(async ({ input }) => {
-		const where = input ? getDate(input) : undefined;
-
-		const [totalMatches, overs] = await db.$transaction([
-			db.matches.count({ where }),
-			db.matches.groupBy({
-				by: ["overs"],
-				where,
-				orderBy: { overs: "asc" },
-				_count: true,
-			}),
-		]);
-
-		return {
-			totalMatches,
-			overs: overs.map((o) => ({ overs: o.overs, count: o._count })),
-		};
-	}),
 	list: publicProcedure.input(matchSchema).query(async ({ input }) => {
 		const matches = await db.matches.findMany({
 			where: { ...getDate(input), potmId: input.potm, ...(input.overs ? { overs: input.overs } : {}) },

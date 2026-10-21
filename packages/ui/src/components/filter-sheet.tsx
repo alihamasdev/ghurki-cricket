@@ -53,7 +53,7 @@ export function FilterSheet({ title, icon: Icon, value, triggerProps, children, 
 					<SheetHeader>
 						<SheetTitle>{title}</SheetTitle>
 					</SheetHeader>
-					{open && children}
+					{open && <div className="flex-1 overflow-y-auto">{children}</div>}
 				</SheetContent>
 			</Sheet>
 		</FilterSheetContext.Provider>

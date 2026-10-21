@@ -64,4 +64,3 @@ export type ExpenseData = {
 	summary: ExpenseSummary;
 	expenses: ExpenseStats[];
 };
-

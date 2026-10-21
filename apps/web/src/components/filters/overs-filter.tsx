@@ -1,8 +1,8 @@
+import { FilterSheet } from "@ghurki-cricket/ui/components/filter-sheet";
 import { RadioGroup, RadioGroupItem } from "@ghurki-cricket/ui/components/radio-group";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 
-import { FilterSheet } from "@ghurki-cricket/ui/components/filter-sheet";
 import { BallIcon } from "@/components/icons";
 import { PageError } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
@@ -27,7 +27,7 @@ function OversOptions() {
 	const search = useSearch({ strict: false }) ?? {};
 
 	const { data, isPending, isError, error } = useQuery(
-		trpc.matches.listOvers.queryOptions({
+		trpc.filters.listOvers.queryOptions({
 			rivalry: search.rivalry,
 			date: search.date,
 		}),

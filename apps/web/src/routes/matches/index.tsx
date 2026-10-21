@@ -48,38 +48,32 @@ function HomeRoute() {
 	const dates = Object.keys(data ?? {});
 
 	if (dates.length === 0) {
-		return (
-			<div className="flex h-50 items-center justify-center rounded-md border text-sm text-muted-foreground">
-				No results found
-			</div>
-		);
+		return <div className="flex h-50 items-center justify-center rounded-md border text-sm text-muted-foreground">No results found</div>;
 	}
 
-	return dates
-		.reverse()
-		.map((date) => {
-			const matches = data[date] || [];
-			return (
-				<section key={date} className="space-y-2">
-					<h2 className="font-semibold">{date}</h2>
-					<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-						{matches.map((match) => (
-							<Item key={match.id} size="sm" className="items-start">
-								<ItemContent>
-									{match.innings.map((inning) => (
-										<div key={inning.id} className="flex items-center justify-between gap-3">
-											<ItemTitle>{inning.team}</ItemTitle>
-											<ItemDescription>{inning.score}</ItemDescription>
-										</div>
-									))}
-								</ItemContent>
-								<ItemFooter>
-									<ItemDescription>{match.result}</ItemDescription>
-								</ItemFooter>
-							</Item>
-						))}
-					</div>
-				</section>
-			);
-		});
+	return dates.reverse().map((date) => {
+		const matches = data[date] || [];
+		return (
+			<section key={date} className="space-y-2">
+				<h2 className="font-semibold">{date}</h2>
+				<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+					{matches.map((match) => (
+						<Item key={match.id} size="sm" className="items-start">
+							<ItemContent>
+								{match.innings.map((inning) => (
+									<div key={inning.id} className="flex items-center justify-between gap-3">
+										<ItemTitle>{inning.team}</ItemTitle>
+										<ItemDescription>{inning.score}</ItemDescription>
+									</div>
+								))}
+							</ItemContent>
+							<ItemFooter>
+								<ItemDescription>{match.result}</ItemDescription>
+							</ItemFooter>
+						</Item>
+					))}
+				</div>
+			</section>
+		);
+	});
 }

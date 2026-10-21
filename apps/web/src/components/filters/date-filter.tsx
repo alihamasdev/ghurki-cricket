@@ -1,5 +1,6 @@
 import { formatDate } from "@ghurki-cricket/api/utils";
-import { FilterSheet } from "@ghurki-cricket/ui/components/filter-sheet";
+import { Calendar } from "@ghurki-cricket/ui/components/calendar";
+import { FilterSheet, useFilterSheet } from "@ghurki-cricket/ui/components/filter-sheet";
 import { RadioGroup, RadioGroupItem } from "@ghurki-cricket/ui/components/radio-group";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
@@ -8,10 +9,14 @@ import { CalendarIcon } from "@/components/icons";
 import { PageError } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
+const MIN_DATE = new Date("2025-07-07T00:00:00");
+const START_MONTH = new Date(2025, 6, 1);
+
 type DateFilterProps = {
 	hasAllTime?: boolean;
 	hasPeriods?: boolean;
 	hasRivalries?: boolean;
+	hasCalendar?: boolean;
 };
 
 export function DateFilter(props: DateFilterProps) {
@@ -33,9 +38,10 @@ export function DateFilter(props: DateFilterProps) {
 	);
 }
 
-function DateOptions({ hasAllTime = true, hasPeriods = true, hasRivalries = true }: DateFilterProps) {
+function DateOptions({ hasAllTime = true, hasPeriods = true, hasRivalries = true, hasCalendar = true }: DateFilterProps) {
 	const navigate = useNavigate();
 	const search = useSearch({ strict: false }) ?? {};
+	const { closeSheet } = useFilterSheet();
 
 	const periodKey = (p: { starts: string; ends: string }) => `${p.starts}|${p.ends}`;
 
@@ -44,11 +50,11 @@ function DateOptions({ hasAllTime = true, hasPeriods = true, hasRivalries = true
 		enabled: hasAllTime,
 	});
 	const rivalries = useQuery({
-		...trpc.dates.listRivalries.queryOptions(),
+		...trpc.filters.listRivalries.queryOptions(),
 		enabled: hasRivalries,
 	});
 	const periods = useQuery({
-		...trpc.dates.listPeriods.queryOptions(),
+		...trpc.filters.listPeriods.queryOptions(),
 		enabled: hasPeriods,
 	});
 
@@ -109,6 +115,35 @@ function DateOptions({ hasAllTime = true, hasPeriods = true, hasRivalries = true
 						<RadioGroupItem key={rivalry.name} value={rivalry.name} label={rivalry.name} description={`${rivalry.count} days`} />
 					))}
 				</RadioGroup>
+			)}
+
+			{hasCalendar && (
+				<Calendar
+					mode="single"
+					captionLayout="dropdown"
+					startMonth={START_MONTH}
+					className="w-full"
+					style={{ padding: "8px 16px" }}
+					endMonth={new Date()}
+					disabled={{ before: MIN_DATE, after: new Date() }}
+					selected={search.date ? new Date(`${search.date}T00:00:00`) : undefined}
+					defaultMonth={search.date ? new Date(`${search.date}T00:00:00`) : new Date()}
+					onSelect={(date) => {
+						const formatted = date ? formatDate(date) : undefined;
+						navigate({
+							to: ".",
+							search: (prev) => ({
+								...prev,
+								date: search.date === formatted ? undefined : formatted,
+								rivalry: undefined,
+								starts: undefined,
+								ends: undefined,
+								year: undefined,
+							}),
+						});
+						closeSheet();
+					}}
+				/>
 			)}
 		</>
 	);

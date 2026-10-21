@@ -6,7 +6,8 @@ export function ballsToOvers(balls: number): string {
 }
 
 export function formatDate(inputDate: Date | string, type: "short" | "numeric" = "numeric"): string {
-	const date = new Date(inputDate);
+	const date =
+		typeof inputDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(inputDate) ? new Date(`${inputDate}T00:00:00`) : new Date(inputDate);
 
 	if (type === "short") {
 		return Intl.DateTimeFormat("us", {
@@ -16,7 +17,10 @@ export function formatDate(inputDate: Date | string, type: "short" | "numeric" =
 		}).format(date);
 	}
 
-	return date.toISOString().split("T")[0]!;
+	const y = date.getFullYear();
+	const m = String(date.getMonth() + 1).padStart(2, "0");
+	const d = String(date.getDate()).padStart(2, "0");
+	return `${y}-${m}-${d}`;
 }
 
 export function formatMatchScore(data: { runs: number; balls: number; wickets: number; allOuts: number }): string {
