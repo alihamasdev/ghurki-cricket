@@ -1,37 +1,21 @@
-import { type ExpenseStats } from "@ghurki-cricket/api/types";
+import { type ExpenseStats, type ExpenseSummary } from "@ghurki-cricket/api/types";
+import { FilterSheet } from "@ghurki-cricket/ui/components/filter-sheet";
 import { RadioGroup, RadioGroupItem } from "@ghurki-cricket/ui/components/radio-group";
+import { cn } from "@ghurki-cricket/ui/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { type ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
 import { z } from "zod";
 
 import { DataTable } from "@/components/data-table";
-import { FilterSheet } from "@/components/filter-sheet";
 import { CalendarIcon } from "@/components/icons";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<ExpenseStats>[] = [
-	{
-		accessorKey: "ground",
-		header: "Ground Name",
-		footer: "Total",
-	},
-	{
-		accessorKey: "days",
-		header: "No. of Days",
-		footer: ({ table }) => table.getFilteredRowModel().rows.reduce((sum, row) => sum + row.original.days, 0),
-	},
-	{
-		accessorKey: "expense",
-		header: "Ground Expense",
-		footer: ({ table }) =>
-			table
-				.getFilteredRowModel()
-				.rows.reduce((sum, row) => sum + row.original.expense, 0)
-				.toLocaleString(),
-	},
+	{ accessorKey: "ground", header: "Ground Name" },
+	{ accessorKey: "days", header: "No. of Days" },
+	{ accessorKey: "expense", header: "Ground Expense", cell: ({ row }) => row.original.expense.toLocaleString() },
 ];
 
 export const Route = createFileRoute("/expense/")({
@@ -47,15 +31,13 @@ export const Route = createFileRoute("/expense/")({
 	component: () => {
 		const { year } = Route.useSearch();
 
-		const [open, setOpen] = useState(false);
-
 		return (
 			<PageLayout
 				title="Expense"
 				headerRight={
 					<div className="flex sm:justify-end">
-						<FilterSheet title="Select Year" icon={CalendarIcon} value={year ?? "All Time"} open={open} onOpenChange={setOpen}>
-							<YearFilter setOpen={setOpen} />
+						<FilterSheet title="Select Year" icon={CalendarIcon} value={year ?? "All Time"}>
+							<YearFilter />
 						</FilterSheet>
 					</div>
 				}
@@ -65,6 +47,35 @@ export const Route = createFileRoute("/expense/")({
 		);
 	},
 });
+
+function ExpenseSummaryBoxes({ summary }: { summary: ExpenseSummary }) {
+	const stats = [
+		{ label: "No. of Day", value: summary.days.toLocaleString() },
+		{ label: "Ground Expense", value: summary.groundExpense.toLocaleString() },
+		{ label: "Gear Expense", value: summary.gearExpense.toLocaleString() },
+		{ label: "Total Expense", value: summary.totalExpense.toLocaleString() },
+	];
+
+	return (
+		<div className="grid grid-cols-2 border-b border-border sm:grid-cols-4">
+			{stats.map(({ label, value }, idx) => (
+				<div
+					key={label}
+					className={cn(
+						"flex flex-col items-center justify-center gap-1 p-4 text-center",
+						idx % 2 === 0 ? "border-r border-border" : "",
+						idx < 2 ? "border-b border-border sm:border-b-0" : "",
+						idx === 1 ? "sm:border-r sm:border-border" : "",
+						idx === 2 ? "sm:border-r sm:border-border" : "",
+					)}
+				>
+					<span className="text-xs text-muted-foreground">{label}</span>
+					<span className="text-base font-semibold">{value}</span>
+				</div>
+			))}
+		</div>
+	);
+}
 
 function ExpenseRoute() {
 	const { year } = Route.useSearch();
@@ -78,10 +89,14 @@ function ExpenseRoute() {
 		return <PageError error={error.message} />;
 	}
 
-	return <DataTable columns={columns} data={data} className="[&_table]:table-fixed" />;
+	return (
+		<DataTable columns={columns} data={data.expenses}>
+			<ExpenseSummaryBoxes summary={data.summary} />
+		</DataTable>
+	);
 }
 
-function YearFilter({ setOpen }: { setOpen: (open: boolean) => void }) {
+function YearFilter() {
 	const { year } = Route.useSearch();
 	const naviagte = Route.useNavigate();
 
@@ -99,7 +114,6 @@ function YearFilter({ setOpen }: { setOpen: (open: boolean) => void }) {
 				isLoading={isPending}
 				onValueChange={() => {
 					naviagte({ search: (prev) => ({ ...prev, year: undefined }) });
-					setOpen(false);
 				}}
 			>
 				<RadioGroupItem value="" label="All Time" description={`${data?.totalDays} days`} />
@@ -109,7 +123,6 @@ function YearFilter({ setOpen }: { setOpen: (open: boolean) => void }) {
 				isLoading={isPending}
 				onValueChange={(val: number) => {
 					naviagte({ search: (prev) => ({ ...prev, year: val }) });
-					setOpen(false);
 				}}
 			>
 				{data?.years.map((year) => (

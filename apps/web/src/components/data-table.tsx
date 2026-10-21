@@ -5,15 +5,14 @@ import { useEffect, useState } from "react";
 
 import { ImageCapture } from "@/components/image-capture";
 
-type DataTableProps<TData, TValue> = {
+type DataTableProps<TData, TValue> = React.PropsWithChildren<{
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
-	minSize?: number;
 	className?: string;
 	defaultSort?: { id: string; desc?: boolean };
-};
+}>;
 
-export function DataTable<TData, TValue>({ columns, data, className, defaultSort }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, className, defaultSort, children }: DataTableProps<TData, TValue>) {
 	const defaultSortId = defaultSort?.id;
 	const defaultSortDesc = defaultSort?.desc;
 
@@ -40,6 +39,7 @@ export function DataTable<TData, TValue>({ columns, data, className, defaultSort
 	return (
 		<ImageCapture>
 			<div className={cn("overflow-hidden rounded-md border", className)}>
+				{children}
 				<Table>
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (

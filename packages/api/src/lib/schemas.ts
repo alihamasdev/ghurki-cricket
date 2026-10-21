@@ -36,10 +36,13 @@ export const fieldingStatSchema = statSchema.extend({
 });
 export type FieldingStatSchema = z.infer<typeof fieldingStatSchema>;
 
-export const matchSchema = dateSchema.extend({
+export const matchSchema = dateSchema.omit({ starts: true, ends: true }).extend({
 	potm: z.string().optional().catch(undefined),
+	overs: z.coerce.number().optional().catch(undefined),
 });
 export type MatchSchema = z.infer<typeof matchSchema>;
 
-export const compareTeamSchema = dateSchema.pick({ rivalry: true, date: true }).optional();
+export const compareTeamSchema = dateSchema.omit({ starts: true, ends: true }).extend({
+	overs: z.coerce.number().optional().catch(undefined),
+});
 export type CompareTeamSchema = z.infer<typeof compareTeamSchema>;

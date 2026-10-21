@@ -3,7 +3,8 @@ import { Item, ItemContent, ItemDescription, ItemFooter, ItemTitle } from "@ghur
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DateFilter } from "@/components/date-filter";
+import { DateFilter } from "@/components/filters/date-filter";
+import { OversFilter } from "@/components/filters/overs-filter";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
@@ -20,8 +21,9 @@ export const Route = createFileRoute("/matches/")({
 			<PageLayout
 				title="Matches"
 				headerRight={
-					<div className="flex sm:justify-end">
-						<DateFilter />
+					<div className="flex gap-2 sm:justify-end">
+						<OversFilter />
+						<DateFilter hasPeriods={false} />
 					</div>
 				}
 			>
@@ -43,7 +45,17 @@ function HomeRoute() {
 		return <PageError error={error.message} />;
 	}
 
-	return Object.keys(data)
+	const dates = Object.keys(data ?? {});
+
+	if (dates.length === 0) {
+		return (
+			<div className="flex h-50 items-center justify-center rounded-md border text-sm text-muted-foreground">
+				No results found
+			</div>
+		);
+	}
+
+	return dates
 		.reverse()
 		.map((date) => {
 			const matches = data[date] || [];

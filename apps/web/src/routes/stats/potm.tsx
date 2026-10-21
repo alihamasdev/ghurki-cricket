@@ -6,7 +6,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 
 import { PlayerCell } from "@/components/avatar";
 import { DataTable } from "@/components/data-table";
-import { DateFilter } from "@/components/date-filter";
+import { DateFilter } from "@/components/filters/date-filter";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 

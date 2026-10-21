@@ -52,3 +52,16 @@ export type ExpenseStats = {
 	days: number;
 	expense: number;
 };
+
+export type ExpenseSummary = {
+	days: number;
+	groundExpense: number;
+	gearExpense: number;
+	totalExpense: number;
+};
+
+export type ExpenseData = {
+	summary: ExpenseSummary;
+	expenses: ExpenseStats[];
+};
+

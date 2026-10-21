@@ -3,7 +3,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DateFilter } from "@/components/date-filter";
+import { DateFilter } from "@/components/filters/date-filter";
+import { OversFilter } from "@/components/filters/overs-filter";
 import { ImageCapture } from "@/components/image-capture";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
@@ -21,7 +22,8 @@ export const Route = createFileRoute("/compare/teams")({
 			<PageLayout
 				title="Team vs Team"
 				headerRight={
-					<div className="flex sm:justify-end">
+					<div className="flex gap-2 sm:justify-end">
+						<OversFilter />
 						<DateFilter hasAllTime={false} hasPeriods={false} />
 					</div>
 				}
@@ -44,11 +46,27 @@ function TeamCompareRoute() {
 		return <PageError error={error.message} />;
 	}
 
-	const team1 = data?.[0];
-	const team2 = data?.[1];
+	if (!data || data.length < 2) {
+		return (
+			<ImageCapture width={40}>
+				<div className="overflow-hidden rounded-md border">
+					<Table>
+						<TableBody>
+							<TableRow>
+								<TableCell className="h-50 text-center first:text-center">No results found</TableCell>
+							</TableRow>
+						</TableBody>
+					</Table>
+				</div>
+			</ImageCapture>
+		);
+	}
+
+	const team1 = data[0];
+	const team2 = data[1];
 
 	const rows = [
-		...(!search?.date
+		...(!search?.date && !search?.overs
 			? [{ label: "Series Won", val1: team1?.seriesWon ?? 0, val2: team2?.seriesWon ?? 0 }]
 			: [{ label: "Matches Played", val1: team1?.matchesPlayed ?? 0, val2: team2?.matchesPlayed ?? 0 }]),
 		{ label: "Matches Won", val1: team1?.matchesWon ?? 0, val2: team2?.matchesWon ?? 0 },

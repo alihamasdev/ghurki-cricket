@@ -4,18 +4,40 @@ import { Skeleton } from "@ghurki-cricket/ui/components/skeleton";
 import { cn } from "cn";
 import { useId } from "react";
 
+import { useFilterSheet } from "./filter-sheet";
+
 type RadioGroupProps = RadioGroupPrimitive.Props & {
 	side?: "left" | "right";
 	isLoading?: boolean;
 	length?: number;
+	closeOnValueChange?: boolean;
 };
 
-function RadioGroup({ isLoading, length = 3, side = "left", className, children, ...props }: RadioGroupProps) {
+function RadioGroup({
+	isLoading,
+	length = 3,
+	side = "left",
+	className,
+	children,
+	onValueChange,
+	closeOnValueChange = true,
+	...props
+}: RadioGroupProps) {
+	const { closeSheet } = useFilterSheet();
+
+	const handleValueChange = (value: any, event: any) => {
+		onValueChange?.(value, event);
+		if (closeOnValueChange) {
+			closeSheet();
+		}
+	};
+
 	return (
 		<RadioGroupPrimitive
 			data-slot="radio-group"
 			data-side={side}
 			className={cn("group/radio-group grid", isLoading && "mt-2 gap-2 px-2", className)}
+			onValueChange={handleValueChange}
 			{...props}
 		>
 			{isLoading ? Array.from({ length }).map((_, i) => <Skeleton key={i} className="h-9" />) : children}
