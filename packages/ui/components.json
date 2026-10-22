@@ -1,24 +1,24 @@
 {
 	"$schema": "https://ui.shadcn.com/schema.json",
-	"style": "base-lyra",
+	"style": "base-vega",
 	"rsc": false,
 	"tsx": true,
 	"tailwind": {
 		"config": "",
-		"css": "src/styles/globals.css",
+		"css": "./src/styles/globals.css",
 		"baseColor": "neutral",
 		"cssVariables": true,
 		"prefix": ""
 	},
-	"iconLibrary": "lucide",
 	"aliases": {
 		"components": "@ghurki-cricket/ui/components",
+		"ui": "@ghurki-cricket/ui/components",
 		"utils": "@ghurki-cricket/ui/lib/utils",
-		"hooks": "@ghurki-cricket/ui/hooks",
 		"lib": "@ghurki-cricket/ui/lib",
-		"ui": "@ghurki-cricket/ui/components"
+		"hooks": "@ghurki-cricket/ui/hooks"
 	},
 	"menuColor": "default",
 	"menuAccent": "subtle",
+	"iconLibrary": "lucide",
 	"registries": {}
 }

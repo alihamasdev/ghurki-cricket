@@ -1,7 +1,6 @@
-import type { TooltipValueType } from "recharts";
-
 import { cn } from "cn";
-import * as React from "react";
+import { createContext, use, useId, useMemo } from "react";
+import { type TooltipValueType } from "recharts";
 import * as RechartsPrimitive from "recharts";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
@@ -22,10 +21,10 @@ type ChartContextProps = {
 	config: ChartConfig;
 };
 
-const ChartContext = React.createContext<ChartContextProps | null>(null);
+const ChartContext = createContext<ChartContextProps | null>(null);
 
 function useChart() {
-	const context = React.useContext(ChartContext);
+	const context = use(ChartContext);
 
 	if (!context) {
 		throw new Error("useChart must be used within a <ChartContainer />");
@@ -49,7 +48,7 @@ function ChartContainer({
 		height: number;
 	};
 }) {
-	const uniqueId = React.useId();
+	const uniqueId = useId();
 	const chartId = `chart-${id ?? uniqueId.replace(/:/g, "")}`;
 
 	return (
@@ -125,7 +124,7 @@ function ChartTooltipContent({
 	} & Omit<RechartsPrimitive.DefaultTooltipContentProps<TooltipValueType, TooltipNameType>, "accessibilityLayer">) {
 	const { config } = useChart();
 
-	const tooltipLabel = React.useMemo(() => {
+	const tooltipLabel = useMemo(() => {
 		if (hideLabel || !payload?.length) {
 			return null;
 		}

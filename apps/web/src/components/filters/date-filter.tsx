@@ -9,8 +9,9 @@ import { CalendarIcon } from "@/components/icons";
 import { PageError } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
-const MIN_DATE = new Date("2025-07-07T00:00:00");
+const today = new Date();
 const START_MONTH = new Date(2025, 6, 1);
+const MIN_DATE = new Date("2025-07-07T00:00:00");
 
 type DateFilterProps = {
 	hasAllTime?: boolean;
@@ -124,10 +125,10 @@ function DateOptions({ hasAllTime = true, hasPeriods = true, hasRivalries = true
 					startMonth={START_MONTH}
 					className="w-full"
 					style={{ padding: "8px 16px" }}
-					endMonth={new Date()}
-					disabled={{ before: MIN_DATE, after: new Date() }}
+					endMonth={today}
+					disabled={{ before: MIN_DATE, after: today }}
 					selected={search.date ? new Date(`${search.date}T00:00:00`) : undefined}
-					defaultMonth={search.date ? new Date(`${search.date}T00:00:00`) : new Date()}
+					defaultMonth={search.date ? new Date(`${search.date}T00:00:00`) : today}
 					onSelect={(date) => {
 						const formatted = date ? formatDate(date) : undefined;
 						navigate({

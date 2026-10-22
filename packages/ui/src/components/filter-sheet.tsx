@@ -1,4 +1,4 @@
-import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
+import { type Dialog as SheetPrimitive } from "@base-ui/react/dialog";
 import { Button } from "@ghurki-cricket/ui/components/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@ghurki-cricket/ui/components/sheet";
 import { createContext, useCallback, useContext, useState } from "react";
