@@ -22,7 +22,7 @@ export function getDate({ date, rivalry, starts, ends }: DateSchema): GetDateRet
 
 export function getStatWhere({ group, ...dateFilters }: StatSchema) {
 	return {
-		player: { group: getGroup({ group }) },
+		...(!dateFilters.date ? { player: { group: getGroup({ group }) } } : {}),
 		...getDate(dateFilters),
 	};
 }

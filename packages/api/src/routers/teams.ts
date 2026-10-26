@@ -32,7 +32,7 @@ export const teamsRouter = router({
 		const [seriesStats, matchStats, winStats, aggregateStats, highestScores, lowestScores] = await db.$transaction([
 			db.dates.groupBy({
 				by: ["winnerId"],
-				where: { winnerId: { not: null }, hasStats: true, ...(rivalryId ? { rivalryId } : {}) },
+				where: { winnerId: { not: null }, ...(rivalryId ? { rivalryId } : {}) },
 				_count: { winnerId: true },
 			}),
 			db.innings.groupBy({

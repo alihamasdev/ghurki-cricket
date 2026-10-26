@@ -123,10 +123,9 @@ function DateOptions({ hasAllTime = true, hasPeriods = true, hasRivalries = true
 					mode="single"
 					captionLayout="dropdown"
 					startMonth={START_MONTH}
-					className="w-full"
-					style={{ padding: "8px 16px" }}
 					endMonth={today}
 					disabled={{ before: MIN_DATE, after: today }}
+					style={{ padding: "8px 16px", width: "100%" }}
 					selected={search.date ? new Date(`${search.date}T00:00:00`) : undefined}
 					defaultMonth={search.date ? new Date(`${search.date}T00:00:00`) : today}
 					onSelect={(date) => {
