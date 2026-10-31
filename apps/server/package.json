@@ -16,8 +16,8 @@
 		"@trpc/server": "catalog:",
 		"cors": "^2.8.6",
 		"dotenv": "catalog:",
-		"express": "^5.2.1",
-		"helmet": "^8.0.0",
+		"express": "^5.3.0",
+		"helmet": "^8.3.0",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
@@ -25,8 +25,8 @@
 		"@types/bun": "catalog:",
 		"@types/cors": "^2.8.19",
 		"@types/express": "catalog:",
-		"tsdown": "^0.22.14",
-		"typescript": "^6.0.3"
+		"tsdown": "^0.23.4",
+		"typescript": "catalog:"
 	},
 	"trustedDependencies": [
 		"supabase"

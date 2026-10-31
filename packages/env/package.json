@@ -16,6 +16,6 @@
 	"devDependencies": {
 		"@ghurki-cricket/config": "workspace:*",
 		"@types/bun": "catalog:",
-		"typescript": "^6.0.3"
+		"typescript": "catalog:"
 	}
 }

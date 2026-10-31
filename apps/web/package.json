@@ -11,33 +11,34 @@
 		"start": "vite"
 	},
 	"dependencies": {
+		"@fontsource-variable/outfit": "^5.3.0",
 		"@ghurki-cricket/api": "workspace:*",
 		"@ghurki-cricket/env": "workspace:*",
 		"@ghurki-cricket/ui": "workspace:*",
 		"@tailwindcss/vite": "^4.3.3",
 		"@tanstack/react-query": "catalog:",
-		"@tanstack/react-router": "^1.170.18",
+		"@tanstack/react-router": "^1.170.46",
 		"@tanstack/react-table": "catalog:",
 		"@trpc/client": "catalog:",
 		"@trpc/server": "catalog:",
 		"@trpc/tanstack-react-query": "catalog:",
 		"dotenv": "catalog:",
-		"lucide-react": "catalog:",
+		"lucide-react": "1.66.0",
 		"modern-screenshot": "^4.7.0",
-		"react": "^19.2.8",
-		"react-dom": "^19.2.8",
+		"react": "^19.3.0",
+		"react-dom": "^19.3.0",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@ghurki-cricket/config": "workspace:*",
 		"@tanstack/router-plugin": "^1.168.23",
 		"@types/node": "catalog:",
-		"@types/react": "^19.2.17",
-		"@types/react-dom": "catalog:",
-		"@vitejs/plugin-react": "^6.0.4",
-		"postcss": "^8.5.24",
+		"@types/react": "^19.3.0",
+		"@types/react-dom": "^19.3.0",
+		"@vitejs/plugin-react": "^6.1.2",
+		"postcss": "^8.5.32",
 		"tailwindcss": "catalog:",
-		"typescript": "^6.0.3",
-		"vite": "^8.1.5"
+		"typescript": "catalog:",
+		"vite": "^8.3.5"
 	}
 }
