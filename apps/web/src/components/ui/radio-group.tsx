@@ -1,8 +1,9 @@
 import { Radio as RadioPrimitive } from "@base-ui/react/radio";
 import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group";
-import { Skeleton } from "@ghurki-cricket/ui/components/skeleton";
 import { cn } from "cn";
 import { useId } from "react";
+
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { useFilterSheet } from "./filter-sheet";
 

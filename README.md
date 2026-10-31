@@ -9,7 +9,7 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **React Native** - Build mobile apps using React
 - **Expo** - Tools for React Native development
 - **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
+- **shadcn/ui** - Primitives live in `apps/web/src/components/ui`
 - **Express** - Fast, unopinionated web framework
 - **tRPC** - End-to-end type-safe APIs
 - **Bun** - Runtime environment
@@ -50,29 +50,25 @@ The API is running at [http://localhost:5000](http://localhost:5000).
 
 ## UI Customization
 
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
+The web app uses shadcn/ui primitives in `apps/web/src/components/ui`.
 
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
+- Change design tokens and global styles in `apps/web/src/index.css`
+- Update UI primitives in `apps/web/src/components/ui/*`
+- Adjust shadcn aliases in `apps/web/components.json`
 
-### Add more shared components
+### Add more components
 
-Run this from the project root to add more primitives to the shared UI package:
+Run this from the project root or `apps/web` to add more components:
 
 ```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
+npx shadcn@latest add accordion dialog popover sheet table
 ```
 
-Import shared components like this:
+Import components like this:
 
 ```tsx
-import { Button } from "@ghurki-cricket/ui/components/button";
+import { Button } from "@/components/ui/button";
 ```
-
-### Add app-specific blocks
-
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
 
 ## Deployment
 

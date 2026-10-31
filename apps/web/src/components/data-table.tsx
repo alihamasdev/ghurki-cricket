@@ -1,9 +1,9 @@
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@ghurki-cricket/ui/components/table";
-import { cn } from "@ghurki-cricket/ui/lib/utils";
 import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable, type ColumnDef, type SortingState } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 
 import { ImageCapture } from "@/components/image-capture";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 type DataTableProps<TData, TValue> = React.PropsWithChildren<{
 	columns: ColumnDef<TData, TValue>[];

@@ -1,10 +1,10 @@
-import { FilterSheet } from "@ghurki-cricket/ui/components/filter-sheet";
-import { RadioGroup, RadioGroupItem } from "@ghurki-cricket/ui/components/radio-group";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 
 import { BallIcon } from "@/components/icons";
 import { PageError } from "@/components/page-layout";
+import { FilterSheet } from "@/components/ui/filter-sheet";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { trpc } from "@/utils/trpc";
 
 export function OversFilter() {

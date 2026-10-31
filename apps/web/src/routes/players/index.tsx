@@ -1,10 +1,10 @@
 import { groupSchema } from "@ghurki-cricket/api/schema";
-import { Item, ItemContent, ItemMedia, ItemTitle, ItemDescription } from "@ghurki-cricket/ui/components/item";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PlayerAvatar } from "@/components/avatar";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
+import { Item, ItemContent, ItemMedia, ItemTitle, ItemDescription } from "@/components/ui/item";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/players/")({

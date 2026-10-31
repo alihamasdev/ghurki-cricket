@@ -1,8 +1,9 @@
-import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from "@ghurki-cricket/ui/components/empty";
-import { SidebarTrigger } from "@ghurki-cricket/ui/components/sidebar";
-import { Spinner } from "@ghurki-cricket/ui/components/spinner";
-import { cn } from "@ghurki-cricket/ui/lib/utils";
 import { AlertTriangleIcon } from "lucide-react";
+
+import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 
 type PageLayoutProps = React.PropsWithChildren<{
 	title: string;

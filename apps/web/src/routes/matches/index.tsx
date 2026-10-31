@@ -1,11 +1,11 @@
 import { matchSchema } from "@ghurki-cricket/api/schema";
-import { Item, ItemContent, ItemDescription, ItemFooter, ItemTitle } from "@ghurki-cricket/ui/components/item";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { DateFilter } from "@/components/filters/date-filter";
 import { OversFilter } from "@/components/filters/overs-filter";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
+import { Item, ItemContent, ItemDescription, ItemFooter, ItemTitle } from "@/components/ui/item";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/matches/")({

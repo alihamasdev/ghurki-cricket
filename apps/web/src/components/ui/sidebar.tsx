@@ -1,12 +1,13 @@
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
-import { Button } from "@ghurki-cricket/ui/components/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@ghurki-cricket/ui/components/sheet";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@ghurki-cricket/ui/components/tooltip";
-import { useIsMobile } from "@ghurki-cricket/ui/hooks/use-mobile";
 import { cn } from "cn";
 import { PanelLeftIcon } from "lucide-react";
 import { createContext, use, useEffect, useState, useCallback, useMemo } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

@@ -1,6 +1,7 @@
 import { env } from "@ghurki-cricket/env/web";
-import { Avatar, AvatarFallback, AvatarImage } from "@ghurki-cricket/ui/components/avatar";
 import { ShieldIcon, UserIcon } from "lucide-react";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export type AvatarVariant = "avatar" | "profile";
 

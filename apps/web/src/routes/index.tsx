@@ -1,8 +1,8 @@
-import { Item, ItemContent, ItemMedia, ItemTitle } from "@ghurki-cricket/ui/components/item";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { sidebarList } from "@/components/app-sidebar";
 import { PageLayout } from "@/components/page-layout";
+import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
 
 export const Route = createFileRoute("/")({
 	head: () => ({

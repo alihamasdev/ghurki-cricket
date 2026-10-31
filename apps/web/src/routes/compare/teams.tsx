@@ -1,5 +1,4 @@
 import { compareTeamSchema } from "@ghurki-cricket/api/schema";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@ghurki-cricket/ui/components/table";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -7,6 +6,7 @@ import { DateFilter } from "@/components/filters/date-filter";
 import { OversFilter } from "@/components/filters/overs-filter";
 import { ImageCapture } from "@/components/image-capture";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/compare/teams")({

@@ -7,18 +7,6 @@ import {
 	matchSchema,
 	statSchema,
 } from "@ghurki-cricket/api/schema";
-import {
-	Sidebar,
-	SidebarContent,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarGroupLabel,
-	SidebarHeader,
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	useSidebar,
-} from "@ghurki-cricket/ui/components/sidebar";
 import { Link, useLocation, useSearch } from "@tanstack/react-router";
 import { type ZodType } from "zod";
 
@@ -36,6 +24,18 @@ import {
 	TeamVsTeamIcon,
 	type Icon,
 } from "@/components/icons";
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupLabel,
+	SidebarHeader,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
+	useSidebar,
+} from "@/components/ui/sidebar";
 
 type SidebarItem = Array<{
 	name: string;
