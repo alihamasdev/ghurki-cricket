@@ -2,7 +2,7 @@ import { AlertTriangleIcon } from "lucide-react";
 
 import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 type PageLayoutProps = React.PropsWithChildren<{
@@ -39,8 +39,8 @@ export function PageLayout({ title, headerRight, className, children }: PageLayo
 	);
 }
 
-export function PageLoader({ ...props }: React.ComponentProps<typeof Spinner>) {
-	return <Spinner {...props} />;
+export function PageLoader({ className, ...props }: React.ComponentProps<typeof Skeleton>) {
+	return <Skeleton className={cn("h-125", className)} {...props} />;
 }
 
 export function PageError({ error }: { error?: string }) {

@@ -44,13 +44,13 @@ export const Route = createFileRoute("/stats/bowling")({
 					</div>
 				}
 			>
-				<BowlingRoute />
+				<BowlingTable />
 			</PageLayout>
 		);
 	},
 });
 
-function BowlingRoute() {
+function BowlingTable() {
 	const search = Route.useSearch();
 	const { data, status, error } = useQuery(trpc.bowling.list.queryOptions(search));
 

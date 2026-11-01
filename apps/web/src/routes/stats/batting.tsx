@@ -44,13 +44,13 @@ export const Route = createFileRoute("/stats/batting")({
 					</div>
 				}
 			>
-				<BattingRoute />
+				<BattingTable />
 			</PageLayout>
 		);
 	},
 });
 
-function BattingRoute() {
+function BattingTable() {
 	const search = Route.useSearch();
 	const { data, status, error } = useQuery(trpc.batting.list.queryOptions(search));
 

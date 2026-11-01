@@ -10,6 +10,7 @@ export const battingRouter = router({
 	list: publicProcedure.input(battingStatSchema).query(async ({ input }) => {
 		return getBattingStats(input);
 	}),
+	graph: publicProcedure.query(async () => {}),
 });
 
 const getBattingStats = async (filters: BattingStatSchema): Promise<BattingStats[]> => {

@@ -35,13 +35,13 @@ export const Route = createFileRoute("/stats/fielding")({
 					</div>
 				}
 			>
-				<FieldingRoute />
+				<FieldingTable />
 			</PageLayout>
 		);
 	},
 });
 
-function FieldingRoute() {
+function FieldingTable() {
 	const search = Route.useSearch();
 	const { data, status, error } = useQuery(trpc.fielding.list.queryOptions(search));
 
