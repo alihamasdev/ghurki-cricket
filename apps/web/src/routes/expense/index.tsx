@@ -2,9 +2,8 @@ import { expenseSchema } from "@ghurki-cricket/api/schema";
 import { type ExpenseStats, type ExpenseSummary } from "@ghurki-cricket/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { type ColumnDef } from "@tanstack/react-table";
 
-import { DataTable } from "@/components/data-table";
+import { DataTable, type ColumnDef } from "@/components/data-table";
 import { CalendarIcon } from "@/components/icons";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { FilterSheet } from "@/components/ui/filter-sheet";

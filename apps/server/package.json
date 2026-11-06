@@ -25,7 +25,7 @@
 		"@types/bun": "catalog:",
 		"@types/cors": "^2.8.19",
 		"@types/express": "catalog:",
-		"tsdown": "^0.23.4",
+		"tsdown": "^0.23.7",
 		"typescript": "catalog:"
 	},
 	"trustedDependencies": [

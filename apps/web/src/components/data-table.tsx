@@ -1,28 +1,43 @@
-import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable, type ColumnDef, type SortingState } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { flexRender, type RowData, type SortingState } from "@tanstack/react-table";
+import {
+	getCoreRowModel,
+	getSortedRowModel,
+	useLegacyTable as useReactTable,
+	type LegacyColumnDef as ColumnDef,
+} from "@tanstack/react-table/legacy";
+import { useState } from "react";
 
 import { ImageCapture } from "@/components/image-capture";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-type DataTableProps<TData, TValue> = React.PropsWithChildren<{
-	columns: ColumnDef<TData, TValue>[];
+export type { ColumnDef };
+
+type DataTableProps<TData extends RowData, _TValue = unknown> = React.PropsWithChildren<{
+	columns: ColumnDef<TData, any>[];
 	data: TData[];
 	className?: string;
 	defaultSort?: { id: string; desc?: boolean };
 }>;
 
-export function DataTable<TData, TValue>({ columns, data, className, defaultSort, children }: DataTableProps<TData, TValue>) {
+export function DataTable<TData extends RowData, TValue = unknown>({
+	columns,
+	data,
+	className,
+	defaultSort,
+	children,
+}: DataTableProps<TData, TValue>) {
 	const defaultSortId = defaultSort?.id;
 	const defaultSortDesc = defaultSort?.desc;
 
+	const [prevSortKey, setPrevSortKey] = useState(() => `${defaultSortId}:${defaultSortDesc}`);
 	const [sorting, setSorting] = useState<SortingState>(() => (defaultSortId ? [{ id: defaultSortId, desc: defaultSortDesc ?? true }] : []));
 
-	useEffect(() => {
-		if (defaultSortId) {
-			setSorting([{ id: defaultSortId, desc: defaultSortDesc ?? true }]);
-		}
-	}, [defaultSortId, defaultSortDesc]);
+	const currentSortKey = `${defaultSortId}:${defaultSortDesc}`;
+	if (prevSortKey !== currentSortKey) {
+		setPrevSortKey(currentSortKey);
+		setSorting(defaultSortId ? [{ id: defaultSortId, desc: defaultSortDesc ?? true }] : []);
+	}
 
 	// oxlint-disable-next-line react/incompatible-library
 	const table = useReactTable({

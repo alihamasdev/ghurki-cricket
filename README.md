@@ -1,131 +1,321 @@
-# Ghurki Cricket
+<p align="center">
+  <img src="./logo.png" alt="Ghurki Cricket Logo" width="140" />
+</p>
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, Express, TRPC, and more.
+<h1 align="center">Ghurki Cricket</h1>
 
-## Features
+<p align="center">
+  A modern, end-to-end type-safe cricket analytics and tournament management platform built for tracking matches, performance statistics, player rivalries, and expenses across web and mobile.
+</p>
 
-- **TypeScript** - For type safety and improved developer experience
-- **TanStack Router** - File-based routing with full type safety
-- **React Native** - Build mobile apps using React
-- **Expo** - Tools for React Native development
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **shadcn/ui** - Primitives live in `apps/web/src/components/ui`
-- **Express** - Fast, unopinionated web framework
-- **tRPC** - End-to-end type-safe APIs
-- **Bun** - Runtime environment
-- **Prisma** - TypeScript-first ORM
-- **PostgreSQL** - Database engine
-- **Oxlint** - Oxlint + Oxfmt (linting & formatting)
-- **Turborepo** - Optimized monorepo build system
+<p align="center">
+  <img src="https://img.shields.io/badge/Runtime-Bun-black?logo=bun" alt="Bun" />
+  <img src="https://img.shields.io/badge/Framework-React_19-blue?logo=react" alt="React 19" />
+  <img src="https://img.shields.io/badge/Mobile-Expo_SDK_58-000020?logo=expo" alt="Expo" />
+  <img src="https://img.shields.io/badge/API-tRPC_v11-2596be?logo=trpc" alt="tRPC" />
+  <img src="https://img.shields.io/badge/Database-PostgreSQL-336791?logo=postgresql" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/ORM-Prisma-2D3748?logo=prisma" alt="Prisma" />
+  <img src="https://img.shields.io/badge/Monorepo-Turborepo-ef4444?logo=turborepo" alt="Turborepo" />
+</p>
 
-## Getting Started
+---
 
-First, install the dependencies:
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Quickstart](#quickstart)
+- [Database Setup](#database-setup)
+- [Environment Variables](#environment-variables)
+- [Available Scripts](#available-scripts)
+- [Player Media Management](#player-media-management)
+- [UI Components & Design System](#ui-components--design-system)
+- [Deployment](#deployment)
+
+---
+
+## Overview
+
+**Ghurki Cricket** is a high-performance cricket tracking platform tailored for local leagues, club matches, and friendly rivalries. The platform tracks ball-by-ball performance, match results, player-of-the-match accolades, head-to-head batter vs. bowler rivalries, and ground expenses.
+
+Built as an integrated monorepo using **Turborepo** and **Bun**, the workspace shares database schemas, business logic, environment validation, and type definitions between a responsive web client, a cross-platform Expo mobile app, and an Express-powered tRPC API server.
+
+---
+
+## Key Features
+
+- **Match & Session Tracking**: Log match dates, venue details, overs, winning margins, innings scorecards, and highlight video links.
+- **Deep Cricket Analytics**:
+  - **Batting**: Runs, strike rates, fours, sixes, ducks, 30s, and 50s.
+  - **Bowling**: Wickets, balls bowled, dots, extras (wides, no-balls), and multi-wicket milestones (2-fers, 3-fers).
+  - **Fielding & Attendance**: Catches, run-outs, and participation history across sessions.
+- **Rivalry & Duel Records**: Track head-to-head records between individual batters and bowlers over time.
+- **Cross-Platform Access**:
+  - **Web Application**: Fast Single Page Application (SPA) with TanStack Router, TanStack Table, Recharts, and shadcn/ui.
+  - **Mobile Application**: Native iOS and Android application built with React Native 0.88, Expo SDK 58, and Expo Router.
+- **End-to-End Type Safety**: Shared tRPC router contracts and Zod runtime schema validation prevent client-server contract mismatches.
+- **Asset Pipeline**: Automatic image optimization and WebP conversion for player profile photos and avatars stored via Supabase Storage.
+- **Match Expense Auditing**: Record and audit ground fees, gear costs, and player contributions per match day.
+
+---
+
+## Tech Stack
+
+| Layer                | Technologies                                                                                                                                                                                                                   |
+| :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Monorepo & Build** | [Turborepo](https://turbo.build/), [Bun](https://bun.sh/) Workspaces, [Oxlint](https://oxc.rs/) & [Oxfmt](https://github.com/oxc-project/oxc)                                                                                  |
+| **Web Frontend**     | [React 19](https://react.dev/), [Vite](https://vite.dev/), [TanStack Router](https://tanstack.com/router), [Tailwind CSS v4](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/), [Recharts](https://recharts.org/) |
+| **Mobile App**       | [React Native](https://reactnative.dev/), [Expo SDK 58](https://expo.dev/), [Expo Router](https://docs.expo.dev/router/introduction/), [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/)          |
+| **API Server**       | [Express 5](https://expressjs.com/), [tRPC v11](https://trpc.io/), [Helmet](https://helmetjs.github.io/), [CORS](https://github.com/expressjs/cors)                                                                            |
+| **Database & Cache** | [PostgreSQL](https://www.postgresql.org/), [Prisma ORM](https://www.prisma.io/), [Supabase Storage](https://supabase.com/storage)                                                                                              |
+| **Configuration**    | [@t3-oss/env-core](https://env.t3.gg/) for runtime environment validation, [Zod](https://zod.dev/)                                                                                                                             |
+
+---
+
+## Project Structure
+
+```text
+ghurki-cricket/
+├── apps/
+│   ├── native/            # Cross-platform mobile app (React Native & Expo Router)
+│   ├── server/            # Express backend serving tRPC endpoints and media proxy
+│   └── web/               # Web client (Vite, React 19, TanStack Router, Tailwind v4)
+├── packages/
+│   ├── api/               # Shared tRPC routers, procedures, and query contexts
+│   ├── config/            # Shared TypeScript and compiler configurations
+│   ├── db/                # Prisma ORM schema, migrations, and generated client
+│   └── env/               # Validated environment configurations for server, web, and native
+├── players/               # Raw player images (avatars and profile portraits)
+├── scripts/
+│   ├── sync-vercel-env.ts # CLI script to push local environment variables to Vercel
+│   └── upload-player-images.ts # Image optimization and Supabase Storage upload script
+├── logo.png               # Project branding asset
+├── turbo.json             # Turborepo task pipeline configuration
+└── vercel.json            # Vercel Services multi-service configuration
+```
+
+---
+
+## Prerequisites
+
+Before setting up the project, make sure you have the following installed:
+
+- **[Bun](https://bun.sh/)** (`>= 1.3.0`)
+- **[Node.js](https://nodejs.org/)** (`>= 20.0.0`, required for native dependencies and Expo CLI tooling)
+- **[PostgreSQL](https://www.postgresql.org/)** database instance (local instance, Docker container, or hosted service such as Supabase / Neon)
+- **[Expo Go](https://expo.dev/go)** mobile app on iOS or Android (optional, for testing the mobile application on physical hardware)
+
+---
+
+## Quickstart
+
+### 1. Clone the repository and install dependencies
 
 ```bash
+git clone https://github.com/your-username/ghurki-cricket.git
+cd ghurki-cricket
 bun install
 ```
 
-## Database Setup
+### 2. Configure environment variables
 
-This project uses PostgreSQL with Prisma.
-
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/server/.env` file with your PostgreSQL connection details.
-3. Apply the schema to your database:
+Copy the example environment file and configure your credentials:
 
 ```bash
+cp .env.example .env.local
+```
+
+> [!NOTE]
+> The backend server loads variables from `.env.local` or `apps/server/.env`. Refer to [Environment Variables](#environment-variables) for configuration details.
+
+### 3. Initialize the database
+
+Generate the Prisma client and synchronize the database schema:
+
+```bash
+bun run db:generate
 bun run db:push
 ```
 
-Then, run the development server:
+### 4. Start the development servers
+
+Start all workspaces concurrently (web dashboard, Express API, and Expo dev server):
 
 ```bash
 bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the web application.
-Use the Expo Go app to run the mobile application.
-The API is running at [http://localhost:5000](http://localhost:5000).
+Once running, the applications are accessible at:
 
-## UI Customization
+| Application                   | Address                                        |
+| :---------------------------- | :--------------------------------------------- |
+| **Web Dashboard**             | [http://localhost:3000](http://localhost:3000) |
+| **API Server (tRPC & Media)** | [http://localhost:8000](http://localhost:8000) |
+| **Expo Dev Tools**            | `http://localhost:8081`                        |
 
-The web app uses shadcn/ui primitives in `apps/web/src/components/ui`.
+> [!TIP]
+> To launch individual applications instead of the entire monorepo, use `bun run dev:web`, `bun run dev:server`, or `bun run dev:native`.
 
-- Change design tokens and global styles in `apps/web/src/index.css`
-- Update UI primitives in `apps/web/src/components/ui/*`
-- Adjust shadcn aliases in `apps/web/components.json`
+---
 
-### Add more components
+## Database Setup
 
-Run this from the project root or `apps/web` to add more components:
+The database schema and models are managed under `packages/db` using Prisma ORM with PostgreSQL.
+
+### Core Domain Models
+
+- **`Players`**: Personal info, player groups (`core`, `family`, `friends`), roles, avatars, and match statistics.
+- **`Teams`**: Team identities, match win records, and date session results.
+- **`Dates`**: Session dates, ground details, financial breakdowns, and associated matches.
+- **`Matches` & `Innings`**: Match results, target/score calculations, overs, win margins, and Player of the Match awards.
+- **`Batters`, `Bowlers`, `Fielders`**: Per-session statistical scorecards for every participating player.
+- **`Rivalries` & `Records`**: Lifetime head-to-head records tracking matchups between individual batters and bowlers.
+
+### Database Workflows
 
 ```bash
-npx shadcn@latest add accordion dialog popover sheet table
+# Push schema changes directly to the database during development
+bun run db:push
+
+# Generate the type-safe Prisma client
+bun run db:generate
+
+# Run migration scripts for staging or production
+bun run db:migrate
+
+# Open the visual Prisma Studio database manager
+bun run db:studio
 ```
 
-Import components like this:
+> [!IMPORTANT]
+> Always run `bun run db:generate` whenever you modify `packages/db/prisma/schema/schema.prisma` to keep TypeScript typings synchronized across `packages/api` and `apps/server`.
 
-```tsx
-import { Button } from "@/components/ui/button";
-```
+---
 
-## Deployment
+## Environment Variables
 
-### Vercel Services
+Environment variables are validated at runtime via `@ghurki-cricket/env` backed by `@t3-oss/env-core` and Zod.
 
-- Target: web + server
-- Config: `vercel.json`
-- Link the project first: bun run deploy:setup
-- Local Vercel dev: bun run dev:vercel
-- Sync preview env: bun run env:preview
-- Sync production env: bun run env:production
-- Dry-run check (no upload): bun run deploy:check
-- Preview deploy: bun run deploy
-- Production deploy: bun run deploy:prod
-- Web requests under `/api/*` route to the server service and are rewritten before reaching the backend.
-  Vercel Services share project environment variables, but deploys do not upload local `.env` files automatically. Link the project with `vercel link`, then run the env sync command before your first deploy (otherwise the deployment starts with no env vars), or pass one-off envs with `vercel deploy -e KEY=value`.
-  Pass Vercel CLI flags to the env sync command directly, for example: `bun run env:production --scope your-team`.
+### Server & Database (`apps/server/.env` or `.env.local`)
 
-For more details, see the guide on [Deploying to Vercel](https://www.better-t-stack.dev/docs/guides/vercel).
+| Variable               | Description                                           | Example                                                              |
+| :--------------------- | :---------------------------------------------------- | :------------------------------------------------------------------- |
+| `DATABASE_URL`         | PostgreSQL connection string                          | `postgresql://user:pass@localhost:5432/ghurki_cricket?schema=public` |
+| `PORT`                 | HTTP port for the Express server (defaults to `8000`) | `8000`                                                               |
+| `CORS_ORIGIN`          | Allowed CORS origins (comma-separated or `*`)         | `http://localhost:3000`                                              |
+| `SUPABASE_STORAGE_URL` | Upstream Supabase Storage URL for player assets       | `https://<project-ref>.supabase.co/storage/v1/object/public/players` |
 
-## Git Hooks and Formatting
+### Web Client (`apps/web/.env` or root `.env.local`)
 
-- Run checks: `bun run check`
+| Variable           | Description                                        | Default                                       |
+| :----------------- | :------------------------------------------------- | :-------------------------------------------- |
+| `VITE_SERVER_URL`  | Absolute URL or same-origin path to the API server | `http://localhost:8000` (dev) / `/api` (prod) |
+| `VITE_STORAGE_URL` | Optional direct Supabase Storage public CDN URL    | _(optional)_                                  |
 
-## Project Structure
+### Mobile Client (`apps/native/.env`)
 
-```
-ghurki-cricket/
-├── apps/
-│   ├── web/         # Frontend application (React + TanStack Router)
-│   ├── native/      # Mobile application (React Native, Expo)
-│   └── server/      # Backend API (Express, TRPC)
-├── packages/
-│   ├── api/         # API layer / business logic (TRPC)
-│   ├── db/          # Database schema & queries (Prisma)
-│   ├── config/      # Project configuration (Typescript)
-│   ├── env/         # Typesafe environmental variables (@t3/env)
-│   └── ui/          # Shared shadcn/ui components and styles
-```
+| Variable                 | Description                                    | Example                     |
+| :----------------------- | :--------------------------------------------- | :-------------------------- |
+| `EXPO_PUBLIC_SERVER_URL` | Accessible API endpoint URL for mobile clients | `http://192.168.1.100:8000` |
+
+---
 
 ## Available Scripts
 
-- `bun run dev`: Start all applications in development mode
-- `bun run build`: Build all applications
-- `bun run dev:web`: Start only the web application
-- `bun run dev:server`: Start only the server
-- `bun run check-types`: Check TypeScript types across all apps
-- `bun run dev:native`: Start the React Native/Expo development server
-- `bun run db:push`: Push schema changes to database
-- `bun run db:generate`: Generate database client/types
-- `bun run db:migrate`: Run database migrations
-- `bun run db:studio`: Open database studio UI
-- `bun run check`: Run Oxlint and Oxfmt
-- `bun run deploy:setup`: Link this repo to a Vercel project (first-time setup)
-- `bun run dev:vercel`: Run the Vercel Services dev environment locally
-- `bun run env:preview`: Sync local env files to the Vercel preview environment
-- `bun run env:production`: Sync local env files to the Vercel production environment
-- `bun run deploy`: Create a Vercel preview deployment
-- `bun run deploy:prod`: Deploy to Vercel production
-- `bun run deploy:check`: Dry-run a deploy to preview framework detection and included files without uploading
+Run these scripts from the repository root:
+
+| Command                        | Action                                                         |
+| :----------------------------- | :------------------------------------------------------------- |
+| `bun run dev`                  | Start web, server, and native apps in watch mode via Turborepo |
+| `bun run dev:web`              | Start only the Vite web application                            |
+| `bun run dev:server`           | Start only the Express tRPC server                             |
+| `bun run dev:native`           | Start the Expo development server for the mobile app           |
+| `bun run build`                | Build all packages and applications for production             |
+| `bun run check`                | Run Oxlint and Oxfmt across the codebase                       |
+| `bun run check-types`          | Typecheck all monorepo workspaces (`tsc --noEmit`)             |
+| `bun run db:generate`          | Generate the Prisma client in `packages/db`                    |
+| `bun run db:push`              | Synchronize database schema with the Prisma schema             |
+| `bun run db:migrate`           | Apply pending database migrations                              |
+| `bun run db:studio`            | Open Prisma Studio in the browser                              |
+| `bun run upload-player-images` | Optimize and upload player photos to Supabase Storage          |
+| `bun run env:prev`             | Sync local `.env` variables to Vercel preview environments     |
+| `bun run env:prod`             | Sync local `.env` variables to Vercel production environments  |
+| `bun run deploy:prev`          | Deploy a preview build using Vercel CLI                        |
+| `bun run deploy:prod`          | Deploy directly to Vercel production                           |
+
+---
+
+## Player Media Management
+
+Player avatars and full portraits are processed and uploaded to Supabase Storage using Sharp:
+
+1. Place source photos in the `players/` directory:
+   - Avatars: `players/avatars/<player-name>.png`
+   - Profiles: `players/profiles/<player-name>.png`
+2. Ensure `SUPABASE_STORAGE_URL` (or `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`) are present in `.env.local`.
+3. Execute the image processing script:
+
+```bash
+bun run upload-player-images
+```
+
+The script automatically converts images to optimized WebP format, resizes them, and uploads them to the public `players` bucket. The Express backend serves cached, immutable WebP responses via `/players/:playerId.webp` and `/players/:playerId/:variant.webp`.
+
+---
+
+## UI Components & Design System
+
+The web frontend uses **Tailwind CSS v4** and **shadcn/ui** components located in `apps/web/src/components/ui`.
+
+To add more shadcn/ui primitives to the web application:
+
+```bash
+cd apps/web
+bunx --bun shadcn@latest add <component-name>
+```
+
+Global styles and design tokens can be adjusted in `apps/web/src/index.css`.
+
+---
+
+## Deployment
+
+### Vercel Services (Multi-Service Architecture)
+
+The project is structured to deploy on Vercel using **Vercel Services** defined in `vercel.json`:
+
+- **Web Service (`apps/web`)**: Static Vite SPA bundle with client-side routing.
+- **Server Service (`apps/server`)**: Node.js/Express backend handling tRPC calls and image proxying.
+- **Routing Rules**: Requests hitting `/api/*` and `/players/*.webp` route seamlessly to the server service, while all remaining routes point to the web SPA.
+
+```text
+Incoming Request
+  ├── /api/*               ──>  Server Service (Express + tRPC)
+  ├── /players/*.webp      ──>  Server Service (Image Cache & Proxy)
+  └── /*                   ──>  Web Service (Vite React SPA)
+```
+
+### Deployment Workflow
+
+1. Link the repository to your Vercel project:
+
+   ```bash
+   bunx vercel link
+   ```
+
+2. Push your environment variables to Vercel:
+
+   ```bash
+   bun run env:prev  # Push to Preview environment
+   bun run env:prod  # Push to Production environment
+   ```
+
+3. Trigger a deployment:
+
+   ```bash
+   bun run deploy:prev # Deploy preview build
+   bun run deploy:prod # Deploy to production
+   ```

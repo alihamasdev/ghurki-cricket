@@ -2,10 +2,9 @@ import { statSchema } from "@ghurki-cricket/api/schema";
 import { type POTMStats } from "@ghurki-cricket/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { type ColumnDef } from "@tanstack/react-table";
 
 import { PlayerCell } from "@/components/avatar";
-import { DataTable } from "@/components/data-table";
+import { DataTable, type ColumnDef } from "@/components/data-table";
 import { DateFilter } from "@/components/filters/date-filter";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
