@@ -102,3 +102,17 @@ export function TeamVsTeamIcon({ ...props }: React.ComponentProps<"svg">) {
 		</svg>
 	);
 }
+
+export function PlayerVsPlayerIcon({ ...props }: React.ComponentProps<"svg">) {
+	return (
+		<svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 15.938 15.938" xmlSpace="preserve" {...props}>
+			<circle cx="3.25" cy="9.5" r="1.5" />
+			<path d="M0.2 15.938c0-2.2 1.4-3.5 3.05-3.5s3.05 1.3 3.05 3.5z" />
+			<circle cx="12.688" cy="9.5" r="1.5" />
+			<path d="M9.638 15.938c0-2.2 1.4-3.5 3.05-3.5s3.05 1.3 3.05 3.5z" />
+			<path d="M7.5 4.607c-.546-.194-.938-.715-.938-1.326s.392-1.132.938-1.326V0H1.875v1.875h2.344v2.813H1.875v1.875H7.5z" />
+			<path d="M1.875 2.813h1.406v.938H1.875zm10.781 0h1.406v.938h-1.406z" />
+			<path d="M9.375 3.281a1.41 1.41 0 0 1-.938 1.326v1.956h5.625V4.688h-2.344V1.875h2.344V0H8.438v1.956c.546.194.938.715.938 1.326" />
+		</svg>
+	);
+}

@@ -1,6 +1,7 @@
 import {
 	battingStatSchema,
 	bowlingStatSchema,
+	comparePlayerSchema,
 	compareTeamSchema,
 	fieldingStatSchema,
 	groupSchema,
@@ -22,6 +23,7 @@ import {
 	TeamsIcon,
 	WalletIcon,
 	TeamVsTeamIcon,
+	PlayerVsPlayerIcon,
 	type Icon,
 } from "@/components/icons";
 import {
@@ -70,7 +72,10 @@ export const sidebarList: SidebarList = [
 	},
 	{
 		label: "Compare",
-		items: [{ name: "Team vs Team", href: "/compare/teams", icon: TeamVsTeamIcon, search: compareTeamSchema }],
+		items: [
+			{ name: "Team vs Team", href: "/compare/teams", icon: TeamVsTeamIcon, search: compareTeamSchema },
+			{ name: "Player vs Player", href: "/compare/players", icon: PlayerVsPlayerIcon, search: comparePlayerSchema },
+		],
 	},
 ];
 

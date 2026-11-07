@@ -168,17 +168,18 @@ model Fielders {
 }
 
 model Records {
-  runs      Int       @default(0)
-  wickets   Int       @default(0)
-  fours     Int       @default(0)
-  sixes     Int       @default(0)
-  dots      Int       @default(0)
+  rivalryId String
+  rivalry   Rivalries @relation(fields: [rivalryId], references: [title])
   batterId  String
   batter    Players   @relation("BattingRecord", fields: [batterId], references: [name])
   bowlerId  String
   bowler    Players   @relation("BowlingRecord", fields: [bowlerId], references: [name])
-  rivalryId String
-  rivalry   Rivalries @relation(fields: [rivalryId], references: [title])
+  runs      Int       @default(0)
+  balls     Int       @default(0)
+  dots      Int       @default(0)
+  fours     Int       @default(0)
+  sixes     Int       @default(0)
+  wickets   Int       @default(0)
 
   @@id([batterId, bowlerId, rivalryId])
   @@index([batterId, bowlerId])

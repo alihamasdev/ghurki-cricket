@@ -6,7 +6,7 @@ export const groupSchema = z.object({
 	group: z
 		.enum([...groupFilters, "all"])
 		.optional()
-		.catch(undefined),
+		.catch("core"),
 });
 export type GroupSchema = z.infer<typeof groupSchema>;
 
@@ -51,4 +51,9 @@ export const matchSchema = dateSchema.omit({ starts: true, ends: true }).extend(
 
 export const compareTeamSchema = dateSchema.omit({ starts: true, ends: true }).extend({
 	...overSchema.shape,
+});
+
+export const comparePlayerSchema = dateSchema.pick({ rivalry: true }).extend({
+	player1: z.string().optional().catch(undefined),
+	player2: z.string().optional().catch(undefined),
 });
