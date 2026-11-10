@@ -7,24 +7,24 @@
 			"packages/*"
 		],
 		"catalog": {
-			"dotenv": "^18.0.9",
+			"dotenv": "^18.0.10",
 			"zod": "^4.6.7",
 			"@types/bun": "^1.4.4",
 			"@types/node": "^26.6.6",
-			"@trpc/server": "^11.24.0",
+			"@trpc/server": "^11.28.0",
 			"@types/express": "^5.0.6",
-			"@trpc/tanstack-react-query": "^11.24.0",
-			"@trpc/client": "^11.24.0",
-			"@tanstack/react-query": "^5.106.1",
+			"@trpc/tanstack-react-query": "^11.28.0",
+			"@trpc/client": "^11.28.0",
+			"@tanstack/react-query": "^5.107.1",
 			"@tanstack/react-table": "^9.3.1",
-			"tailwindcss": "^4.3.4",
+			"tailwindcss": "^4.3.5",
 			"typescript": "^7.0.2"
 		}
 	},
 	"type": "module",
 	"scripts": {
 		"build": "turbo run build",
-		"check": "oxlint --fix && oxfmt --write",
+		"check": "tailwint \"apps/web/src/**/*.tsx\" && oxlint --fix && oxfmt --write",
 		"check-types": "turbo run check-types",
 		"db:generate": "turbo run db:generate -F @ghurki-cricket/db --",
 		"db:migrate": "turbo run db:migrate -F @ghurki-cricket/db --",
@@ -50,15 +50,19 @@
 		"@ghurki-cricket/config": "workspace:*",
 		"@shadcn/lint": "^0.2.5",
 		"@supabase/supabase-js": "^2.119.0",
+		"@tailwindcss/language-server": "^0.16.0",
+		"@tanstack/eslint-plugin-query": "^5.107.1",
 		"@types/bun": "catalog:",
 		"@types/node": "catalog:",
-		"oxfmt": "^0.77.0",
-		"oxlint": "^1.92.0",
+		"lefthook": "^2.2.2",
+		"oxfmt": "^0.78.0",
+		"oxlint": "^1.93.0",
 		"sharp": "^0.35.5",
+		"tailwint": "^1.1.16",
 		"tsx": "^4.23.15",
 		"turbo": "^2.11.10",
 		"typescript": "catalog:",
-		"vercel": "^65.12.1"
+		"vercel": "^65.14.0"
 	},
 	"packageManager": "bun@1.3.14"
 }

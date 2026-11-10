@@ -1,10 +1,10 @@
 {
-	"files.watcherExclude": {
-		"**/routeTree.gen.ts": true
-	},
 	"search.exclude": {
 		"**/skills": true,
 		"**/bun.lock": true,
+		"**/routeTree.gen.ts": true
+	},
+	"files.watcherExclude": {
 		"**/routeTree.gen.ts": true
 	},
 	"files.readonlyInclude": {
@@ -26,6 +26,5 @@
 	"[mdx]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
 	"[markdown]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
 	"[json]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
-	"[jsonc]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
-	"[prisma]": { "editor.defaultFormatter": "Prisma.prisma" }
+	"[jsonc]": { "editor.defaultFormatter": "oxc.oxc-vscode" }
 }

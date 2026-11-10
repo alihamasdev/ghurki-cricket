@@ -1,24 +1,30 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
 	"ignorePatterns": ["node_modules", "dist/", ".agents/", ".turbo/", ".vercel/", "routeTree.gen.ts"],
-	"plugins": ["react", "node", "typescript", "import", "unicorn", "oxc"],
-	"jsPlugins": ["@shadcn/lint"],
+	"plugins": ["react", "node", "typescript", "import", "react-perf", "unicorn", "promise", "oxc", "jsdoc"],
+	"jsPlugins": ["@shadcn/lint", "@tanstack/eslint-plugin-query"],
 	"categories": {
 		"correctness": "warn"
 	},
 	"rules": {
+		"promise/no-callback-in-promise": "off",
+		"typescript/consistent-type-imports": ["warn", { "prefer": "type-imports", "fixStyle": "inline-type-imports" }],
 		"shadcn/no-restyle": ["error", { "allow": ["layout"] }],
-		"typescript/consistent-type-imports": ["warn", { "prefer": "type-imports", "fixStyle": "inline-type-imports" }]
+		"@tanstack/query/exhaustive-deps": "error",
+		"@tanstack/query/infinite-query-property-order": "error",
+		"@tanstack/query/mutation-property-order": "error",
+		"@tanstack/query/no-rest-destructuring": "warn",
+		"@tanstack/query/no-unstable-deps": "error",
+		"@tanstack/query/no-void-query-fn": "error",
+		"@tanstack/query/stable-query-client": "error"
 	},
 	"env": {
 		"builtin": true
 	},
 	"settings": {
 		"react": {
-			"version": "19.3.1"
-		},
-		"tailwindcss": {
-			"callees": ["cva", "cn"]
+			"version": "19.3.1",
+			"linkComponents": [{ "name": "Link", "attributes": ["to", "href"] }]
 		}
 	}
 }
