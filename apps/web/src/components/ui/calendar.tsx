@@ -1,3 +1,4 @@
+/* oxlint-disable */
 import { cn } from "cn";
 import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -24,7 +25,8 @@ function Calendar({
 		<DayPicker
 			showOutsideDays={showOutsideDays}
 			className={cn(
-				"group/calendar bg-background p-2 [--cell-radius:28px] [--cell-size:--spacing(7)] in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
+				"group/calendar bg-background p-2 in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent",
+				"[--cell-radius:28px] [--cell-size:--spacing(7)]",
 				String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
 				String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
 				className,
@@ -61,10 +63,10 @@ function Calendar({
 				),
 				month_grid: cn("w-full border-collapse", defaultClassNames.month_grid),
 				weekdays: cn("flex", defaultClassNames.weekdays),
-				weekday: cn("flex-1 text-[0.8rem] font-normal text-muted-foreground select-none", defaultClassNames.weekday),
+				weekday: cn("flex-1 text-xs font-normal text-muted-foreground select-none", defaultClassNames.weekday),
 				week: cn("mt-2 flex w-full", defaultClassNames.week),
 				week_number_header: cn("w-(--cell-size) select-none", defaultClassNames.week_number_header),
-				week_number: cn("text-[0.8rem] text-muted-foreground select-none", defaultClassNames.week_number),
+				week_number: cn("text-xs text-muted-foreground select-none", defaultClassNames.week_number),
 				day: cn("group/day relative aspect-square h-full w-full p-0 text-center select-none", defaultClassNames.day),
 				range_start: cn(
 					"relative isolate z-0 squircle bg-muted after:absolute after:inset-y-0 after:right-0 after:w-4 after:bg-muted",

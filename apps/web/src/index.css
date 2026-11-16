@@ -7,7 +7,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-	--radius: 0.5rem;
 	--foreground: oklch(0.141 0.005 285.823);
 	--background: oklch(1 0 0);
 	--primary: oklch(0.21 0.006 285.885);
@@ -76,6 +75,7 @@
 }
 
 @theme inline {
+	--radius: 8px;
 	--font-sans: "Outfit Variable", "Outfit", sans-serif;
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
@@ -109,6 +109,7 @@
 	--color-chart-4: var(--chart-4);
 	--color-chart-5: var(--chart-5);
 
+	--radius-xs: calc(var(--radius) - 6px);
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
