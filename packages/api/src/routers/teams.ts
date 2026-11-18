@@ -18,6 +18,7 @@ export const teamsRouter = router({
 
 		if (!input?.date && !input?.rivalry) {
 			const lastRivalry = await db.rivalries.findFirst({
+				where: { dates: { some: { hasStats: true } } },
 				orderBy: { startedAt: "desc" },
 			});
 			if (lastRivalry) {

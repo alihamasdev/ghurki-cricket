@@ -1,6 +1,6 @@
 import { comparePlayerSchema } from "@ghurki-cricket/api/schema";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { DateFilter } from "@/components/filters/date-filter";
 import { PlayerFilter } from "@/components/filters/player-filter";
@@ -11,6 +11,36 @@ import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/compare/players/")({
 	validateSearch: comparePlayerSchema,
+	beforeLoad: async ({ context, search }) => {
+		if (!search.player1 || !search.player2 || search.player1 === search.player2) {
+			const players = await context.queryClient.query(context.trpc.players.list.queryOptions({ group: "core" }));
+			if (players && players.length >= 2) {
+				let p1 = search.player1;
+				let p2 = search.player2;
+
+				if (!p1 && !p2) {
+					const idx1 = Math.floor(Math.random() * players.length);
+					let idx2 = Math.floor(Math.random() * (players.length - 1));
+					if (idx2 >= idx1) idx2++;
+					p1 = players[idx1].name;
+					p2 = players[idx2].name;
+				} else if (!p1 && p2) {
+					const remaining = players.filter((p) => p.name !== p2);
+					p1 = remaining[Math.floor(Math.random() * remaining.length)]?.name;
+				} else if (p1 && !p2) {
+					const remaining = players.filter((p) => p.name !== p1);
+					p2 = remaining[Math.floor(Math.random() * remaining.length)]?.name;
+				} else if (p1 === p2) {
+					const remaining = players.filter((p) => p.name !== p1);
+					p2 = remaining[Math.floor(Math.random() * remaining.length)]?.name;
+				}
+
+				if (p1 && p2 && p1 !== p2) {
+					throw redirect({ to: "/compare/players", replace: true, search: { ...search, player1: p1, player2: p2 } });
+				}
+			}
+		}
+	},
 	head: () => ({
 		meta: [
 			{ title: "Player vs Player | Ghurki Cricket" },

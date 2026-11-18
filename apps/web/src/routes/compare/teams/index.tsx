@@ -1,6 +1,6 @@
 import { compareTeamSchema } from "@ghurki-cricket/api/schema";
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { DateFilter } from "@/components/filters/date-filter";
 import { OversFilter } from "@/components/filters/overs-filter";
@@ -11,6 +11,15 @@ import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/compare/teams/")({
 	validateSearch: compareTeamSchema,
+	beforeLoad: async ({ context, search }) => {
+		if (!search.rivalry && !search.date) {
+			const rivalries = await context.queryClient.query(context.trpc.filters.listRivalries.queryOptions());
+			const latestRivalry = rivalries?.[0]?.name;
+			if (latestRivalry) {
+				throw redirect({ to: "/compare/teams", replace: true, search: { ...search, rivalry: latestRivalry } });
+			}
+		}
+	},
 	head: () => ({
 		meta: [
 			{ title: "Team vs Team | Ghurki Cricket" },
