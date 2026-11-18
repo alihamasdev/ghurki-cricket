@@ -9,7 +9,7 @@ import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trpc } from "@/utils/trpc";
 
-export const Route = createFileRoute("/compare/teams")({
+export const Route = createFileRoute("/compare/teams/")({
 	validateSearch: compareTeamSchema,
 	head: () => ({
 		meta: [
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/compare/teams")({
 				headerRight={
 					<div className="flex gap-2 sm:justify-end">
 						<OversFilter />
-						<DateFilter hasAllTime={false} hasPeriods={false} />
+						<DateFilter hasAllTime={false} hasYears={false} />
 					</div>
 				}
 			>

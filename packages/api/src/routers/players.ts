@@ -12,6 +12,7 @@ export const playerRouter = router({
 			select: { name: true, role: true, avatar: true },
 		});
 	}),
+
 	compare: publicProcedure.input(comparePlayerSchema).query(async ({ input }) => {
 		const { player1, player2, rivalry } = input ?? {};
 		if (!player1 || !player2 || player1 === player2) {

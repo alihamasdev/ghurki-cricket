@@ -59,7 +59,7 @@ function RadioGroupItem({ label, description, orientation = "horizontal", classN
 			data-slot="radio-group-item"
 			htmlFor={id}
 			className={cn(
-				"group/radio-group-item flex w-full cursor-pointer flex-wrap items-center gap-2.5 rounded-md px-4 py-2 text-sm transition-colors duration-200 hover:bg-muted/60",
+				"group/radio-group-item flex w-full cursor-pointer flex-wrap items-center gap-2.5 px-4 py-2 text-sm transition-colors duration-200 hover:bg-muted/75",
 				className,
 			)}
 		>

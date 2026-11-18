@@ -9,7 +9,7 @@ import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trpc } from "@/utils/trpc";
 
-export const Route = createFileRoute("/compare/players")({
+export const Route = createFileRoute("/compare/players/")({
 	validateSearch: comparePlayerSchema,
 	head: () => ({
 		meta: [
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/compare/players")({
 					<div className="flex gap-2 sm:justify-end">
 						<PlayerFilter param="player1" label="Player 1" />
 						<PlayerFilter param="player2" label="Player 2" />
-						<DateFilter hasPeriods={false} hasCalendar={false} />
+						<DateFilter hasYears={false} hasDates={false} />
 					</div>
 				}
 			>

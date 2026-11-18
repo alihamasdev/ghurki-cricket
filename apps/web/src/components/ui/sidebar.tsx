@@ -172,13 +172,13 @@ function Sidebar({
 	}
 
 	return (
-		<div
+		<aside
+			data-slot="sidebar"
 			className="group peer hidden text-sidebar-foreground md:block"
 			data-state={state}
 			data-collapsible={state === "collapsed" ? collapsible : ""}
 			data-variant={variant}
 			data-side={side}
-			data-slot="sidebar"
 		>
 			{/* This is what handles the sidebar gap on desktop */}
 			<div
@@ -198,6 +198,7 @@ function Sidebar({
 				className={cn(
 					"fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear data-[side=left]:left-0 data-[side=left]:group-data-[collapsible=offcanvas]:-left-(--sidebar-width) data-[side=right]:right-0 data-[side=right]:group-data-[collapsible=offcanvas]:-right-(--sidebar-width) md:flex",
 					// Adjust the padding for floating and inset variants.
+					variant === "floating" ? "pr-px!" : "",
 					variant === "floating" || variant === "inset"
 						? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
 						: "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
@@ -213,7 +214,7 @@ function Sidebar({
 					{children}
 				</div>
 			</div>
-		</div>
+		</aside>
 	);
 }
 
@@ -239,12 +240,13 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
 	);
 }
 
-function SidebarInset({ className, ...props }: React.ComponentProps<"div">) {
+function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
 	return (
-		<div
+		<main
 			data-slot="sidebar-inset"
 			className={cn(
-				"relative flex w-full flex-1 flex-col bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-none md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
+				"relative flex w-full flex-1 flex-col bg-background",
+				"md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-none md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
 				className,
 			)}
 			{...props}

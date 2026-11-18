@@ -1,4 +1,4 @@
-import { battingStatSchema } from "@ghurki-cricket/api/schema";
+import { statSchema } from "@ghurki-cricket/api/schema";
 import { type BattingStats } from "@ghurki-cricket/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -25,8 +25,8 @@ const columns: ColumnDef<BattingStats>[] = [
 	{ accessorKey: "fifties", header: "50s" },
 ];
 
-export const Route = createFileRoute("/stats/batting")({
-	validateSearch: battingStatSchema,
+export const Route = createFileRoute("/stats/batting/")({
+	validateSearch: statSchema,
 	head: () => ({
 		meta: [
 			{ title: "Batting Stats | Ghurki Cricket" },
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/stats/batting")({
 			<PageLayout
 				title="Batting Stats"
 				headerRight={
-					<div className="flex sm:justify-end">
+					<div className="grid sm:flex sm:justify-end">
 						<DateFilter />
 					</div>
 				}

@@ -6,7 +6,7 @@ import { type ExpenseData } from "../lib/types";
 
 export const expenseRouter = router({
 	list: publicProcedure.input(expenseSchema).query(async ({ input }): Promise<ExpenseData> => {
-		const where = input.year ? { date: { gte: new Date(input.year, 0, 1), lte: new Date(input.year, 11, 31) } } : undefined;
+		const where = input.starts && input.ends ? { date: { gte: new Date(input.starts), lte: new Date(input.ends) } } : undefined;
 
 		const [expense, totals] = await db.$transaction([
 			db.dates.groupBy({

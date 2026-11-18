@@ -1,24 +1,24 @@
 import { formatDate } from "@ghurki-cricket/api/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useState } from "react";
 
 import { CalendarIcon } from "@/components/icons";
 import { PageError } from "@/components/page-layout";
-import { Calendar } from "@/components/ui/calendar";
-import { FilterSheet, useFilterSheet } from "@/components/ui/filter-sheet";
+import { FilterSheet } from "@/components/ui/filter-sheet";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpc } from "@/utils/trpc";
-
-const today = new Date();
-const START_MONTH = new Date(2025, 6, 1);
-const MIN_DATE = new Date("2025-07-07T00:00:00");
 
 type DateFilterProps = {
 	hasAllTime?: boolean;
-	hasPeriods?: boolean;
+	hasYears?: boolean;
 	hasRivalries?: boolean;
-	hasCalendar?: boolean;
+	hasDates?: boolean;
+	hasStats?: boolean;
 };
+
+type TabType = "rivalries" | "years" | "dates";
 
 export function DateFilter(props: DateFilterProps) {
 	const search = useSearch({ strict: false }) ?? {};
@@ -26,7 +26,14 @@ export function DateFilter(props: DateFilterProps) {
 	const getValue = () => {
 		if (search.date) return formatDate(search.date, "short");
 		if (search.rivalry) return search.rivalry;
-		if (search.starts && search.ends) return `${formatDate(search.starts, "short")} - ${formatDate(search.ends, "short")}`;
+		if (search.starts && search.ends) {
+			const startYear = search.starts.slice(0, 4);
+			const endYear = search.ends.slice(0, 4);
+			if (startYear === endYear && search.starts === `${startYear}-01-01` && search.ends === `${endYear}-12-31`) {
+				return `Year ${startYear}`;
+			}
+			return `${formatDate(search.starts, "short")} - ${formatDate(search.ends, "short")}`;
+		}
 		if (search.starts) return `${formatDate(search.starts, "short")} - Present`;
 		if (search.ends) return `Start - ${formatDate(search.ends, "short")}`;
 		return props.hasAllTime === false ? "Select Rivalry" : "All Time";
@@ -39,112 +46,172 @@ export function DateFilter(props: DateFilterProps) {
 	);
 }
 
-function DateOptions({ hasAllTime = true, hasPeriods = true, hasRivalries = true, hasCalendar = true }: DateFilterProps) {
+function DateOptions({ hasAllTime = true, hasYears = true, hasRivalries = true, hasDates = true, hasStats = true }: DateFilterProps) {
 	const navigate = useNavigate();
 	const search = useSearch({ strict: false }) ?? {};
-	const { closeSheet } = useFilterSheet();
 
 	const periodKey = (p: { starts: string; ends: string }) => `${p.starts}|${p.ends}`;
 
-	const totalDates = useQuery({
-		...trpc.dates.getTotalCount.queryOptions(),
-		enabled: hasAllTime,
-	});
-	const rivalries = useQuery({
-		...trpc.filters.listRivalries.queryOptions(),
-		enabled: hasRivalries,
-	});
-	const periods = useQuery({
-		...trpc.filters.listPeriods.queryOptions(),
-		enabled: hasPeriods,
+	const availableTabs: TabType[] = [
+		hasRivalries && ("rivalries" as const),
+		hasYears && ("years" as const),
+		hasDates && ("dates" as const),
+	].filter(Boolean) as TabType[];
+
+	const getDefaultTab = (): TabType => {
+		if (search.date && hasDates) return "dates";
+		if (search.rivalry && hasRivalries) return "rivalries";
+		if ((search.starts || search.ends) && hasYears) return "years";
+		if (hasRivalries) return "rivalries";
+		if (hasYears) return "years";
+		if (hasDates) return "dates";
+		return "rivalries";
+	};
+
+	const [activeTab, setActiveTab] = useState<TabType>(getDefaultTab);
+	const currentTab = availableTabs.includes(activeTab) ? activeTab : availableTabs[0];
+
+	const [totalDates, rivalries, years, dates] = useQueries({
+		queries: [
+			{
+				...trpc.filters.getDatesCount.queryOptions({ hasStats }),
+				enabled: hasAllTime,
+			},
+			{
+				...trpc.filters.listRivalries.queryOptions(),
+				enabled: hasRivalries && (availableTabs.length <= 1 || currentTab === "rivalries"),
+			},
+			{
+				...trpc.filters.listYears.queryOptions({ hasStats }),
+				enabled: hasYears && (availableTabs.length <= 1 || currentTab === "years"),
+			},
+			{
+				...trpc.filters.listDates.queryOptions(),
+				enabled: hasDates && (availableTabs.length <= 1 || currentTab === "dates"),
+			},
+		],
 	});
 
-	if (totalDates.isError || rivalries.isError || periods.isError) {
-		return <PageError error={totalDates.error?.message || rivalries.error?.message || periods.error?.message} />;
+	if (totalDates.isError || rivalries.isError || years.isError || dates.isError) {
+		return <PageError error={totalDates.error?.message || rivalries.error?.message || years.error?.message || dates.error?.message} />;
+	}
+
+	const allTimeRadio = hasAllTime && (
+		<RadioGroup
+			length={1}
+			isLoading={totalDates.isPending}
+			value={!search.date && !search.rivalry && !search.starts && !search.ends ? "" : "all-time"}
+			onValueChange={() => {
+				navigate({
+					to: ".",
+					search: (prev) => ({ ...prev, date: undefined, rivalry: undefined, starts: undefined, ends: undefined }),
+				});
+			}}
+		>
+			<RadioGroupItem value="" label="All Time" description={`${totalDates.data} days`} />
+		</RadioGroup>
+	);
+
+	const rivalriesRadio = hasRivalries && (
+		<RadioGroup
+			isLoading={rivalries.isPending}
+			value={search.rivalry}
+			onValueChange={(value: string) => {
+				navigate({
+					to: ".",
+					search: (prev) => ({ ...prev, rivalry: value, date: undefined, starts: undefined, ends: undefined }),
+				});
+			}}
+		>
+			{rivalries.data?.map((rivalry) => (
+				<RadioGroupItem key={rivalry.name} value={rivalry.name} label={rivalry.name} description={`${rivalry.count} days`} />
+			))}
+		</RadioGroup>
+	);
+
+	const yearsRadio = hasYears && (
+		<RadioGroup
+			isLoading={years.isPending}
+			value={search.starts && search.ends ? periodKey({ starts: search.starts, ends: search.ends }) : undefined}
+			onValueChange={(key: string) => {
+				const [starts, ends] = key.split("|");
+				navigate({
+					to: ".",
+					search: (prev) => ({ ...prev, starts, ends, date: undefined, rivalry: undefined }),
+				});
+			}}
+		>
+			{years.data?.map((item) => (
+				<RadioGroupItem
+					key={item.starts}
+					value={periodKey(item)}
+					label={`Year ${item.starts.slice(0, 4)}`}
+					description={`${item.count} days`}
+				/>
+			))}
+		</RadioGroup>
+	);
+
+	const datesRadio = hasDates && (
+		<RadioGroup
+			length={5}
+			isLoading={dates.isPending}
+			value={search.date}
+			onValueChange={(value: string) => {
+				navigate({
+					to: ".",
+					search: (prev) => ({ ...prev, date: value, rivalry: undefined, starts: undefined, ends: undefined }),
+				});
+			}}
+		>
+			{dates.data?.map((d) => (
+				<RadioGroupItem key={d.date} value={d.date} label={formatDate(d.date, "short")} description={d.title} />
+			))}
+		</RadioGroup>
+	);
+
+	if (availableTabs.length <= 1) {
+		const singleTab = availableTabs[0];
+		return (
+			<>
+				{allTimeRadio}
+				{singleTab === "rivalries" && rivalriesRadio}
+				{singleTab === "years" && yearsRadio}
+				{singleTab === "dates" && datesRadio}
+			</>
+		);
 	}
 
 	return (
-		<>
-			{hasAllTime && (
-				<RadioGroup
-					length={1}
-					isLoading={totalDates.isPending}
-					value={!search.date && !search.rivalry && !search.starts && !search.ends ? "" : "all-time"}
-					onValueChange={() => {
-						navigate({
-							to: ".",
-							search: (prev) => ({ ...prev, date: undefined, rivalry: undefined, starts: undefined, ends: undefined, year: undefined }),
-						});
-					}}
-				>
-					<RadioGroupItem value="" label="All Time" description={`${totalDates.data} days`} />
-				</RadioGroup>
-			)}
+		<Tabs style={{ gap: 0, overflowY: "auto" }} value={currentTab} onValueChange={(val) => setActiveTab(val as TabType)}>
+			<TabsList variant="sheet" className="sticky top-0 w-full">
+				{hasRivalries && <TabsTrigger value="rivalries">Rivalries</TabsTrigger>}
+				{hasYears && <TabsTrigger value="years">Years</TabsTrigger>}
+				{hasDates && <TabsTrigger value="dates">Dates</TabsTrigger>}
+			</TabsList>
 
-			{hasPeriods && (
-				<RadioGroup
-					isLoading={periods.isPending}
-					value={search.starts && search.ends ? periodKey({ starts: search.starts, ends: search.ends }) : undefined}
-					onValueChange={(key: string) => {
-						const [starts, ends] = key.split("|");
-						navigate({ to: ".", search: (prev) => ({ ...prev, starts, ends, date: undefined, rivalry: undefined }) });
-					}}
-				>
-					{periods.data?.map((period) => (
-						<RadioGroupItem
-							key={period.starts}
-							value={periodKey(period)}
-							label={`${formatDate(period.starts, "short")} - ${formatDate(period.ends, "short")}`}
-							description={`${period.count} days`}
-						/>
-					))}
-				</RadioGroup>
-			)}
+			<div className="flex-1 scroll-fade-y overflow-y-auto pb-4">
+				{hasRivalries && (
+					<TabsContent value="rivalries">
+						{allTimeRadio}
+						{rivalriesRadio}
+					</TabsContent>
+				)}
 
-			{hasRivalries && (
-				<RadioGroup
-					isLoading={rivalries.isPending}
-					value={search.rivalry}
-					onValueChange={(value: string) => {
-						navigate({
-							to: ".",
-							search: (prev) => ({ ...prev, rivalry: value, date: undefined, starts: undefined, ends: undefined }),
-						});
-					}}
-				>
-					{rivalries.data?.map((rivalry) => (
-						<RadioGroupItem key={rivalry.name} value={rivalry.name} label={rivalry.name} description={`${rivalry.count} days`} />
-					))}
-				</RadioGroup>
-			)}
+				{hasYears && (
+					<TabsContent value="years">
+						{allTimeRadio}
+						{yearsRadio}
+					</TabsContent>
+				)}
 
-			{hasCalendar && (
-				<Calendar
-					mode="single"
-					captionLayout="dropdown"
-					startMonth={START_MONTH}
-					endMonth={today}
-					disabled={{ before: MIN_DATE, after: today }}
-					style={{ padding: "8px 16px", width: "100%" }}
-					selected={search.date ? new Date(`${search.date}T00:00:00`) : undefined}
-					defaultMonth={search.date ? new Date(`${search.date}T00:00:00`) : today}
-					onSelect={(date) => {
-						const formatted = date ? formatDate(date) : undefined;
-						navigate({
-							to: ".",
-							search: (prev) => ({
-								...prev,
-								date: search.date === formatted ? undefined : formatted,
-								rivalry: undefined,
-								starts: undefined,
-								ends: undefined,
-								year: undefined,
-							}),
-						});
-						closeSheet();
-					}}
-				/>
-			)}
-		</>
+				{hasDates && (
+					<TabsContent value="dates">
+						{allTimeRadio}
+						{datesRadio}
+					</TabsContent>
+				)}
+			</div>
+		</Tabs>
 	);
 }

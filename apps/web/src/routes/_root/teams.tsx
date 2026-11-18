@@ -6,7 +6,7 @@ import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { Item, ItemContent, ItemMedia, ItemTitle, ItemDescription } from "@/components/ui/item";
 import { trpc } from "@/utils/trpc";
 
-export const Route = createFileRoute("/teams/")({
+export const Route = createFileRoute("/_root/teams")({
 	head: () => ({
 		meta: [
 			{ title: "Teams | Ghurki Cricket" },

@@ -1,4 +1,5 @@
 import { db } from "@ghurki-cricket/db";
+import { z } from "zod";
 
 import { publicProcedure, router } from "../index";
 import { getDate } from "../lib/helpers";
@@ -6,14 +7,74 @@ import { dateSchema } from "../lib/schemas";
 import { formatDate } from "../lib/utils";
 
 export const filtersRouter = router({
-	listOvers: publicProcedure.input(dateSchema.optional()).query(async ({ input }) => {
-		const where = input ? getDate(input) : undefined;
+	getDatesCount: publicProcedure.input(z.object({ hasStats: z.boolean().optional() }).optional()).query(async ({ input }) => {
+		return db.dates.count({
+			where: input?.hasStats ? { hasStats: true } : undefined,
+		});
+	}),
 
+	listDates: publicProcedure.query(async () => {
+		const data = await db.dates.findMany({
+			where: { hasStats: true },
+			orderBy: { date: "desc" },
+			select: { date: true, title: true },
+		});
+
+		return data.map((d) => ({
+			date: formatDate(d.date),
+			title: d.title,
+		}));
+	}),
+
+	listRivalries: publicProcedure.query(async () => {
+		const data = await db.rivalries.findMany({
+			where: { dates: { some: { hasStats: true } } },
+			orderBy: { startedAt: "desc" },
+			select: {
+				title: true,
+				_count: { select: { dates: { where: { hasStats: true } } } },
+			},
+		});
+		return data.map((rivalry) => ({ name: rivalry.title, count: rivalry._count.dates }));
+	}),
+
+	listYears: publicProcedure.input(z.object({ hasStats: z.boolean().optional() }).optional()).query(async ({ input }) => {
+		const data = input?.hasStats
+			? await db.$queryRaw<{ year: number; starts: Date; ends: Date; count: number }[]>`
+					SELECT 
+						EXTRACT(YEAR FROM "date")::int AS year,
+						make_date(EXTRACT(YEAR FROM "date")::int, 1, 1) AS starts,
+						make_date(EXTRACT(YEAR FROM "date")::int, 12, 31) AS ends,
+						COUNT(*)::int AS count
+					FROM "dates"
+					WHERE "hasStats" = true
+					GROUP BY EXTRACT(YEAR FROM "date")
+					ORDER BY year DESC
+				`
+			: await db.$queryRaw<{ year: number; starts: Date; ends: Date; count: number }[]>`
+					SELECT 
+						EXTRACT(YEAR FROM "date")::int AS year,
+						make_date(EXTRACT(YEAR FROM "date")::int, 1, 1) AS starts,
+						make_date(EXTRACT(YEAR FROM "date")::int, 12, 31) AS ends,
+						COUNT(*)::int AS count
+					FROM "dates"
+					GROUP BY EXTRACT(YEAR FROM "date")
+					ORDER BY year DESC
+				`;
+
+		return data.map((item) => ({
+			starts: formatDate(item.starts),
+			ends: formatDate(item.ends),
+			count: item.count,
+		}));
+	}),
+
+	listOvers: publicProcedure.input(dateSchema).query(async ({ input }) => {
 		const [totalMatches, overs] = await db.$transaction([
-			db.matches.count({ where }),
+			db.matches.count({ where: getDate(input) }),
 			db.matches.groupBy({
 				by: ["overs"],
-				where,
+				where: getDate(input),
 				orderBy: { overs: "asc" },
 				_count: true,
 			}),
@@ -23,58 +84,5 @@ export const filtersRouter = router({
 			totalMatches,
 			overs: overs.map((o) => ({ overs: o.overs, count: o._count })),
 		};
-	}),
-	listPeriods: publicProcedure.query(async () => {
-		const data = await db.$queryRaw<{ starts: Date; ends: Date; count: number }[]>`
-  		SELECT
-  		  CASE
-  		    WHEN EXTRACT(MONTH FROM date) <= 6
-  		      THEN make_date(EXTRACT(YEAR FROM date)::int, 1, 1)
-  		    ELSE make_date(EXTRACT(YEAR FROM date)::int, 7, 1)
-  		  END AS starts,
-  		  CASE
-  		    WHEN EXTRACT(MONTH FROM date) <= 6
-  		      THEN make_date(EXTRACT(YEAR FROM date)::int, 6, 30)
-  		    ELSE make_date(EXTRACT(YEAR FROM date)::int, 12, 31)
-  		  END AS ends,
-  		  COUNT(*)::int AS count
-  		FROM dates
-  		WHERE "hasStats" = true
-  		GROUP BY 1, 2
-  		ORDER BY 1 DESC
-		`;
-		return data.map((period) => ({ starts: formatDate(period.starts), ends: formatDate(period.ends), count: period.count }));
-	}),
-	listRivalries: publicProcedure.query(async () => {
-		const data = await db.rivalries.findMany({
-			where: { dates: { some: { hasStats: true } } },
-			orderBy: { startedAt: "desc" },
-			select: {
-				title: true,
-				_count: {
-					select: {
-						dates: {
-							where: { hasStats: true },
-						},
-					},
-				},
-			},
-		});
-		return data.map((rivalry) => ({ name: rivalry.title, count: rivalry._count.dates }));
-	}),
-	listYears: publicProcedure.query(async () => {
-		const [totalDays, years] = await db.$transaction([
-			db.dates.count(),
-			db.$queryRaw<{ year: number; count: number }[]>`
-				SELECT 
-					EXTRACT(YEAR FROM "date")::int AS year,
-					COUNT(*)::int AS count
-				FROM "dates"
-				GROUP BY EXTRACT(YEAR FROM "date")
-				ORDER BY year DESC
-			`,
-		]);
-
-		return { totalDays, years };
 	}),
 });

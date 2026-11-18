@@ -2,7 +2,6 @@ import { router } from "../index";
 import { attendanceRouter } from "./attendance";
 import { battingRouter } from "./batting";
 import { bowlingRouter } from "./bowling";
-import { datesRouter } from "./dates";
 import { expenseRouter } from "./expense";
 import { fieldingRouter } from "./fielding";
 import { filtersRouter } from "./filters";
@@ -20,7 +19,6 @@ export const appRouter = router({
 	bowling: bowlingRouter,
 	fielding: fieldingRouter,
 	potm: potmRouter,
-	dates: datesRouter,
 	expense: expenseRouter,
 	filters: filtersRouter,
 });

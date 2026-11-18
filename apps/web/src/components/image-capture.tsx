@@ -49,7 +49,7 @@ export function ImageCapture({ width = 50, children }: ImageCaptureProps) {
 	}, [handleCopyScreenshot]);
 
 	return (
-		<div ref={contentRef} className="w-full bg-background">
+		<div data-slot="image-capture" ref={contentRef} className="w-full bg-background">
 			{children}
 		</div>
 	);

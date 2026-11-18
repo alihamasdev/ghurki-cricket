@@ -14,7 +14,7 @@ const columns: ColumnDef<POTMStats>[] = [
 	{ accessorKey: "potm", header: "Player of Match" },
 ];
 
-export const Route = createFileRoute("/stats/potm")({
+export const Route = createFileRoute("/stats/potm/")({
 	validateSearch: statSchema,
 	head: () => ({
 		meta: [

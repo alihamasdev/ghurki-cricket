@@ -15,7 +15,7 @@ const columns: ColumnDef<AttendanceStats>[] = [
 	{ accessorKey: "percentage", header: "Percentage", cell: ({ row }) => `${row.original.percentage}%` },
 ];
 
-export const Route = createFileRoute("/stats/attendance")({
+export const Route = createFileRoute("/stats/attendance/")({
 	validateSearch: statSchema,
 	head: () => ({
 		meta: [

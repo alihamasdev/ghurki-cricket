@@ -1,4 +1,4 @@
-import { bowlingStatSchema } from "@ghurki-cricket/api/schema";
+import { statSchema } from "@ghurki-cricket/api/schema";
 import { type BowlingStats } from "@ghurki-cricket/api/types";
 import { ballsToOvers } from "@ghurki-cricket/api/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -25,8 +25,8 @@ const columns: ColumnDef<BowlingStats>[] = [
 	{ accessorKey: "threeFR", header: "3fer" },
 ];
 
-export const Route = createFileRoute("/stats/bowling")({
-	validateSearch: bowlingStatSchema,
+export const Route = createFileRoute("/stats/bowling/")({
+	validateSearch: statSchema,
 	head: () => ({
 		meta: [
 			{ title: "Bowling Stats | Ghurki Cricket" },

@@ -4,10 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { DataTable, type ColumnDef } from "@/components/data-table";
-import { CalendarIcon } from "@/components/icons";
+import { DateFilter } from "@/components/filters/date-filter";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
-import { FilterSheet } from "@/components/ui/filter-sheet";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
 
@@ -17,7 +15,7 @@ const columns: ColumnDef<ExpenseStats>[] = [
 	{ accessorKey: "expense", header: "Ground Expense", cell: ({ row }) => row.original.expense.toLocaleString() },
 ];
 
-export const Route = createFileRoute("/expense/")({
+export const Route = createFileRoute("/_root/expense")({
 	validateSearch: expenseSchema,
 	head: () => ({
 		meta: [
@@ -26,16 +24,12 @@ export const Route = createFileRoute("/expense/")({
 		],
 	}),
 	component: () => {
-		const { year } = Route.useSearch();
-
 		return (
 			<PageLayout
 				title="Expense"
 				headerRight={
 					<div className="flex sm:justify-end">
-						<FilterSheet title="Select Year" icon={CalendarIcon} value={year ?? "All Time"}>
-							<YearFilter />
-						</FilterSheet>
+						<DateFilter hasStats={false} hasRivalries={false} hasDates={false} />
 					</div>
 				}
 			>
@@ -75,8 +69,8 @@ function ExpenseSummaryBoxes({ summary }: { summary: ExpenseSummary }) {
 }
 
 function ExpenseRoute() {
-	const { year } = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.expense.list.queryOptions({ year }));
+	const { starts, ends } = Route.useSearch();
+	const { data, status, error } = useQuery(trpc.expense.list.queryOptions({ starts, ends }));
 
 	if (status === "pending") {
 		return <PageLoader />;
@@ -90,42 +84,5 @@ function ExpenseRoute() {
 		<DataTable columns={columns} data={data.expenses}>
 			<ExpenseSummaryBoxes summary={data.summary} />
 		</DataTable>
-	);
-}
-
-function YearFilter() {
-	const { year } = Route.useSearch();
-	const naviagte = Route.useNavigate();
-
-	const { data, isPending, isError, error } = useQuery(trpc.filters.listYears.queryOptions());
-
-	if (isError) {
-		return <PageError error={error.message} />;
-	}
-
-	return (
-		<>
-			<RadioGroup
-				length={1}
-				value={year ?? ""}
-				isLoading={isPending}
-				onValueChange={() => {
-					naviagte({ search: (prev) => ({ ...prev, year: undefined }) });
-				}}
-			>
-				<RadioGroupItem value="" label="All Time" description={`${data?.totalDays} days`} />
-			</RadioGroup>
-			<RadioGroup
-				value={year}
-				isLoading={isPending}
-				onValueChange={(val: number) => {
-					naviagte({ search: (prev) => ({ ...prev, year: val }) });
-				}}
-			>
-				{data?.years.map((year) => (
-					<RadioGroupItem key={year.year} value={year.year} label={`Year ${year.year}`} description={`${year.count} days`} />
-				))}
-			</RadioGroup>
-		</>
 	);
 }

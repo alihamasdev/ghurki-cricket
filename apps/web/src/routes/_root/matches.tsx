@@ -8,7 +8,7 @@ import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { Item, ItemContent, ItemDescription, ItemFooter, ItemTitle } from "@/components/ui/item";
 import { trpc } from "@/utils/trpc";
 
-export const Route = createFileRoute("/matches/")({
+export const Route = createFileRoute("/_root/matches")({
 	validateSearch: matchSchema,
 	head: () => ({
 		meta: [
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/matches/")({
 				headerRight={
 					<div className="flex gap-2 sm:justify-end">
 						<OversFilter />
-						<DateFilter hasPeriods={false} />
+						<DateFilter />
 					</div>
 				}
 			>

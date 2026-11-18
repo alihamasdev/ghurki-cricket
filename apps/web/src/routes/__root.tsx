@@ -33,7 +33,8 @@ function RootComponent() {
 			<HeadContent />
 			<SidebarProvider>
 				<AppSidebar />
-				<SidebarInset>
+				{/* oxlint-disable-next-line shadcn/no-restyle */}
+				<SidebarInset className="container gap-4 p-4">
 					<Outlet />
 				</SidebarInset>
 			</SidebarProvider>

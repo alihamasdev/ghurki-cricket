@@ -12,6 +12,7 @@ export const teamsRouter = router({
 			select: { name: true, slug: true, avatar: true },
 		});
 	}),
+
 	compare: publicProcedure.input(compareTeamSchema).query(async ({ input }) => {
 		let dateWhere = input && getDate(input);
 

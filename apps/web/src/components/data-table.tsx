@@ -1,17 +1,33 @@
-import { flexRender, type RowData, type SortingState } from "@tanstack/react-table";
 import {
-	getCoreRowModel,
-	getSortedRowModel,
-	useLegacyTable as useReactTable,
-	type LegacyColumnDef as ColumnDef,
-} from "@tanstack/react-table/legacy";
+	type ColumnDef as CoreColumnDef,
+	type RowData,
+	type SortingState,
+	createColumnHelper as coreCreateColumnHelper,
+	columnVisibilityFeature,
+	createSortedRowModel,
+	rowSortingFeature,
+	sortFns,
+	tableFeatures,
+	useTable,
+} from "@tanstack/react-table";
 import { useState } from "react";
 
 import { ImageCapture } from "@/components/image-capture";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-export type { ColumnDef };
+export const dataTableFeatures = tableFeatures({
+	rowSortingFeature,
+	columnVisibilityFeature,
+	sortedRowModel: createSortedRowModel(),
+	sortFns,
+});
+
+export type DataTableFeatures = typeof dataTableFeatures;
+
+export type ColumnDef<TData extends RowData, TValue = unknown> = CoreColumnDef<DataTableFeatures, TData, TValue>;
+
+export const createColumnHelper = <TData extends RowData>() => coreCreateColumnHelper<DataTableFeatures, TData>();
 
 type DataTableProps<TData extends RowData, _TValue = unknown> = React.PropsWithChildren<{
 	columns: ColumnDef<TData, any>[];
@@ -39,16 +55,14 @@ export function DataTable<TData extends RowData, TValue = unknown>({
 		setSorting(defaultSortId ? [{ id: defaultSortId, desc: defaultSortDesc ?? true }] : []);
 	}
 
-	// oxlint-disable-next-line react/incompatible-library
-	const table = useReactTable({
+	const table = useTable({
+		features: dataTableFeatures,
 		data,
 		columns,
 		state: {
 			sorting,
 		},
 		onSortingChange: setSorting,
-		getCoreRowModel: getCoreRowModel(),
-		getSortedRowModel: getSortedRowModel(),
 	});
 
 	return (
@@ -68,7 +82,7 @@ export function DataTable<TData extends RowData, TValue = unknown>({
 												onClick={() => header.column.toggleSorting(true)}
 												onDoubleClick={() => header.column.toggleSorting(false)}
 											>
-												{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+												{header.isPlaceholder ? null : <table.FlexRender header={header} />}
 											</button>
 										</TableHead>
 									);
@@ -79,10 +93,10 @@ export function DataTable<TData extends RowData, TValue = unknown>({
 					<TableBody>
 						{table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
-								<TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+								<TableRow key={row.id}>
 									{row.getVisibleCells().map((cell) => (
 										<TableCell key={cell.id} data-sorted={cell.column.getIsSorted() ? "true" : undefined}>
-											{flexRender(cell.column.columnDef.cell, cell.getContext())}
+											<table.FlexRender cell={cell} />
 										</TableCell>
 									))}
 								</TableRow>
@@ -101,9 +115,7 @@ export function DataTable<TData extends RowData, TValue = unknown>({
 							{table.getFooterGroups().map((footerGroup) => (
 								<TableRow key={footerGroup.id}>
 									{footerGroup.headers.map((header) => (
-										<TableCell key={header.id}>
-											{header.isPlaceholder ? null : flexRender(header.column.columnDef.footer, header.getContext())}
-										</TableCell>
+										<TableCell key={header.id}>{header.isPlaceholder ? null : <table.FlexRender footer={header} />}</TableCell>
 									))}
 								</TableRow>
 							))}

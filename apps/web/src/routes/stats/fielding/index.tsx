@@ -1,4 +1,4 @@
-import { fieldingStatSchema } from "@ghurki-cricket/api/schema";
+import { statSchema } from "@ghurki-cricket/api/schema";
 import { type FieldingStats } from "@ghurki-cricket/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -16,8 +16,8 @@ const columns: ColumnDef<FieldingStats>[] = [
 	{ accessorKey: "runOuts", header: "Run Outs" },
 ];
 
-export const Route = createFileRoute("/stats/fielding")({
-	validateSearch: fieldingStatSchema,
+export const Route = createFileRoute("/stats/fielding/")({
+	validateSearch: statSchema,
 	head: () => ({
 		meta: [
 			{ title: "Fielding Stats | Ghurki Cricket" },

@@ -1,13 +1,4 @@
-import {
-	battingStatSchema,
-	bowlingStatSchema,
-	comparePlayerSchema,
-	compareTeamSchema,
-	fieldingStatSchema,
-	groupSchema,
-	matchSchema,
-	statSchema,
-} from "@ghurki-cricket/api/schema";
+import { comparePlayerSchema, compareTeamSchema, groupSchema, matchSchema, statSchema } from "@ghurki-cricket/api/schema";
 import { Link, useLocation, useSearch } from "@tanstack/react-router";
 import { type ZodType } from "zod";
 
@@ -63,9 +54,9 @@ export const sidebarList: SidebarList = [
 	{
 		label: "Stats",
 		items: [
-			{ name: "Batting", href: "/stats/batting", icon: BatIcon, search: battingStatSchema },
-			{ name: "Bowling", href: "/stats/bowling", icon: BallIcon, search: bowlingStatSchema },
-			{ name: "Fielding", href: "/stats/fielding", icon: StumpsIcon, search: fieldingStatSchema },
+			{ name: "Batting", href: "/stats/batting", icon: BatIcon, search: statSchema },
+			{ name: "Bowling", href: "/stats/bowling", icon: BallIcon, search: statSchema },
+			{ name: "Fielding", href: "/stats/fielding", icon: StumpsIcon, search: statSchema },
 			{ name: "POTM", href: "/stats/potm", icon: MedalIcon, search: statSchema },
 			{ name: "Attendance", href: "/stats/attendance", icon: CalendarIcon, search: statSchema },
 		],
