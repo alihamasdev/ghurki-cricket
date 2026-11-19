@@ -21,7 +21,7 @@ type DateFilterProps = {
 type TabType = "rivalries" | "years" | "dates";
 
 export function DateFilter(props: DateFilterProps) {
-	const search = useSearch({ strict: false }) ?? {};
+	const search = useSearch({ strict: false });
 
 	const getValue = () => {
 		if (search.date) return formatDate(search.date, "short");
@@ -48,7 +48,7 @@ export function DateFilter(props: DateFilterProps) {
 
 function DateOptions({ hasAllTime = true, hasYears = true, hasRivalries = true, hasDates = true, hasStats = true }: DateFilterProps) {
 	const navigate = useNavigate();
-	const search = useSearch({ strict: false }) ?? {};
+	const search = useSearch({ strict: false });
 
 	const periodKey = (p: { starts: string; ends: string }) => `${p.starts}|${p.ends}`;
 

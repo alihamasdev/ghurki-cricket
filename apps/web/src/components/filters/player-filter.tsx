@@ -14,7 +14,7 @@ type PlayerFilterProps = {
 };
 
 export function PlayerFilter({ param, label }: PlayerFilterProps) {
-	const search = useSearch({ strict: false }) ?? {};
+	const search = useSearch({ strict: false });
 	const currentPlayer = search[param];
 
 	return (

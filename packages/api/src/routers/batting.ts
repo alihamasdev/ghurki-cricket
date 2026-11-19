@@ -3,7 +3,7 @@ import { db } from "@ghurki-cricket/db";
 import { publicProcedure, router } from "../index";
 import { getStatWhere } from "../lib/helpers";
 import { statSchema } from "../lib/schemas";
-import { type BattingStats } from "../lib/types";
+import type { AverageDayStats, BattingStats, MostInSingleDayStats } from "../lib/types";
 import { calcBattingAverage, calcStrikeRate } from "../lib/utils";
 
 export const battingRouter = router({
@@ -41,6 +41,59 @@ export const battingRouter = router({
 				highestScore: val._max.highestScore ?? 0,
 				strikeRate: calcStrikeRate(val._sum),
 				average: calcBattingAverage(val._sum),
+			}))
+			.sort((a, b) => b.runs - a.runs);
+	}),
+
+	listAvgPerDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<AverageDayStats[]> => {
+		const data = await db.batters.groupBy({
+			by: ["playerId"],
+			where: getStatWhere(input),
+			_avg: {
+				innings: true,
+				runs: true,
+				balls: true,
+				notOuts: true,
+				fours: true,
+				sixes: true,
+				thirties: true,
+			},
+		});
+		return data
+			.map((val) => ({
+				player: val.playerId,
+				innings: val._avg.innings ?? 0,
+				runs: val._avg.runs ?? 0,
+				balls: val._avg.balls ?? 0,
+				fours: val._avg.fours ?? 0,
+				sixes: val._avg.sixes ?? 0,
+				thirties: val._avg.thirties ?? 0,
+			}))
+			.sort((a, b) => b.runs - a.runs);
+	}),
+
+	mostInSingleDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<MostInSingleDayStats[]> => {
+		const data = await db.batters.groupBy({
+			by: ["playerId"],
+			where: getStatWhere(input),
+			_max: {
+				innings: true,
+				runs: true,
+				balls: true,
+				fours: true,
+				sixes: true,
+				thirties: true,
+			},
+		});
+		return data
+			.map((val) => ({
+				player: val.playerId,
+				innings: val._max.innings ?? 0,
+				runs: val._max.runs ?? 0,
+				balls: val._max.balls ?? 0,
+				fours: val._max.fours ?? 0,
+				sixes: val._max.sixes ?? 0,
+				thirties: val._max.thirties ?? 0,
 			}))
 			.sort((a, b) => b.runs - a.runs);
 	}),

@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { trpc } from "@/utils/trpc";
 
 export function OversFilter() {
-	const search = useSearch({ strict: false }) ?? {};
+	const search = useSearch({ strict: false });
 
 	const getValue = () => {
 		if (search.overs) return `${search.overs} Overs`;
@@ -24,7 +24,7 @@ export function OversFilter() {
 
 function OversOptions() {
 	const navigate = useNavigate();
-	const search = useSearch({ strict: false }) ?? {};
+	const search = useSearch({ strict: false });
 
 	const { data, isPending, isError, error } = useQuery(
 		trpc.filters.listOvers.queryOptions({

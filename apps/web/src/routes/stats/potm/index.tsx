@@ -27,7 +27,7 @@ export const Route = createFileRoute("/stats/potm/")({
 			<PageLayout
 				title="Player of the Match Stats"
 				headerRight={
-					<div className="flex sm:justify-end">
+					<div className="grid sm:flex sm:justify-end">
 						<DateFilter />
 					</div>
 				}

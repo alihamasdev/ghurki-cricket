@@ -38,7 +38,7 @@ export const Route = createFileRoute("/stats/bowling/")({
 			<PageLayout
 				title="Bowling Stats"
 				headerRight={
-					<div className="flex sm:justify-end">
+					<div className="grid sm:flex sm:justify-end">
 						<DateFilter />
 					</div>
 				}

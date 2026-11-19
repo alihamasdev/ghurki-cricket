@@ -29,7 +29,7 @@ export const Route = createFileRoute("/stats/fielding/")({
 			<PageLayout
 				title="Fielding Stats"
 				headerRight={
-					<div className="flex sm:justify-end">
+					<div className="grid sm:flex sm:justify-end">
 						<DateFilter />
 					</div>
 				}

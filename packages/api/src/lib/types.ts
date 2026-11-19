@@ -14,6 +14,26 @@ export type BattingStats = {
 	average?: number;
 };
 
+export type AverageDayStats = {
+	player: string;
+	innings: number;
+	runs: number;
+	balls: number;
+	fours: number;
+	sixes: number;
+	thirties: number;
+};
+
+export type MostInSingleDayStats = {
+	player: string;
+	innings: number;
+	runs: number;
+	balls: number;
+	fours: number;
+	sixes: number;
+	thirties: number;
+};
+
 export type BowlingStats = {
 	player: string;
 	innings?: number;
@@ -29,6 +49,28 @@ export type BowlingStats = {
 	average?: number | null;
 };
 
+export type BowlingAverageDayStats = {
+	player: string;
+	innings: number;
+	runs: number;
+	balls: number;
+	wickets: number;
+	dots: number;
+	wides: number;
+	twoFR: number;
+};
+
+export type BowlingMostInSingleDayStats = {
+	player: string;
+	innings: number;
+	runs: number;
+	balls: number;
+	wickets: number;
+	dots: number;
+	wides: number;
+	twoFR: number;
+};
+
 export type FieldingStats = {
 	player: string;
 	innings: number;
@@ -36,7 +78,26 @@ export type FieldingStats = {
 	runOuts?: number;
 };
 
+export type FieldingAverageDayStats = {
+	player: string;
+	innings: number;
+	catches: number;
+	runOuts: number;
+};
+
+export type FieldingMostInSingleDayStats = {
+	player: string;
+	innings: number;
+	catches: number;
+	runOuts: number;
+};
+
 export type POTMStats = {
+	player: string;
+	potm: number;
+};
+
+export type POTMMostInSingleDayStats = {
 	player: string;
 	potm: number;
 };

@@ -1,5 +1,5 @@
 import { comparePlayerSchema, compareTeamSchema, groupSchema, matchSchema, statSchema } from "@ghurki-cricket/api/schema";
-import { Link, useLocation, useSearch } from "@tanstack/react-router";
+import { Link, type LinkOptions, useLocation, useSearch } from "@tanstack/react-router";
 import { type ZodType } from "zod";
 
 import {
@@ -32,7 +32,7 @@ import {
 
 type SidebarItem = Array<{
 	name: string;
-	href: string;
+	href: NonNullable<LinkOptions["to"]>;
 	icon: Icon;
 	search?: ZodType;
 }>;
@@ -73,7 +73,7 @@ export const sidebarList: SidebarList = [
 export function AppSidebar() {
 	const { state } = useSidebar();
 	const { pathname } = useLocation();
-	const search = useSearch({ strict: false }) ?? {};
+	const search = useSearch({ strict: false });
 
 	return (
 		<Sidebar variant="floating" collapsible="icon">
