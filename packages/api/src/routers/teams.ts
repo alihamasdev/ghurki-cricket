@@ -2,8 +2,9 @@ import { db } from "@ghurki-cricket/db";
 
 import { publicProcedure, router } from "../index";
 import { getDate } from "../lib/helpers";
-import { compareTeamSchema } from "../lib/schemas";
-import { formatMatchScore } from "../lib/utils";
+import { compareTeamSchema, overSchema } from "../lib/schemas";
+import { type TeamConsecutiveWinsStat, type TeamHighestChaseStat, type TeamInningStat } from "../lib/types";
+import { formatDate, formatMatchScore } from "../lib/utils";
 
 export const teamsRouter = router({
 	list: publicProcedure.query(async () => {
@@ -14,20 +15,8 @@ export const teamsRouter = router({
 	}),
 
 	compare: publicProcedure.input(compareTeamSchema).query(async ({ input }) => {
-		let dateWhere = input && getDate(input);
-
-		if (!input?.date && !input?.rivalry) {
-			const lastRivalry = await db.rivalries.findFirst({
-				where: { dates: { some: { hasStats: true } } },
-				orderBy: { startedAt: "desc" },
-			});
-			if (lastRivalry) {
-				dateWhere = { date: { rivalryId: lastRivalry.title } };
-			}
-		}
-
+		const dateWhere = input && getDate(input);
 		const rivalryId = dateWhere && "date" in dateWhere && dateWhere.date?.rivalryId ? dateWhere.date.rivalryId : undefined;
-
 		const matchWhere = { ...dateWhere, ...(input?.overs ? { overs: input.overs } : {}) };
 		const inningsWhere = { ...dateWhere, ...(input?.overs ? { match: { overs: input.overs } } : {}) };
 
@@ -100,5 +89,146 @@ export const teamsRouter = router({
 				};
 			})
 			.sort((a, b) => b.winPercentage - a.winPercentage);
+	}),
+
+	highestRuns: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamInningStat[]> => {
+		const inningsWhere = input?.overs ? { match: { overs: input.overs } } : {};
+
+		const innings = await db.innings.findMany({
+			distinct: ["teamId"],
+			where: inningsWhere,
+			orderBy: { runs: "desc" },
+			include: {
+				match: { select: { overs: true } },
+			},
+		});
+
+		return innings
+			.map((inn) => ({
+				team: inn.teamId,
+				score: formatMatchScore(inn),
+				overs: inn.match.overs,
+				runRate: inn.balls ? ((inn.runs / inn.balls) * 6).toFixed(2) : "0.00",
+				date: formatDate(inn.dateId, "short"),
+				_runs: inn.runs,
+			}))
+			.sort((a, b) => b._runs - a._runs)
+			.map(({ _runs, ...rest }) => rest);
+	}),
+
+	lowestRuns: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamInningStat[]> => {
+		const inningsWhere = input?.overs ? { match: { overs: input.overs } } : {};
+
+		const innings = await db.innings.findMany({
+			distinct: ["teamId"],
+			where: { ...inningsWhere, allOuts: 1 },
+			orderBy: { runs: "asc" },
+			include: {
+				match: { select: { overs: true } },
+			},
+		});
+
+		return innings
+			.map((inn) => ({
+				team: inn.teamId,
+				score: formatMatchScore(inn),
+				overs: inn.match.overs,
+				runRate: inn.balls ? ((inn.runs / inn.balls) * 6).toFixed(2) : "0.00",
+				date: formatDate(inn.dateId, "short"),
+				_runs: inn.runs,
+			}))
+			.sort((a, b) => a._runs - b._runs)
+			.map(({ _runs, ...rest }) => rest);
+	}),
+
+	highestChases: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamHighestChaseStat[]> => {
+		const matchWhere = input?.overs ? { overs: input.overs } : {};
+
+		const matches = await db.matches.findMany({
+			where: matchWhere,
+			include: {
+				innings: {
+					orderBy: { id: "asc" },
+					select: { id: true, teamId: true, runs: true, balls: true, wickets: true, allOuts: true },
+				},
+			},
+		});
+
+		const successfulChases: TeamHighestChaseStat[] = [];
+		for (const match of matches) {
+			const inn = match.innings;
+			if (inn.length === 4) {
+				const [first, second, third, fourth] = inn;
+				if (!first || !second || !third || !fourth) continue;
+
+				const teamATotal = first.runs + third.runs;
+				const teamB1st = second.runs;
+				const target = teamATotal - teamB1st + 1;
+				const chasingInning = fourth;
+
+				if (match.winnerId === chasingInning.teamId && target > 0) {
+					successfulChases.push({
+						team: chasingInning.teamId,
+						target,
+						score: formatMatchScore(chasingInning),
+						potm: match.potmId ?? "-",
+						date: formatDate(match.dateId, "short"),
+					});
+				}
+			} else if (inn.length === 2) {
+				const [firstInning, chasingInning] = inn;
+				if (!firstInning || !chasingInning) continue;
+
+				if (match.winnerId === chasingInning.teamId) {
+					const target = firstInning.runs + 1;
+					successfulChases.push({
+						team: chasingInning.teamId,
+						target,
+						score: formatMatchScore(chasingInning),
+						potm: match.potmId ?? "-",
+						date: formatDate(match.dateId, "short"),
+					});
+				}
+			}
+		}
+
+		return successfulChases.sort((a, b) => b.target - a.target).slice(0, 15);
+	}),
+
+	consecutiveWins: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamConsecutiveWinsStat[]> => {
+		const matchWhere = input?.overs ? { overs: input.overs } : {};
+
+		const matches = await db.matches.findMany({
+			where: matchWhere,
+			orderBy: [{ dateId: "asc" }, { id: "asc" }],
+			include: {
+				innings: { orderBy: { id: "asc" }, select: { teamId: true } },
+			},
+		});
+
+		const maxStreaks = new Map<string, number>();
+		const currentStreaks = new Map<string, number>();
+
+		for (const match of matches) {
+			const teamsInMatch = Array.from(new Set(match.innings.map((i) => i.teamId)));
+			const winner = match.winnerId;
+
+			for (const team of teamsInMatch) {
+				if (team === winner) {
+					const cur = (currentStreaks.get(team) || 0) + 1;
+					currentStreaks.set(team, cur);
+					const max = maxStreaks.get(team) || 0;
+					if (cur > max) {
+						maxStreaks.set(team, cur);
+					}
+				} else {
+					currentStreaks.set(team, 0);
+				}
+			}
+		}
+
+		return Array.from(maxStreaks.entries())
+			.map(([team, wins]) => ({ team, wins }))
+			.sort((a, b) => b.wins - a.wins);
 	}),
 });

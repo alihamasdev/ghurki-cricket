@@ -3,7 +3,7 @@ import { db } from "@ghurki-cricket/db";
 import { publicProcedure, router } from "../index";
 import { getStatWhere } from "../lib/helpers";
 import { statSchema } from "../lib/schemas";
-import type { FieldingAverageDayStats, FieldingMostInSingleDayStats, FieldingStats } from "../lib/types";
+import { type FieldingStats } from "../lib/types";
 
 export const fieldingRouter = router({
 	list: publicProcedure.input(statSchema).query(async ({ input }): Promise<FieldingStats[]> => {
@@ -26,7 +26,7 @@ export const fieldingRouter = router({
 			.sort((a, b) => b.catches - a.catches);
 	}),
 
-	listAvgPerDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<FieldingAverageDayStats[]> => {
+	listAvgPerDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<FieldingStats[]> => {
 		const data = await db.fielders.groupBy({
 			by: ["playerId"],
 			where: getStatWhere(input),
@@ -46,7 +46,7 @@ export const fieldingRouter = router({
 			.sort((a, b) => b.catches - a.catches);
 	}),
 
-	mostInSingleDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<FieldingMostInSingleDayStats[]> => {
+	mostInSingleDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<FieldingStats[]> => {
 		const data = await db.fielders.groupBy({
 			by: ["playerId"],
 			where: getStatWhere(input),

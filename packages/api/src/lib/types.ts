@@ -1,30 +1,20 @@
 export type BattingStats = {
 	player: string;
-	innings?: number;
-	runs?: number;
-	balls?: number;
-	notOuts?: number;
-	fours?: number;
-	sixes?: number;
-	ducks?: number;
-	thirties?: number;
-	fifties?: number;
-	highestScore?: number;
-	strikeRate?: number;
-	average?: number;
-};
-
-export type AverageDayStats = {
-	player: string;
 	innings: number;
 	runs: number;
 	balls: number;
+	notOuts: number;
 	fours: number;
 	sixes: number;
+	ducks: number;
 	thirties: number;
+	fifties: number;
+	highestScore: number;
+	strikeRate: number;
+	average: number;
 };
 
-export type MostInSingleDayStats = {
+export type OtherBattingStats = {
 	player: string;
 	innings: number;
 	runs: number;
@@ -36,31 +26,20 @@ export type MostInSingleDayStats = {
 
 export type BowlingStats = {
 	player: string;
-	innings?: number;
-	runs?: number;
-	balls?: number;
-	wickets?: number;
-	dots?: number;
-	wides?: number;
-	noBalls?: number;
-	twoFR?: number;
-	threeFR?: number;
-	economy?: number | null;
-	average?: number | null;
-};
-
-export type BowlingAverageDayStats = {
-	player: string;
 	innings: number;
 	runs: number;
 	balls: number;
 	wickets: number;
 	dots: number;
 	wides: number;
+	noBalls: number;
 	twoFR: number;
+	threeFR: number;
+	economy: number | null;
+	average: number | null;
 };
 
-export type BowlingMostInSingleDayStats = {
+export type OtherBowlingStats = {
 	player: string;
 	innings: number;
 	runs: number;
@@ -74,20 +53,6 @@ export type BowlingMostInSingleDayStats = {
 export type FieldingStats = {
 	player: string;
 	innings: number;
-	catches?: number;
-	runOuts?: number;
-};
-
-export type FieldingAverageDayStats = {
-	player: string;
-	innings: number;
-	catches: number;
-	runOuts: number;
-};
-
-export type FieldingMostInSingleDayStats = {
-	player: string;
-	innings: number;
 	catches: number;
 	runOuts: number;
 };
@@ -97,15 +62,31 @@ export type POTMStats = {
 	potm: number;
 };
 
-export type POTMMostInSingleDayStats = {
-	player: string;
-	potm: number;
-};
-
 export type AttendanceStats = {
 	player: string;
 	attendance: string;
 	percentage: number;
+};
+
+export type TeamInningStat = {
+	team: string;
+	score: string;
+	overs: number;
+	runRate: string;
+	date: string;
+};
+
+export type TeamHighestChaseStat = {
+	team: string;
+	target: number;
+	score: string;
+	potm: string;
+	date: string;
+};
+
+export type TeamConsecutiveWinsStat = {
+	team: string;
+	wins: number;
 };
 
 export type ExpenseStats = {

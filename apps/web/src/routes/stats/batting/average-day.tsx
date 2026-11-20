@@ -1,5 +1,5 @@
 import { statSchema } from "@ghurki-cricket/api/schema";
-import { type AverageDayStats } from "@ghurki-cricket/api/types";
+import { type OtherBattingStats } from "@ghurki-cricket/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -9,7 +9,7 @@ import { DateFilter } from "@/components/filters/date-filter";
 import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
-const columns: ColumnDef<AverageDayStats>[] = [
+const columns: ColumnDef<OtherBattingStats>[] = [
 	{ accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerCell name={row.original.player} /> },
 	{ accessorKey: "innings", header: "Inns", cell: ({ row }) => row.original.innings?.toFixed(1) },
 	{ accessorKey: "runs", header: "Runs", cell: ({ row }) => row.original.runs?.toFixed(1) },

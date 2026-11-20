@@ -3,7 +3,7 @@ import { db } from "@ghurki-cricket/db";
 import { publicProcedure, router } from "../index";
 import { getStatWhere } from "../lib/helpers";
 import { statSchema } from "../lib/schemas";
-import type { AverageDayStats, BattingStats, MostInSingleDayStats } from "../lib/types";
+import type { BattingStats, OtherBattingStats } from "../lib/types";
 import { calcBattingAverage, calcStrikeRate } from "../lib/utils";
 
 export const battingRouter = router({
@@ -45,7 +45,7 @@ export const battingRouter = router({
 			.sort((a, b) => b.runs - a.runs);
 	}),
 
-	listAvgPerDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<AverageDayStats[]> => {
+	listAvgPerDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<OtherBattingStats[]> => {
 		const data = await db.batters.groupBy({
 			by: ["playerId"],
 			where: getStatWhere(input),
@@ -72,7 +72,7 @@ export const battingRouter = router({
 			.sort((a, b) => b.runs - a.runs);
 	}),
 
-	mostInSingleDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<MostInSingleDayStats[]> => {
+	mostInSingleDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<OtherBattingStats[]> => {
 		const data = await db.batters.groupBy({
 			by: ["playerId"],
 			where: getStatWhere(input),
