@@ -79,6 +79,7 @@ model Matches {
   id       Int       @id @default(autoincrement())
   title    String
   overs    Int
+  target   Int?
   winBy    String
   videoUrl String?
   winnerId String

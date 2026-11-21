@@ -18,6 +18,7 @@ export function getPlayerImageUrl(name: string, variant: AvatarVariant = "avatar
 export type PlayerAvatarProps = React.ComponentProps<typeof Avatar> & {
 	name: string;
 	variant?: AvatarVariant;
+	style?: React.CSSProperties;
 };
 
 export function PlayerAvatar({ name, variant = "avatar", ...props }: PlayerAvatarProps) {
@@ -30,9 +31,9 @@ export function PlayerAvatar({ name, variant = "avatar", ...props }: PlayerAvata
 	);
 }
 
-export function PlayerCell({ name, variant = "avatar", ...props }: PlayerAvatarProps) {
+export function PlayerCell({ name, variant = "avatar", style, ...props }: PlayerAvatarProps) {
 	return (
-		<div className="flex items-center gap-2">
+		<div className="flex items-center gap-2" style={style}>
 			<PlayerAvatar name={name} variant={variant} {...props} />
 			<span className="font-medium">{name}</span>
 		</div>

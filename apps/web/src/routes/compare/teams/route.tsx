@@ -11,6 +11,7 @@ const teamStatsLinks = linkOptions([
 	{ title: "Highest runs by teams", to: "/compare/teams/highest-runs" },
 	{ title: "Lowest runs by teams", to: "/compare/teams/lowest-runs" },
 	{ title: "Highest successful chase", to: "/compare/teams/highest-successful-chase" },
+	{ title: "Lowest score defended", to: "/compare/teams/lowest-score-defended" },
 	{ title: "Most consecutive wins", to: "/compare/teams/most-consecutive-wins" },
 ]);
 

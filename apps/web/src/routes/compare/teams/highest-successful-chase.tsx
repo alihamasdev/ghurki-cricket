@@ -22,9 +22,9 @@ const columns: ColumnDef<TeamHighestChaseStat>[] = [
 		header: "POTM",
 		cell: ({ row }) =>
 			row.original.potm && row.original.potm !== "-" ? (
-				<PlayerCell name={row.original.potm} />
+				<PlayerCell name={row.original.potm} style={{ display: "inline-flex" }} />
 			) : (
-				<div className="text-left">Not available</div>
+				"Not available"
 			),
 	},
 	{ accessorKey: "date", header: "Date" },

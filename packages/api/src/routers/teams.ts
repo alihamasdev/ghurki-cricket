@@ -3,7 +3,7 @@ import { db } from "@ghurki-cricket/db";
 import { publicProcedure, router } from "../index";
 import { getDate } from "../lib/helpers";
 import { compareTeamSchema, overSchema } from "../lib/schemas";
-import { type TeamConsecutiveWinsStat, type TeamHighestChaseStat, type TeamInningStat } from "../lib/types";
+import type { TeamConsecutiveWinsStat, TeamHighestChaseStat, TeamInningStat, TeamLowestDefendedStat } from "../lib/types";
 import { formatDate, formatMatchScore } from "../lib/utils";
 
 export const teamsRouter = router({
@@ -142,57 +142,71 @@ export const teamsRouter = router({
 	}),
 
 	highestChases: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamHighestChaseStat[]> => {
-		const matchWhere = input?.overs ? { overs: input.overs } : {};
+		const matchWhere = {
+			target: { not: null },
+			...(input?.overs ? { overs: input.overs } : {}),
+		};
 
 		const matches = await db.matches.findMany({
 			where: matchWhere,
 			include: {
 				innings: {
-					orderBy: { id: "asc" },
-					select: { id: true, teamId: true, runs: true, balls: true, wickets: true, allOuts: true },
+					orderBy: { id: "desc" },
+					take: 1,
+					select: { teamId: true, runs: true, balls: true, wickets: true, allOuts: true },
 				},
 			},
 		});
 
 		const successfulChases: TeamHighestChaseStat[] = [];
 		for (const match of matches) {
-			const inn = match.innings;
-			if (inn.length === 4) {
-				const [first, second, third, fourth] = inn;
-				if (!first || !second || !third || !fourth) continue;
-
-				const teamATotal = first.runs + third.runs;
-				const teamB1st = second.runs;
-				const target = teamATotal - teamB1st + 1;
-				const chasingInning = fourth;
-
-				if (match.winnerId === chasingInning.teamId && target > 0) {
-					successfulChases.push({
-						team: chasingInning.teamId,
-						target,
-						score: formatMatchScore(chasingInning),
-						potm: match.potmId ?? "-",
-						date: formatDate(match.dateId, "short"),
-					});
-				}
-			} else if (inn.length === 2) {
-				const [firstInning, chasingInning] = inn;
-				if (!firstInning || !chasingInning) continue;
-
-				if (match.winnerId === chasingInning.teamId) {
-					const target = firstInning.runs + 1;
-					successfulChases.push({
-						team: chasingInning.teamId,
-						target,
-						score: formatMatchScore(chasingInning),
-						potm: match.potmId ?? "-",
-						date: formatDate(match.dateId, "short"),
-					});
-				}
+			const chasingInning = match.innings[0];
+			if (chasingInning && match.target && match.winnerId === chasingInning.teamId) {
+				successfulChases.push({
+					team: chasingInning.teamId,
+					target: match.target,
+					score: formatMatchScore(chasingInning),
+					potm: match.potmId ?? "-",
+					date: formatDate(match.dateId, "short"),
+				});
 			}
 		}
 
-		return successfulChases.sort((a, b) => b.target - a.target).slice(0, 15);
+		return successfulChases.sort((a, b) => b.target - a.target).slice(0, 10);
+	}),
+
+	lowestDefended: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamLowestDefendedStat[]> => {
+		const matchWhere = {
+			target: { not: null },
+			...(input?.overs ? { overs: input.overs } : {}),
+		};
+
+		const matches = await db.matches.findMany({
+			where: matchWhere,
+			include: {
+				innings: {
+					orderBy: { id: "desc" },
+					take: 1,
+					select: { teamId: true, runs: true, balls: true, wickets: true, allOuts: true },
+				},
+			},
+		});
+
+		const defended: TeamLowestDefendedStat[] = [];
+		for (const match of matches) {
+			const chasingInning = match.innings[0];
+			if (chasingInning && match.target && match.winnerId !== chasingInning.teamId) {
+				defended.push({
+					team: match.winnerId,
+					target: match.target,
+					score: formatMatchScore(chasingInning),
+					potm: match.potmId ?? "-",
+					date: formatDate(match.dateId, "short"),
+				});
+			}
+		}
+
+		return defended.sort((a, b) => a.target - b.target).slice(0, 10);
 	}),
 
 	consecutiveWins: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamConsecutiveWinsStat[]> => {
