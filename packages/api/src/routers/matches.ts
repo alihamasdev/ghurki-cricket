@@ -2,21 +2,36 @@ import { db } from "@ghurki-cricket/db";
 
 import { publicProcedure, router } from "../index";
 import { getDate } from "../lib/helpers";
-import { matchSchema } from "../lib/schemas";
+import { matchListSchema } from "../lib/schemas";
 import { formatDate, formatMatchScore } from "../lib/utils";
 
 export const matchesRouter = router({
-	list: publicProcedure.input(matchSchema).query(async ({ input }) => {
-		const matches = await db.matches.findMany({
-			where: { ...getDate(input), potmId: input.potm, ...(input.overs ? { overs: input.overs } : {}) },
-			orderBy: { id: "desc" },
-			include: {
-				innings: {
-					orderBy: { id: "asc" },
-					select: { id: true, teamId: true, runs: true, balls: true, wickets: true, allOuts: true },
+	list: publicProcedure.input(matchListSchema).query(async ({ input }) => {
+		const page = input.cursor ?? 1;
+		const limit = input.limit;
+		const skip = (page - 1) * limit;
+
+		const where = {
+			...getDate(input),
+			potmId: input.potm,
+			...(input.overs ? { overs: input.overs } : {}),
+		};
+
+		const [totalMatches, matches] = await db.$transaction([
+			db.matches.count({ where }),
+			db.matches.findMany({
+				where,
+				orderBy: { id: "desc" },
+				skip,
+				take: limit,
+				include: {
+					innings: {
+						orderBy: { id: "asc" },
+						select: { id: true, teamId: true, runs: true, balls: true, wickets: true, allOuts: true },
+					},
 				},
-			},
-		});
+			}),
+		]);
 
 		const formattedMatches = matches.map((match) => ({
 			id: match.id,
@@ -30,6 +45,16 @@ export const matchesRouter = router({
 			})),
 		}));
 
-		return Object.groupBy(formattedMatches.reverse(), (match) => match.date);
+		const totalPages = Math.ceil(totalMatches / limit);
+		const nextPage = page < totalPages ? page + 1 : undefined;
+
+		return {
+			matches: formattedMatches,
+			totalMatches,
+			totalPages,
+			page,
+			limit,
+			nextPage,
+		};
 	}),
 });
