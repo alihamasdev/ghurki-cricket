@@ -10,9 +10,12 @@ import {
 	tableFeatures,
 	useTable,
 } from "@tanstack/react-table";
+import { AlertTriangleIcon } from "lucide-react";
 import { useState } from "react";
 
 import { ImageCapture } from "@/components/image-capture";
+import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
@@ -124,5 +127,23 @@ export function DataTable<TData extends RowData, TValue = unknown>({
 				</Table>
 			</div>
 		</ImageCapture>
+	);
+}
+
+export function DataTableLoader({ className, ...props }: React.ComponentProps<typeof Skeleton>) {
+	return <Skeleton className={cn("h-93", className)} {...props} />;
+}
+
+export function DataTableError({ error, className, ...props }: { error?: string } & React.ComponentProps<typeof Empty>) {
+	return (
+		<Empty className={cn("h-93", className)} {...props}>
+			<EmptyContent>
+				<EmptyMedia variant="icon">
+					<AlertTriangleIcon />
+				</EmptyMedia>
+				<EmptyTitle>Something went wrong, please try again</EmptyTitle>
+				{error && <EmptyDescription>{error}</EmptyDescription>}
+			</EmptyContent>
+		</Empty>
 	);
 }

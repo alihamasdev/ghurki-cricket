@@ -3,9 +3,9 @@ import { type ExpenseStats, type ExpenseSummary } from "@ghurki-cricket/api/type
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DataTable, type ColumnDef } from "@/components/data-table";
+import { DataTable, type ColumnDef, DataTableError, DataTableLoader } from "@/components/data-table";
 import { DateFilter } from "@/components/filters/date-filter";
-import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
+import { PageLayout } from "@/components/page-layout";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
 
@@ -73,11 +73,11 @@ function ExpenseRoute() {
 	const { data, status, error } = useQuery(trpc.expense.list.queryOptions({ starts, ends }));
 
 	if (status === "pending") {
-		return <PageLoader />;
+		return <DataTableLoader className="h-112" />;
 	}
 
 	if (status === "error") {
-		return <PageError error={error.message} />;
+		return <DataTableError error={error.message} className="h-112" />;
 	}
 
 	return (

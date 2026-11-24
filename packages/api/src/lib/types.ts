@@ -80,6 +80,7 @@ export type TeamHighestChaseStat = {
 	team: string;
 	target: number;
 	score: string;
+	overs: number;
 	potm: string;
 	date: string;
 };
@@ -88,6 +89,7 @@ export type TeamLowestDefendedStat = {
 	team: string;
 	target: number;
 	score: string;
+	overs: number;
 	potm: string;
 	date: string;
 };

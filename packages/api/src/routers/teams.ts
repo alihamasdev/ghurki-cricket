@@ -166,6 +166,7 @@ export const teamsRouter = router({
 					team: chasingInning.teamId,
 					target: match.target,
 					score: formatMatchScore(chasingInning),
+					overs: match.overs,
 					potm: match.potmId ?? "-",
 					date: formatDate(match.dateId, "short"),
 				});
@@ -200,6 +201,7 @@ export const teamsRouter = router({
 					team: match.winnerId,
 					target: match.target,
 					score: formatMatchScore(chasingInning),
+					overs: match.overs,
 					potm: match.potmId ?? "-",
 					date: formatDate(match.dateId, "short"),
 				});

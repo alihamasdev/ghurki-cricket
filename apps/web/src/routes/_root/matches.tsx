@@ -4,8 +4,9 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { DateFilter } from "@/components/filters/date-filter";
 import { OversFilter } from "@/components/filters/overs-filter";
-import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
+import { PageError, PageLayout } from "@/components/page-layout";
 import { Item, ItemContent, ItemDescription, ItemFooter, ItemTitle } from "@/components/ui/item";
+import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/_root/matches")({
@@ -38,7 +39,16 @@ function HomeRoute() {
 	const { data, status, error } = useQuery(trpc.matches.list.queryOptions(search));
 
 	if (status === "pending") {
-		return <PageLoader />;
+		return Array.from({ length: 10 }).map((_, i) => (
+			<section key={i} className="space-y-2">
+				<Skeleton className="h-6 w-25" />
+				<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+					<Skeleton className="h-24" />
+					<Skeleton className="h-24" />
+					<Skeleton className="h-24" />
+				</div>
+			</section>
+		));
 	}
 
 	if (status === "error") {

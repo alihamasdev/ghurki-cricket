@@ -2,7 +2,6 @@ import { type QueryClient } from "@tanstack/react-query";
 import { HeadContent, Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 
 import { AppSidebar } from "@/components/app-sidebar";
-import { StumprIcon } from "@/components/icons";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { type trpc } from "@/utils/trpc";
@@ -16,7 +15,6 @@ type RouterContext = {
 
 export const Route = createRootRouteWithContext<RouterContext>()({
 	component: RootComponent,
-	pendingComponent: RootLoading,
 	head: () => ({
 		meta: [
 			{ charSet: "utf-8" },
@@ -39,13 +37,5 @@ function RootComponent() {
 				</SidebarInset>
 			</SidebarProvider>
 		</TooltipProvider>
-	);
-}
-
-function RootLoading() {
-	return (
-		<div className="flex h-dvh w-full items-center justify-center">
-			<StumprIcon className="size-16 fill-primary" />
-		</div>
 	);
 }

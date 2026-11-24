@@ -4,9 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PlayerCell } from "@/components/avatar";
-import { DataTable, type ColumnDef } from "@/components/data-table";
+import { DataTable, type ColumnDef, DataTableError, DataTableLoader } from "@/components/data-table";
 import { OversFilter } from "@/components/filters/overs-filter";
-import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
+import { PageLayout } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<TeamHighestChaseStat>[] = [
@@ -17,6 +17,7 @@ const columns: ColumnDef<TeamHighestChaseStat>[] = [
 		header: "Score",
 		sortFn: (rowA, rowB) => parseInt(rowA.original.score, 10) - parseInt(rowB.original.score, 10),
 	},
+	{ accessorKey: "overs", header: "Overs" },
 	{
 		accessorKey: "potm",
 		header: "POTM",
@@ -24,7 +25,7 @@ const columns: ColumnDef<TeamHighestChaseStat>[] = [
 			row.original.potm && row.original.potm !== "-" ? (
 				<PlayerCell name={row.original.potm} style={{ display: "inline-flex" }} />
 			) : (
-				"Not available"
+				<span className="text-xs/7 font-medium">Not available</span>
 			),
 	},
 	{ accessorKey: "date", header: "Date" },
@@ -59,11 +60,11 @@ function HighestChaseTable() {
 	const { data, status, error } = useQuery(trpc.teams.highestChases.queryOptions(search));
 
 	if (status === "pending") {
-		return <PageLoader />;
+		return <DataTableLoader />;
 	}
 
 	if (status === "error") {
-		return <PageError error={error.message} />;
+		return <DataTableError error={error.message} />;
 	}
 
 	return <DataTable columns={columns} data={data} defaultSort={{ id: "target", desc: true }} />;

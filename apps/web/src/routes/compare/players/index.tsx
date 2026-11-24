@@ -2,10 +2,11 @@ import { comparePlayerSchema } from "@ghurki-cricket/api/schema";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
+import { DataTableLoader, DataTableError } from "@/components/data-table";
 import { DateFilter } from "@/components/filters/date-filter";
 import { PlayerFilter } from "@/components/filters/player-filter";
 import { ImageCapture } from "@/components/image-capture";
-import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
+import { PageLayout } from "@/components/page-layout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trpc } from "@/utils/trpc";
 
@@ -92,11 +93,11 @@ function PlayerCompareRoute() {
 	}
 
 	if (status === "pending") {
-		return <PageLoader />;
+		return <DataTableLoader className="h-85" />;
 	}
 
 	if (status === "error") {
-		return <PageError error={error.message} />;
+		return <DataTableError error={error.message} className="h-85" />;
 	}
 
 	if (!data || !data.player1 || !data.player2) {

@@ -2,8 +2,6 @@ import { AlertTriangleIcon } from "lucide-react";
 
 import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 
 type PageLayoutProps = React.PropsWithChildren<{
 	title: string;
@@ -26,13 +24,9 @@ export function PageLayout({ title, headerRight, children }: PageLayoutProps) {
 	);
 }
 
-export function PageLoader({ className, ...props }: React.ComponentProps<typeof Skeleton>) {
-	return <Skeleton className={cn("h-125", className)} {...props} />;
-}
-
-export function PageError({ error }: { error?: string }) {
+export function PageError({ error, ...props }: { error?: string } & React.ComponentProps<typeof Empty>) {
 	return (
-		<Empty>
+		<Empty {...props}>
 			<EmptyContent>
 				<EmptyMedia variant="icon">
 					<AlertTriangleIcon />

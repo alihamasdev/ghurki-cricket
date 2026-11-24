@@ -3,8 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PlayerAvatar } from "@/components/avatar";
-import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
+import { PageError, PageLayout } from "@/components/page-layout";
 import { Item, ItemContent, ItemMedia, ItemTitle, ItemDescription } from "@/components/ui/item";
+import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/_root/players")({
@@ -29,7 +30,13 @@ function PlayersRoute() {
 	const { data, status, error } = useQuery(trpc.players.list.queryOptions(search));
 
 	if (status === "pending") {
-		return <PageLoader />;
+		return (
+			<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+				{Array.from({ length: 10 }).map((_, i) => (
+					<Skeleton key={i} className="h-16" />
+				))}
+			</div>
+		);
 	}
 
 	if (status === "error") {

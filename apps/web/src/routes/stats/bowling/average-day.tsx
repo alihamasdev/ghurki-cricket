@@ -5,9 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PlayerCell } from "@/components/avatar";
-import { DataTable, type ColumnDef } from "@/components/data-table";
+import { DataTable, type ColumnDef, DataTableError, DataTableLoader } from "@/components/data-table";
 import { DateFilter } from "@/components/filters/date-filter";
-import { PageError, PageLayout, PageLoader } from "@/components/page-layout";
+import { PageLayout } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<OtherBowlingStats>[] = [
@@ -50,11 +50,11 @@ function AverageBowlingDayTable() {
 	const { data, status, error } = useQuery(trpc.bowling.listAvgPerDay.queryOptions(search));
 
 	if (status === "pending") {
-		return <PageLoader />;
+		return <DataTableLoader />;
 	}
 
 	if (status === "error") {
-		return <PageError error={error.message} />;
+		return <DataTableError error={error.message} />;
 	}
 
 	return <DataTable columns={columns} data={data} defaultSort={{ id: "wickets", desc: true }} />;

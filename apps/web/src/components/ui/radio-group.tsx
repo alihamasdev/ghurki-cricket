@@ -3,9 +3,8 @@ import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group";
 import { cn } from "cn";
 import { useId } from "react";
 
+import { useFilterSheet } from "@/components/ui/filter-sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-
-import { useFilterSheet } from "./filter-sheet";
 
 type RadioGroupProps = RadioGroupPrimitive.Props & {
 	side?: "left" | "right";
