@@ -39,6 +39,7 @@
 		"dev:web": "turbo run dev -F web --",
 		"env:prev": "tsx scripts/sync-vercel-env.ts preview",
 		"env:prod": "tsx scripts/sync-vercel-env.ts production",
+		"prepare": "lefthook install",
 		"upload-player-images": "bun scripts/upload-player-images.ts"
 	},
 	"dependencies": {

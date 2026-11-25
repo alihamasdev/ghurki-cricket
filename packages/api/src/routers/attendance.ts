@@ -18,6 +18,12 @@ const getDateFilter = ({ date, rivalry, starts, ends }: DateSchema) => {
 };
 
 export const attendanceRouter = router({
+	/**
+	 * Computes player attendance statistics across dates based on match participation.
+	 *
+	 * @param input - Optional date range, rivalry, single date, and player group filter.
+	 * @returns Array of player attendance counts and attendance percentage sorted descending.
+	 */
 	list: publicProcedure.input(statSchema).query(async ({ input }): Promise<AttendanceStats[]> => {
 		const [data, total] = await db.$transaction([
 			db.fielders.groupBy({

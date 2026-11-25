@@ -1,10 +1,8 @@
-import { overSchema } from "@ghurki-cricket/api/schema";
 import { type TeamConsecutiveWinsStat } from "@ghurki-cricket/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { DataTable, type ColumnDef, DataTableLoader, DataTableError } from "@/components/data-table";
-import { OversFilter } from "@/components/filters/overs-filter";
 import { PageLayout } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
@@ -14,7 +12,6 @@ const columns: ColumnDef<TeamConsecutiveWinsStat>[] = [
 ];
 
 export const Route = createFileRoute("/stats/teams/most-consecutive-wins")({
-	validateSearch: overSchema,
 	head: () => ({
 		meta: [
 			{ title: "Most Consecutive Wins | Ghurki Cricket" },
@@ -23,14 +20,7 @@ export const Route = createFileRoute("/stats/teams/most-consecutive-wins")({
 	}),
 	component: () => {
 		return (
-			<PageLayout
-				title="Most consecutive wins"
-				headerRight={
-					<div className="flex sm:justify-end">
-						<OversFilter />
-					</div>
-				}
-			>
+			<PageLayout title="Most consecutive wins">
 				<ConsecutiveWinsTable />
 			</PageLayout>
 		);
@@ -38,8 +28,7 @@ export const Route = createFileRoute("/stats/teams/most-consecutive-wins")({
 });
 
 function ConsecutiveWinsTable() {
-	const search = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.teams.consecutiveWins.queryOptions(search));
+	const { data, status, error } = useQuery(trpc.teams.consecutiveWins.queryOptions());
 
 	if (status === "pending") {
 		return <DataTableLoader />;

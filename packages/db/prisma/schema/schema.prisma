@@ -38,7 +38,7 @@ model Players {
   battingRecords Records[]   @relation("BattingRecord")
   bowlingRecords Records[]   @relation("BowlingRecord")
 
-  @@index([role])
+  @@index([group])
   @@map("players")
 }
 
@@ -70,8 +70,8 @@ model Dates {
   fielding  Fielders[]
 
   @@index([hasStats])
-  @@index([ground])
   @@index([rivalryId])
+  @@index([winnerId])
   @@map("dates")
 }
 
@@ -92,6 +92,8 @@ model Matches {
 
   @@index([potmId])
   @@index([winnerId])
+  @@index([dateId])
+  @@index([overs])
   @@map("matches")
 }
 
@@ -110,6 +112,7 @@ model Innings {
 
   @@index([matchId])
   @@index([teamId])
+  @@index([dateId])
   @@map("innings")
 }
 
@@ -130,7 +133,7 @@ model Batters {
   fifties      Int      @default(0)
 
   @@id([playerId, dateId])
-  @@index([playerId])
+  @@index([dateId])
   @@map("batting")
 }
 
@@ -150,7 +153,7 @@ model Bowlers {
   threeFR  Int      @default(0) @map("3fr")
 
   @@id([playerId, dateId])
-  @@index([playerId])
+  @@index([dateId])
   @@map("bowling")
 }
 
@@ -164,7 +167,7 @@ model Fielders {
   runOuts  Int      @default(0)
 
   @@id([playerId, dateId])
-  @@index([playerId])
+  @@index([dateId])
   @@map("fielding")
 }
 
@@ -183,6 +186,7 @@ model Records {
   wickets   Int       @default(0)
 
   @@id([batterId, bowlerId, rivalryId])
-  @@index([batterId, bowlerId])
+  @@index([bowlerId])
+  @@index([rivalryId])
   @@map("records")
 }

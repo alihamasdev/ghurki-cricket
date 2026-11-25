@@ -5,6 +5,8 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import cors from "cors";
 import express, { type Express } from "express";
 import helmet from "helmet";
+import { Readable } from "node:stream";
+import type { ReadableStream as NodeReadableStream } from "node:stream/web";
 import { z } from "zod";
 
 const app: Express = express();
@@ -24,9 +26,10 @@ const isAllowedOrigin = (origin: string | undefined): boolean => {
 		if (
 			hostname === "localhost" ||
 			hostname === "127.0.0.1" ||
-			hostname.endsWith(".vercel.app") ||
+			hostname === "stats.alihamas.pk" ||
+			hostname === "alihamas.pk" ||
 			hostname.endsWith(".alihamas.pk") ||
-			hostname === "alihamas.pk"
+			(hostname.startsWith("ghurki-cricket") && hostname.endsWith(".vercel.app"))
 		) {
 			return true;
 		}
@@ -45,7 +48,7 @@ app.use(
 			if (isAllowedOrigin(origin)) {
 				callback(null, true);
 			} else {
-				callback(new Error(`Origin ${origin} not allowed by CORS`));
+				callback(null, false);
 			}
 		},
 		methods: ["GET", "POST", "OPTIONS"],
@@ -87,9 +90,17 @@ app.get(
 			}
 
 			res.setHeader("Content-Type", "image/webp");
-			res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
-			const arrayBuffer = await upstream.arrayBuffer();
-			res.status(200).send(Buffer.from(arrayBuffer));
+			res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+			res.setHeader("CDN-Cache-Control", "no-store");
+			res.setHeader("Vercel-CDN-Cache-Control", "no-store");
+
+			if (upstream.body) {
+				// SAFETY: Fetch ReadableStream is compatible with Node.js Readable.fromWeb stream adapter.
+				const stream = Readable.fromWeb(upstream.body as NodeReadableStream);
+				stream.pipe(res);
+			} else {
+				res.status(200).end();
+			}
 		} catch {
 			res.status(500).send("Error fetching image");
 		}

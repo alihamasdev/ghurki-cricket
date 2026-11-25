@@ -6,6 +6,12 @@ import { groupSchema, statSchema } from "../lib/schemas";
 import { type POTMStats } from "../lib/types";
 
 export const potmRouter = router({
+	/**
+	 * Lists Player of the Match (POTM) award counts aggregated per player.
+	 *
+	 * @param input - Optional date range, rivalry, single date, and player group filter.
+	 * @returns Array of players and their total POTM award counts sorted descending.
+	 */
 	list: publicProcedure.input(statSchema).query(async ({ input }): Promise<POTMStats[]> => {
 		const data = await db.matches.groupBy({
 			by: ["potmId"],
@@ -22,6 +28,12 @@ export const potmRouter = router({
 			.sort((a, b) => b.potm - a.potm);
 	}),
 
+	/**
+	 * Finds the highest number of POTM awards won by each player in a single playing day.
+	 *
+	 * @param input - Player group filter ("core", "friends", "family", or "all").
+	 * @returns Array of players with their personal record of most POTMs in a day sorted descending.
+	 */
 	mostInSingleDay: publicProcedure.input(groupSchema).query(async ({ input }): Promise<POTMStats[]> => {
 		const data = await db.matches.groupBy({
 			by: ["potmId", "dateId"],

@@ -1,4 +1,4 @@
-import { db } from "@ghurki-cricket/db";
+import { db, Prisma } from "@ghurki-cricket/db";
 
 import { publicProcedure, router } from "../index";
 import { getDate } from "../lib/helpers";
@@ -7,6 +7,11 @@ import type { TeamConsecutiveWinsStat, TeamHighestChaseStat, TeamInningStat, Tea
 import { calcStrikeRate, formatDate, formatMatchScore } from "../lib/utils";
 
 export const teamsRouter = router({
+	/**
+	 * Lists all registered teams ordered alphabetically.
+	 *
+	 * @returns Array of team objects with name, slug, and avatar.
+	 */
 	list: publicProcedure.query(async () => {
 		return await db.teams.findMany({
 			orderBy: { name: "asc" },
@@ -14,6 +19,12 @@ export const teamsRouter = router({
 		});
 	}),
 
+	/**
+	 * Aggregates overall team performance statistics (series wins, matches played/won, win percentage, runs, balls, strike rate).
+	 *
+	 * @param input - Optional overs filter.
+	 * @returns Array of team statistics sorted by series won descending.
+	 */
 	listStats: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamStats[]> => {
 		const matchWhere = input?.overs ? { overs: input.overs } : {};
 		const inningsWhere = input?.overs ? { match: { overs: input.overs } } : {};
@@ -79,6 +90,12 @@ export const teamsRouter = router({
 			.sort((a, b) => b.series - a.series);
 	}),
 
+	/**
+	 * Finds the highest team innings totals recorded across matches.
+	 *
+	 * @param input - Optional overs filter.
+	 * @returns Array of highest team scores with runs, balls, wickets, run rate, and match date sorted by runs descending.
+	 */
 	highestRuns: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamInningStat[]> => {
 		const inningsWhere = input?.overs ? { match: { overs: input.overs } } : {};
 
@@ -104,6 +121,12 @@ export const teamsRouter = router({
 			.map(({ _runs, ...rest }) => rest);
 	}),
 
+	/**
+	 * Finds the lowest team scores where the team was bowled all out.
+	 *
+	 * @param input - Optional overs filter.
+	 * @returns Array of lowest all-out innings totals with runs, balls, wickets, run rate, and match date sorted by runs ascending.
+	 */
 	lowestRuns: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamInningStat[]> => {
 		const inningsWhere = input?.overs ? { match: { overs: input.overs } } : {};
 
@@ -129,122 +152,180 @@ export const teamsRouter = router({
 			.map(({ _runs, ...rest }) => rest);
 	}),
 
+	/**
+	 * Retrieves the top 10 highest successfully chased targets by teams using a LATERAL join.
+	 *
+	 * @param input - Optional overs filter.
+	 * @returns Array of top 10 highest target chases with match score and date sorted by target descending.
+	 */
 	highestChases: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamHighestChaseStat[]> => {
-		const matchWhere = { target: { not: null } };
+		const overFilter = input?.overs ? Prisma.sql`AND m.overs = ${input.overs}` : Prisma.empty;
 
-		if (input?.overs) {
-			Object.assign(matchWhere, { overs: input.overs });
-		}
+		const rows = await db.$queryRaw<
+			{
+				team: string;
+				target: number;
+				overs: number;
+				potm: string | null;
+				dateId: Date;
+				runs: number;
+				balls: number;
+				wickets: number;
+				allOuts: number;
+			}[]
+		>`
+			SELECT 
+				i."teamId" AS team,
+				m.target,
+				m.overs,
+				m."potmId" AS potm,
+				m."dateId",
+				i.runs,
+				i.balls,
+				i.wickets,
+				i."allOuts"
+			FROM matches m
+			JOIN LATERAL (
+				SELECT id, "teamId", runs, balls, wickets, "allOuts"
+				FROM innings
+				WHERE "matchId" = m.id
+				ORDER BY id DESC
+				LIMIT 1
+			) i ON true
+			WHERE m.target IS NOT NULL
+			  AND m."winnerId" = i."teamId"
+			  ${overFilter}
+			ORDER BY m.target DESC
+			LIMIT 10
+		`;
 
-		const matches = await db.matches.findMany({
-			where: matchWhere,
-			include: {
-				innings: {
-					orderBy: { id: "desc" },
-					take: 1,
-					select: { teamId: true, runs: true, balls: true, wickets: true, allOuts: true },
-				},
-			},
-		});
-
-		const successfulChases: TeamHighestChaseStat[] = [];
-
-		for (const match of matches) {
-			const chasingInning = match.innings[0];
-
-			if (chasingInning && match.target && match.winnerId === chasingInning.teamId) {
-				successfulChases.push({
-					team: chasingInning.teamId,
-					target: match.target,
-					score: formatMatchScore(chasingInning),
-					overs: match.overs,
-					potm: match.potmId ?? "-",
-					date: formatDate(match.dateId, "short"),
-				});
-			}
-		}
-
-		return successfulChases.sort((a, b) => b.target - a.target).slice(0, 10);
+		return rows.map((r) => ({
+			team: r.team,
+			target: r.target,
+			score: formatMatchScore({
+				runs: r.runs,
+				balls: r.balls,
+				wickets: r.wickets,
+				allOuts: r.allOuts,
+			}),
+			overs: r.overs,
+			potm: r.potm ?? "-",
+			date: formatDate(r.dateId, "short"),
+		}));
 	}),
 
+	/**
+	 * Retrieves the top 10 lowest defended targets where the defending team successfully won.
+	 *
+	 * @param input - Optional overs filter.
+	 * @returns Array of top 10 lowest target defenses with match score and date sorted by target ascending.
+	 */
 	lowestDefended: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamLowestDefendedStat[]> => {
-		const matchWhere = {
-			target: { not: null },
-		};
+		const overFilter = input?.overs ? Prisma.sql`AND m.overs = ${input.overs}` : Prisma.empty;
 
-		if (input?.overs) {
-			Object.assign(matchWhere, { overs: input.overs });
-		}
+		const rows = await db.$queryRaw<
+			{
+				team: string;
+				target: number;
+				overs: number;
+				potm: string | null;
+				dateId: Date;
+				runs: number;
+				balls: number;
+				wickets: number;
+				allOuts: number;
+			}[]
+		>`
+			SELECT 
+				m."winnerId" AS team,
+				m.target,
+				m.overs,
+				m."potmId" AS potm,
+				m."dateId",
+				i.runs,
+				i.balls,
+				i.wickets,
+				i."allOuts"
+			FROM matches m
+			JOIN LATERAL (
+				SELECT id, "teamId", runs, balls, wickets, "allOuts"
+				FROM innings
+				WHERE "matchId" = m.id
+				ORDER BY id DESC
+				LIMIT 1
+			) i ON true
+			WHERE m.target IS NOT NULL
+			  AND m."winnerId" != i."teamId"
+			  ${overFilter}
+			ORDER BY m.target ASC
+			LIMIT 10
+		`;
 
-		const matches = await db.matches.findMany({
-			where: matchWhere,
-			include: {
-				innings: {
-					orderBy: { id: "desc" },
-					take: 1,
-					select: { teamId: true, runs: true, balls: true, wickets: true, allOuts: true },
-				},
-			},
-		});
-
-		const defended: TeamLowestDefendedStat[] = [];
-
-		for (const match of matches) {
-			const chasingInning = match.innings[0];
-
-			if (chasingInning && match.target && match.winnerId !== chasingInning.teamId) {
-				defended.push({
-					team: match.winnerId,
-					target: match.target,
-					score: formatMatchScore(chasingInning),
-					overs: match.overs,
-					potm: match.potmId ?? "-",
-					date: formatDate(match.dateId, "short"),
-				});
-			}
-		}
-
-		return defended.sort((a, b) => a.target - b.target).slice(0, 10);
+		return rows.map((r) => ({
+			team: r.team,
+			target: r.target,
+			score: formatMatchScore({
+				runs: r.runs,
+				balls: r.balls,
+				wickets: r.wickets,
+				allOuts: r.allOuts,
+			}),
+			overs: r.overs,
+			potm: r.potm ?? "-",
+			date: formatDate(r.dateId, "short"),
+		}));
 	}),
 
-	consecutiveWins: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamConsecutiveWinsStat[]> => {
-		const matchWhere = input?.overs ? { overs: input.overs } : {};
-
-		const matches = await db.matches.findMany({
-			where: matchWhere,
-			orderBy: [{ dateId: "asc" }, { id: "asc" }],
-			include: {
-				innings: { orderBy: { id: "asc" }, select: { teamId: true } },
-			},
-		});
-
-		const maxStreaks = new Map<string, number>();
-		const currentStreaks = new Map<string, number>();
-
-		for (const match of matches) {
-			const teamsInMatch = Array.from(new Set(match.innings.map((i) => i.teamId)));
-			const winner = match.winnerId;
-
-			for (const team of teamsInMatch) {
-				if (team === winner) {
-					const cur = (currentStreaks.get(team) || 0) + 1;
-					currentStreaks.set(team, cur);
-					const max = maxStreaks.get(team) || 0;
-
-					if (cur > max) {
-						maxStreaks.set(team, cur);
-					}
-				} else {
-					currentStreaks.set(team, 0);
-				}
-			}
-		}
-
-		return Array.from(maxStreaks.entries())
-			.map(([team, wins]) => ({ team, wins }))
-			.sort((a, b) => b.wins - a.wins);
+	/**
+	 * Computes the longest consecutive match winning streak for each team using SQL gaps-and-islands window functions.
+	 *
+	 * @returns Array of teams with their maximum consecutive match winning streak count sorted descending.
+	 */
+	consecutiveWins: publicProcedure.query(async (): Promise<TeamConsecutiveWinsStat[]> => {
+		return await db.$queryRaw<TeamConsecutiveWinsStat[]>`
+			WITH team_matches AS (
+				SELECT DISTINCT
+					i."teamId" AS team,
+					m."dateId",
+					m.id AS match_id,
+					CASE WHEN m."winnerId" = i."teamId" THEN 1 ELSE 0 END AS is_win
+				FROM matches m
+				JOIN innings i ON i."matchId" = m.id
+			),
+			streaks AS (
+				SELECT 
+					team,
+					is_win,
+					SUM(CASE WHEN is_win = 0 THEN 1 ELSE 0 END) OVER (
+						PARTITION BY team 
+						ORDER BY "dateId" ASC, match_id ASC
+					) AS streak_group
+				FROM team_matches
+			),
+			streak_lengths AS (
+				SELECT 
+					team,
+					COUNT(*) AS wins
+				FROM streaks
+				WHERE is_win = 1
+				GROUP BY team, streak_group
+			)
+			SELECT 
+				t.name AS team,
+				COALESCE(MAX(s.wins), 0)::int AS wins
+			FROM teams t
+			LEFT JOIN streak_lengths s ON s.team = t.name
+			GROUP BY t.name
+			ORDER BY wins DESC
+		`;
 	}),
 
+	/**
+	 * Compares team statistics side-by-side (series wins, win percentage, run rate, highest/lowest scores).
+	 *
+	 * @param input - Optional rivalry, date range, exact date, or overs filter.
+	 * @returns Array of team comparison stats sorted by win percentage descending.
+	 */
 	compare: publicProcedure.input(compareTeamSchema).query(async ({ input }) => {
 		const dateWhere = input && getDate(input);
 		const rivalryId = dateWhere && "date" in dateWhere && dateWhere.date?.rivalryId ? dateWhere.date.rivalryId : undefined;

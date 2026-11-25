@@ -6,6 +6,12 @@ import { matchListSchema } from "../lib/schemas";
 import { formatDate, formatMatchScore } from "../lib/utils";
 
 export const matchesRouter = router({
+	/**
+	 * Lists paginated matches with innings scores, winner details, and POTM information.
+	 *
+	 * @param input - Pagination cursor/limit, and optional date, rivalry, overs, or POTM filter.
+	 * @returns Paginated match list with total match count, pagination metadata, and formatted scores.
+	 */
 	list: publicProcedure.input(matchListSchema).query(async ({ input }) => {
 		const page = input.cursor ?? 1;
 		const limit = input.limit;

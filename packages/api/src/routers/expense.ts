@@ -5,6 +5,12 @@ import { expenseSchema } from "../lib/schemas";
 import { type ExpenseData } from "../lib/types";
 
 export const expenseRouter = router({
+	/**
+	 * Computes match day expenses aggregated by ground and overall total costs (ground fee + gear).
+	 *
+	 * @param input - Optional starts and ends date range filter.
+	 * @returns Expense summary with totals and per-ground breakdown sorted by expense descending.
+	 */
 	list: publicProcedure.input(expenseSchema).query(async ({ input }): Promise<ExpenseData> => {
 		const where = input.starts && input.ends ? { date: { gte: new Date(input.starts), lte: new Date(input.ends) } } : undefined;
 

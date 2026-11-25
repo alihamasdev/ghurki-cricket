@@ -5,6 +5,12 @@ import { getGroup } from "../lib/helpers";
 import { comparePlayerSchema, groupSchema } from "../lib/schemas";
 
 export const playerRouter = router({
+	/**
+	 * Lists all registered players belonging to the specified player group.
+	 *
+	 * @param input - Player group filter ("core", "friends", "family", or "all").
+	 * @returns Array of player profiles with name, role, and avatar ordered by name ascending.
+	 */
 	list: publicProcedure.input(groupSchema).query(async ({ input }) => {
 		return await db.players.findMany({
 			orderBy: { name: "asc" },
@@ -13,6 +19,12 @@ export const playerRouter = router({
 		});
 	}),
 
+	/**
+	 * Compares head-to-head batting vs bowling statistics between two players.
+	 *
+	 * @param input - Two distinct player names and optional rivalry filter.
+	 * @returns Head-to-head stats for both match-ups (runs, balls, dots, boundaries, strike rate, average).
+	 */
 	compare: publicProcedure.input(comparePlayerSchema).query(async ({ input }) => {
 		const { player1, player2, rivalry } = input ?? {};
 

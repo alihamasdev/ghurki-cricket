@@ -12,22 +12,23 @@ export function formatDate(inputDate: Date | string, type: "short" | "numeric" =
 	if (inputDate instanceof Date) {
 		date = inputDate;
 	} else if (/^\d{4}-\d{2}-\d{2}$/.test(inputDate)) {
-		date = new Date(`${inputDate}T00:00:00`);
+		date = new Date(`${inputDate}T00:00:00Z`);
 	} else {
 		date = new Date(inputDate);
 	}
 
 	if (type === "short") {
-		return Intl.DateTimeFormat("us", {
+		return Intl.DateTimeFormat("en-US", {
+			timeZone: "UTC",
 			month: "short",
 			day: "2-digit",
 			year: "numeric",
 		}).format(date);
 	}
 
-	const y = date.getFullYear();
-	const m = String(date.getMonth() + 1).padStart(2, "0");
-	const d = String(date.getDate()).padStart(2, "0");
+	const y = date.getUTCFullYear();
+	const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+	const d = String(date.getUTCDate()).padStart(2, "0");
 
 	return `${y}-${m}-${d}`;
 }

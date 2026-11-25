@@ -7,6 +7,12 @@ import type { OtherBowlingStats, BowlingStats } from "../lib/types";
 import { calcBowlingAverage, calcBowlingEconomy } from "../lib/utils";
 
 export const bowlingRouter = router({
+	/**
+	 * Lists aggregated bowling stats (wickets, runs, balls, dots, extras, economy, average).
+	 *
+	 * @param input - Optional date range, rivalry, single date, and player group filter.
+	 * @returns Array of player bowling stats sorted by wickets descending.
+	 */
 	list: publicProcedure.input(statSchema).query(async ({ input }): Promise<BowlingStats[]> => {
 		const data = await db.bowlers.groupBy({
 			by: ["playerId"],
@@ -42,6 +48,12 @@ export const bowlingRouter = router({
 			.sort((a, b) => b.wickets - a.wickets);
 	}),
 
+	/**
+	 * Calculates average bowling metrics per playing day (wickets, runs, balls, dots, wides).
+	 *
+	 * @param input - Optional date range, rivalry, single date, and player group filter.
+	 * @returns Array of players with average bowling statistics per day sorted by wickets.
+	 */
 	listAvgPerDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<OtherBowlingStats[]> => {
 		const data = await db.bowlers.groupBy({
 			by: ["playerId"],
@@ -69,6 +81,12 @@ export const bowlingRouter = router({
 			.sort((a, b) => b.wickets - a.wickets);
 	}),
 
+	/**
+	 * Finds the highest single-day bowling performance for each player (most wickets, dots, balls).
+	 *
+	 * @param input - Optional date range, rivalry, single date, and player group filter.
+	 * @returns Array of players with their personal best single-day bowling numbers sorted by wickets.
+	 */
 	mostInSingleDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<OtherBowlingStats[]> => {
 		const data = await db.bowlers.groupBy({
 			by: ["playerId"],

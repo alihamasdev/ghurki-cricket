@@ -7,6 +7,12 @@ import type { BattingStats, OtherBattingStats } from "../lib/types";
 import { calcBattingAverage, calcStrikeRate } from "../lib/utils";
 
 export const battingRouter = router({
+	/**
+	 * Lists aggregated batting stats (runs, innings, average, strike rate, boundaries, fifties).
+	 *
+	 * @param input - Optional date range, rivalry, single date, and player group filter.
+	 * @returns Array of player batting stats sorted by total runs descending.
+	 */
 	list: publicProcedure.input(statSchema).query(async ({ input }): Promise<BattingStats[]> => {
 		const data = await db.batters.groupBy({
 			by: ["playerId"],
@@ -46,6 +52,12 @@ export const battingRouter = router({
 			.sort((a, b) => b.runs - a.runs);
 	}),
 
+	/**
+	 * Calculates average batting metrics per playing day (innings, runs, balls, boundaries).
+	 *
+	 * @param input - Optional date range, rivalry, single date, and player group filter.
+	 * @returns Array of players with average batting statistics per day sorted by runs.
+	 */
 	listAvgPerDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<OtherBattingStats[]> => {
 		const data = await db.batters.groupBy({
 			by: ["playerId"],
@@ -72,6 +84,12 @@ export const battingRouter = router({
 			.sort((a, b) => b.runs - a.runs);
 	}),
 
+	/**
+	 * Finds the highest single-day batting performance for each player (most runs, balls, boundaries).
+	 *
+	 * @param input - Optional date range, rivalry, single date, and player group filter.
+	 * @returns Array of players with their personal best single-day batting numbers sorted by runs.
+	 */
 	mostInSingleDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<OtherBattingStats[]> => {
 		const data = await db.batters.groupBy({
 			by: ["playerId"],
