@@ -53,6 +53,7 @@ export function DataTable<TData extends RowData, TValue = unknown>({
 	const [sorting, setSorting] = useState<SortingState>(() => (defaultSortId ? [{ id: defaultSortId, desc: defaultSortDesc ?? true }] : []));
 
 	const currentSortKey = `${defaultSortId}:${defaultSortDesc}`;
+
 	if (prevSortKey !== currentSortKey) {
 		setPrevSortKey(currentSortKey);
 		setSorting(defaultSortId ? [{ id: defaultSortId, desc: defaultSortDesc ?? true }] : []);

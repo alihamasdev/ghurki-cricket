@@ -10,11 +10,13 @@ export const groupSchema = z.object({
 		.optional()
 		.catch("core"),
 });
+
 export type GroupSchema = z.infer<typeof groupSchema>;
 
 export const overSchema = z.object({
 	overs: z.coerce.number().optional().catch(undefined),
 });
+
 export type OverSchema = z.infer<typeof overSchema>;
 
 export const dateSchema = z.object({
@@ -23,9 +25,11 @@ export const dateSchema = z.object({
 	ends: z.iso.date().optional().catch(undefined),
 	date: z.iso.date().optional().catch(undefined),
 });
+
 export type DateSchema = z.infer<typeof dateSchema>;
 
 export const statSchema = dateSchema.extend(groupSchema.shape);
+
 export type StatSchema = z.infer<typeof statSchema>;
 
 export const expenseSchema = dateSchema.pick({ starts: true, ends: true });
@@ -34,12 +38,14 @@ export const matchSchema = dateSchema.extend({
 	...overSchema.shape,
 	potm: z.string().optional().catch(undefined),
 });
+
 export type MatchSchema = z.infer<typeof matchSchema>;
 
 export const matchListSchema = matchSchema.extend({
 	cursor: z.coerce.number().int().positive().optional().catch(undefined),
 	limit: z.coerce.number().int().positive().default(DEFAULT_LIMIT),
 });
+
 export type MatchListSchema = z.infer<typeof matchListSchema>;
 
 export const compareTeamSchema = dateSchema.omit({ starts: true, ends: true }).extend({

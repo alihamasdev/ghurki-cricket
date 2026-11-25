@@ -16,6 +16,7 @@ export const Route = createFileRoute("/compare/teams/")({
 		if (!search.rivalry && !search.date) {
 			const rivalries = await context.queryClient.query(context.trpc.filters.listRivalries.queryOptions());
 			const latestRivalry = rivalries?.[0]?.name;
+
 			if (latestRivalry) {
 				throw redirect({ to: "/compare/teams", replace: true, search: { ...search, rivalry: latestRivalry } });
 			}

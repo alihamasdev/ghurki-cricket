@@ -1,6 +1,6 @@
 {
 	"$schema": "./node_modules/oxfmt/configuration_schema.json",
-	"ignorePatterns": ["node_modules", "dist/", ".agents/", ".turbo/", ".vercel/", "routeTree.gen.ts"],
+	"ignorePatterns": ["node_modules", "**/dist/", ".agents/", ".turbo/", ".vercel/", "tools/", "**/routeTree.gen.ts"],
 	"semi": true,
 	"tabWidth": 2,
 	"useTabs": true,

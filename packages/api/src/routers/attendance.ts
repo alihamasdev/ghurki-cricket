@@ -7,9 +7,13 @@ import { type AttendanceStats } from "../lib/types";
 
 const getDateFilter = ({ date, rivalry, starts, ends }: DateSchema) => {
 	if (rivalry) return { rivalryId: rivalry };
+
 	if (starts && ends) return { date: { gte: new Date(starts), lte: new Date(ends) } };
+
 	if (starts) return { date: { gte: new Date(starts) } };
+
 	if (ends) return { date: { lte: new Date(ends) } };
+
 	if (date) return { date: new Date(date) };
 };
 
@@ -30,6 +34,7 @@ export const attendanceRouter = router({
 			.map((val) => {
 				const percentage = total > 0 ? (val._count / total) * 100 : 0;
 				const roundPercentage = percentage.toFixed();
+
 				return {
 					player: val.playerId,
 					attendance: `${val._count} / ${total}`,

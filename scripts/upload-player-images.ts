@@ -6,9 +6,11 @@ import sharp from "sharp";
 
 // Load environment variables from .env.local or apps/server/.env
 config({ path: path.resolve(process.cwd(), ".env.local") });
+
 config({ path: path.resolve(process.cwd(), "apps/server/.env") });
 
 const storageUrl = process.env.SUPABASE_STORAGE_URL;
+
 const supabaseUrl =
 	process.env.SUPABASE_URL ||
 	(storageUrl ? new URL(storageUrl).origin : undefined) ||
@@ -26,18 +28,23 @@ const BUCKET_NAME = "players";
 
 async function ensureBucket() {
 	const { data: buckets, error } = await supabase.storage.listBuckets();
+
 	if (error) {
 		console.warn("⚠️ Could not list buckets:", error.message);
+
 		return;
 	}
 
 	const existing = buckets.find((b) => b.name === BUCKET_NAME);
+
 	if (!existing) {
 		console.log(`📦 Creating public bucket "${BUCKET_NAME}"...`);
+
 		const { error: createErr } = await supabase.storage.createBucket(BUCKET_NAME, {
 			public: true,
 			allowedMimeTypes: ["image/webp"],
 		});
+
 		if (createErr) throw createErr;
 	} else if (!existing.public || !existing.allowed_mime_types?.includes("image/webp")) {
 		console.log(`⚙️ Updating bucket "${BUCKET_NAME}" settings...`);
@@ -71,6 +78,7 @@ async function processAndUpload() {
 
 	if (rawImages.length > 0) {
 		console.log(`🖼️ Processing ${rawImages.length} raw images from players/ with sharp...`);
+
 		for (const file of rawImages) {
 			const ext = path.extname(file);
 			const baseName = path.basename(file, ext).trim().toLowerCase();

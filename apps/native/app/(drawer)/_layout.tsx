@@ -34,6 +34,7 @@ const DrawerLayout = () => {
 				options={{
 					headerTitle: "Home",
 					drawerLabel: "Home",
+					// SAFETY: React Navigation passes color strings at runtime.
 					drawerIcon: ({ size, color }) => <Ionicons name="home-outline" size={size} color={color as string} />,
 				}}
 			/>
@@ -42,6 +43,7 @@ const DrawerLayout = () => {
 				options={{
 					headerTitle: "Tabs",
 					drawerLabel: "Tabs",
+					// SAFETY: React Navigation passes color strings at runtime.
 					drawerIcon: ({ size, color }) => <MaterialIcons name="border-bottom" size={size} color={color as string} />,
 					headerRight: () => (
 						<Link href="/modal" asChild>

@@ -5,11 +5,13 @@ import { createTRPCClient, httpBatchStreamLink } from "@trpc/client";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 
 function getServerUrl(url: string) {
+	// SAFETY: globalThis may carry Node.js process environment variables during SSR or prerendering.
 	const processEnv = (
 		globalThis as {
 			process?: { env?: Record<string, string | undefined> };
 		}
 	).process?.env;
+
 	if (typeof window === "undefined" && processEnv?.SERVER_URL) {
 		return processEnv.SERVER_URL.endsWith("/") ? processEnv.SERVER_URL.slice(0, -1) : processEnv.SERVER_URL;
 	}
@@ -28,8 +30,10 @@ function getServerUrl(url: string) {
 		processEnv?.VERCEL_ENV === "production"
 			? (processEnv?.VERCEL_PROJECT_PRODUCTION_URL ?? processEnv?.VERCEL_URL)
 			: (processEnv?.VERCEL_URL ?? processEnv?.VERCEL_PROJECT_PRODUCTION_URL);
+
 	if (vercelUrl) {
 		const origin = vercelUrl.startsWith("http") ? vercelUrl : `https://${vercelUrl}`;
+
 		return `${origin}${normalized}`;
 	}
 

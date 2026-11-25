@@ -12,6 +12,6 @@ export const env = createEnv({
 			.transform((val) => val.replace(/\/+$/, ""))
 			.optional(),
 	},
-	runtimeEnv: (import.meta as any).env,
+	runtimeEnv: import.meta.env,
 	emptyStringAsUndefined: true,
 });

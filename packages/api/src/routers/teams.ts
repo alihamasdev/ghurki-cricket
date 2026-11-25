@@ -47,6 +47,7 @@ export const teamsRouter = router({
 
 		const matchesPlayedMap = matchStats.reduce<Record<string, number>>((acc, curr) => {
 			acc[curr.teamId] = (acc[curr.teamId] ?? 0) + 1;
+
 			return acc;
 		}, {});
 
@@ -129,10 +130,11 @@ export const teamsRouter = router({
 	}),
 
 	highestChases: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamHighestChaseStat[]> => {
-		const matchWhere = {
-			target: { not: null },
-			...(input?.overs ? { overs: input.overs } : {}),
-		};
+		const matchWhere = { target: { not: null } };
+
+		if (input?.overs) {
+			Object.assign(matchWhere, { overs: input.overs });
+		}
 
 		const matches = await db.matches.findMany({
 			where: matchWhere,
@@ -146,8 +148,10 @@ export const teamsRouter = router({
 		});
 
 		const successfulChases: TeamHighestChaseStat[] = [];
+
 		for (const match of matches) {
 			const chasingInning = match.innings[0];
+
 			if (chasingInning && match.target && match.winnerId === chasingInning.teamId) {
 				successfulChases.push({
 					team: chasingInning.teamId,
@@ -166,8 +170,11 @@ export const teamsRouter = router({
 	lowestDefended: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamLowestDefendedStat[]> => {
 		const matchWhere = {
 			target: { not: null },
-			...(input?.overs ? { overs: input.overs } : {}),
 		};
+
+		if (input?.overs) {
+			Object.assign(matchWhere, { overs: input.overs });
+		}
 
 		const matches = await db.matches.findMany({
 			where: matchWhere,
@@ -181,8 +188,10 @@ export const teamsRouter = router({
 		});
 
 		const defended: TeamLowestDefendedStat[] = [];
+
 		for (const match of matches) {
 			const chasingInning = match.innings[0];
+
 			if (chasingInning && match.target && match.winnerId !== chasingInning.teamId) {
 				defended.push({
 					team: match.winnerId,
@@ -221,6 +230,7 @@ export const teamsRouter = router({
 					const cur = (currentStreaks.get(team) || 0) + 1;
 					currentStreaks.set(team, cur);
 					const max = maxStreaks.get(team) || 0;
+
 					if (cur > max) {
 						maxStreaks.set(team, cur);
 					}
@@ -238,13 +248,36 @@ export const teamsRouter = router({
 	compare: publicProcedure.input(compareTeamSchema).query(async ({ input }) => {
 		const dateWhere = input && getDate(input);
 		const rivalryId = dateWhere && "date" in dateWhere && dateWhere.date?.rivalryId ? dateWhere.date.rivalryId : undefined;
-		const matchWhere = { ...dateWhere, ...(input?.overs ? { overs: input.overs } : {}) };
-		const inningsWhere = { ...dateWhere, ...(input?.overs ? { match: { overs: input.overs } } : {}) };
+		const matchWhere = { ...dateWhere };
+
+		if (input?.overs) {
+			Object.assign(matchWhere, { overs: input.overs });
+		}
+
+		const inningsWhere = { ...dateWhere };
+
+		if (input?.overs) {
+			Object.assign(inningsWhere, { match: { overs: input.overs } });
+		}
+
+		const datesWhere = {
+			winnerId: { not: null },
+		};
+
+		if (rivalryId) {
+			Object.assign(datesWhere, { rivalryId });
+		}
+
+		const lowestWhere = { ...inningsWhere };
+
+		if (!input?.date) {
+			Object.assign(lowestWhere, { allOuts: 1 });
+		}
 
 		const [seriesStats, matchStats, winStats, aggregateStats, highestScores, lowestScores] = await db.$transaction([
 			db.dates.groupBy({
 				by: ["winnerId"],
-				where: { winnerId: { not: null }, ...(rivalryId ? { rivalryId } : {}) },
+				where: datesWhere,
 				_count: { winnerId: true },
 			}),
 			db.innings.groupBy({
@@ -269,7 +302,7 @@ export const teamsRouter = router({
 			}),
 			db.innings.findMany({
 				distinct: ["teamId"],
-				where: { ...inningsWhere, ...(input?.date ? {} : { allOuts: 1 }) },
+				where: lowestWhere,
 				orderBy: { runs: "asc" },
 				select: { teamId: true, runs: true, balls: true, wickets: true, allOuts: true },
 			}),
@@ -277,6 +310,7 @@ export const teamsRouter = router({
 
 		const matchesPlayedMap = matchStats.reduce<Record<string, number>>((acc, curr) => {
 			acc[curr.teamId] = (acc[curr.teamId] ?? 0) + 1;
+
 			return acc;
 		}, {});
 
@@ -296,7 +330,7 @@ export const teamsRouter = router({
 
 				return {
 					team: teamId,
-					...(!input?.date && !input?.overs ? { seriesWon: seriesWins } : {}),
+					seriesWon: !input?.date && !input?.overs ? seriesWins : undefined,
 					matchesPlayed: played,
 					matchesWon: wins,
 					winPercentage: played ? Math.round((wins / played) * 100) : 0,

@@ -4,15 +4,18 @@ import pg from "pg";
 
 import { PrismaClient } from "../prisma/generated/client";
 
-const globalForPrisma = globalThis as unknown as {
-	prisma: PrismaClient | undefined;
+// SAFETY: globalThis persists the Prisma client instance across hot module reloads in development.
+const globalForPrisma = globalThis as {
+	prisma?: PrismaClient;
 };
 
 export function createPrismaClient() {
 	const pool = new pg.Pool({
 		connectionString: env.DATABASE_URL,
 	});
+
 	const adapter = new PrismaPg(pool);
+
 	return new PrismaClient({ adapter });
 }
 

@@ -96,11 +96,11 @@ export function AppSidebar() {
 							<SidebarMenu>
 								{items.map(({ name, href, icon: Icon, search: itemSchema }) => {
 									const parsed = itemSchema?.safeParse(search);
-									const itemSearch = parsed?.success
-										? Object.fromEntries(
-												Object.entries((parsed.data ?? {}) as Record<string, unknown>).filter(([_v, value]) => value !== undefined),
-											)
-										: {};
+
+									const itemSearch =
+										parsed?.success && parsed.data
+											? Object.fromEntries(Object.entries(parsed.data).filter(([, value]) => value !== undefined))
+											: {};
 
 									return (
 										<SidebarMenuItem key={name}>

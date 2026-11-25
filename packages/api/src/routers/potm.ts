@@ -30,9 +30,11 @@ export const potmRouter = router({
 		});
 
 		const playerMaxMap = new Map<string, number>();
+
 		for (const row of data) {
 			if (!row.potmId) continue;
 			const current = playerMaxMap.get(row.potmId) ?? 0;
+
 			if (row._count.potmId > current) {
 				playerMaxMap.set(row.potmId, row._count.potmId);
 			}

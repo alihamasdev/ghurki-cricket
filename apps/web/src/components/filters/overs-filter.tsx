@@ -12,6 +12,7 @@ export function OversFilter() {
 
 	const getValue = () => {
 		if (search.overs) return `${search.overs} Overs`;
+
 		return "All Overs";
 	};
 

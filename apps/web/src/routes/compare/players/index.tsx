@@ -15,6 +15,7 @@ export const Route = createFileRoute("/compare/players/")({
 	beforeLoad: async ({ context, search }) => {
 		if (!search.player1 || !search.player2 || search.player1 === search.player2) {
 			const players = await context.queryClient.query(context.trpc.players.list.queryOptions({ group: "core" }));
+
 			if (players && players.length >= 2) {
 				let p1 = search.player1;
 				let p2 = search.player2;
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/compare/players/")({
 				if (!p1 && !p2) {
 					const idx1 = Math.floor(Math.random() * players.length);
 					let idx2 = Math.floor(Math.random() * (players.length - 1));
+
 					if (idx2 >= idx1) idx2++;
 					p1 = players[idx1].name;
 					p2 = players[idx2].name;

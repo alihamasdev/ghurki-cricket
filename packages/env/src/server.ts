@@ -7,7 +7,9 @@ function getVercelOrigin() {
 		process.env.VERCEL_ENV === "production"
 			? (process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL)
 			: (process.env.VERCEL_URL ?? process.env.VERCEL_PROJECT_PRODUCTION_URL);
+
 	if (!vercelUrl) return undefined;
+
 	return vercelUrl.startsWith("http") ? vercelUrl : `https://${vercelUrl}`;
 }
 

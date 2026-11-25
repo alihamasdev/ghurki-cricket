@@ -27,6 +27,7 @@ function RadioGroup({
 
 	const handleValueChange = (value: any, event: any) => {
 		onValueChange?.(value, event);
+
 		if (closeOnValueChange) {
 			closeSheet();
 		}
@@ -53,6 +54,7 @@ type RadioGroupItemProps = RadioPrimitive.Root.Props & {
 
 function RadioGroupItem({ label, description, orientation = "horizontal", className, children, ...props }: RadioGroupItemProps) {
 	const id = useId();
+
 	return (
 		<label
 			data-slot="radio-group-item"

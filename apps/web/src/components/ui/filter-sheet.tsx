@@ -14,6 +14,7 @@ const FilterSheetContext = createContext<FilterSheetContextType | null>(null);
 
 export function useFilterSheet(): FilterSheetContextType {
 	const context = useContext(FilterSheetContext);
+
 	if (!context) {
 		return {
 			open: false,
@@ -21,6 +22,7 @@ export function useFilterSheet(): FilterSheetContextType {
 			closeSheet: () => {},
 		};
 	}
+
 	return context;
 }
 

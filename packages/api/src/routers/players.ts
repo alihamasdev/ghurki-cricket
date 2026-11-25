@@ -15,19 +15,25 @@ export const playerRouter = router({
 
 	compare: publicProcedure.input(comparePlayerSchema).query(async ({ input }) => {
 		const { player1, player2, rivalry } = input ?? {};
+
 		if (!player1 || !player2 || player1 === player2) {
 			return null;
 		}
 
+		const where = {
+			OR: [
+				{ batterId: player1, bowlerId: player2 },
+				{ batterId: player2, bowlerId: player1 },
+			],
+		};
+
+		if (rivalry) {
+			Object.assign(where, { rivalryId: rivalry });
+		}
+
 		const data = await db.records.groupBy({
 			by: ["batterId", "bowlerId"],
-			where: {
-				OR: [
-					{ batterId: player1, bowlerId: player2 },
-					{ batterId: player2, bowlerId: player1 },
-				],
-				...(rivalry ? { rivalryId: rivalry } : {}),
-			},
+			where,
 			_sum: {
 				runs: true,
 				balls: true,

@@ -16,6 +16,7 @@ export const fieldingRouter = router({
 				runOuts: true,
 			},
 		});
+
 		return data
 			.map((val) => ({
 				player: val.playerId,
@@ -36,6 +37,7 @@ export const fieldingRouter = router({
 				runOuts: true,
 			},
 		});
+
 		return data
 			.map((val) => ({
 				player: val.playerId,
@@ -56,6 +58,7 @@ export const fieldingRouter = router({
 				runOuts: true,
 			},
 		});
+
 		return data
 			.map((val) => ({
 				player: val.playerId,

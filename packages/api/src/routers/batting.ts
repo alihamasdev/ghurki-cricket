@@ -26,6 +26,7 @@ export const battingRouter = router({
 				fifties: true,
 			},
 		});
+
 		return data
 			.map((val) => ({
 				player: val.playerId,
@@ -58,6 +59,7 @@ export const battingRouter = router({
 				sixes: true,
 			},
 		});
+
 		return data
 			.map((val) => ({
 				player: val.playerId,
@@ -82,6 +84,7 @@ export const battingRouter = router({
 				sixes: true,
 			},
 		});
+
 		return data
 			.map((val) => ({
 				player: val.playerId,

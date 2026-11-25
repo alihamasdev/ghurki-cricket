@@ -35,6 +35,7 @@ export const filtersRouter = router({
 				_count: { select: { dates: { where: { hasStats: true } } } },
 			},
 		});
+
 		return data.map((rivalry) => ({ name: rivalry.title, count: rivalry._count.dates }));
 	}),
 

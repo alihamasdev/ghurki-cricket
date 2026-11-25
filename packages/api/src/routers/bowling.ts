@@ -23,6 +23,7 @@ export const bowlingRouter = router({
 				threeFR: true,
 			},
 		});
+
 		return data
 			.map((val) => ({
 				player: val.playerId,
@@ -54,6 +55,7 @@ export const bowlingRouter = router({
 				wides: true,
 			},
 		});
+
 		return data
 			.map((val) => ({
 				player: val.playerId,
@@ -80,6 +82,7 @@ export const bowlingRouter = router({
 				wides: true,
 			},
 		});
+
 		return data
 			.map((val) => ({
 				player: val.playerId,

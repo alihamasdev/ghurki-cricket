@@ -6,7 +6,12 @@ import * as RechartsPrimitive from "recharts";
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
 
+function isString(value: unknown): value is string {
+	return Object.prototype.toString.call(value) === "[object String]";
+}
+
 const INITIAL_DIMENSION = { width: 320, height: 200 } as const;
+
 type TooltipNameType = number | string;
 
 export type ChartConfig = Record<
@@ -85,7 +90,9 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 ${prefix} [data-chart=${id}] {
 ${colorConfig
 	.map(([key, itemConfig]) => {
+		// SAFETY: theme is a known key of THEMES ("light" | "dark") matching itemConfig.theme keys.
 		const color = itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ?? itemConfig.color;
+
 		return color ? `  --color-${key}: ${color};` : null;
 	})
 	.join("\n")}
@@ -132,7 +139,7 @@ function ChartTooltipContent({
 		const [item] = payload;
 		const key = `${labelKey ?? item?.dataKey ?? item?.name ?? "value"}`;
 		const itemConfig = getPayloadConfigFromPayload(config, item, key);
-		const value = !labelKey && typeof label === "string" ? (config[label]?.label ?? label) : itemConfig?.label;
+		const value = !labelKey && isString(label) ? (config[label]?.label ?? label) : itemConfig?.label;
 
 		if (labelFormatter) {
 			return <div className={cn("font-medium", labelClassName)}>{labelFormatter(value, payload)}</div>;
@@ -184,6 +191,7 @@ function ChartTooltipContent({
 										) : (
 											!hideIndicator && (
 												<div
+													// SAFETY: CSS custom properties are valid runtime inline styles on HTML elements.
 													style={{ "--color-bg": indicatorColor, "--color-border": indicatorColor } as React.CSSProperties}
 													className={cn("shrink-0 rounded-xs border-(--color-border) bg-(--color-bg)", {
 														"h-2.5 w-2.5": indicator === "dot",
@@ -201,7 +209,7 @@ function ChartTooltipContent({
 											</div>
 											{item.value != null && (
 												<span className="font-mono font-medium text-foreground tabular-nums">
-													{typeof item.value === "number" ? item.value.toLocaleString() : String(item.value)}
+													{Number.isFinite(item.value) ? item.value.toLocaleString() : String(item.value)}
 												</span>
 											)}
 										</div>
@@ -261,20 +269,28 @@ function ChartLegendContent({
 	);
 }
 
-function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key: string) {
-	if (typeof payload !== "object" || payload === null) {
+function getPayloadConfigFromPayload(config: ChartConfig, payload: { payload?: object } | undefined, key: string) {
+	if (!payload) {
 		return undefined;
 	}
 
-	const payloadPayload =
-		"payload" in payload && typeof payload.payload === "object" && payload.payload !== null ? payload.payload : undefined;
-
+	const nestedPayload = payload.payload;
 	let configLabelKey: string = key;
 
-	if (key in payload && typeof payload[key as keyof typeof payload] === "string") {
-		configLabelKey = payload[key as keyof typeof payload] as string;
-	} else if (payloadPayload && key in payloadPayload && typeof payloadPayload[key as keyof typeof payloadPayload] === "string") {
-		configLabelKey = payloadPayload[key as keyof typeof payloadPayload] as string;
+	if (key in payload) {
+		// SAFETY: Checking property presence before accessing string candidate for label lookup.
+		const candidate = (payload as Record<string, string | number | boolean | undefined>)[key];
+
+		if (isString(candidate)) {
+			configLabelKey = candidate;
+		}
+	} else if (nestedPayload && key in nestedPayload) {
+		// SAFETY: Recharts nested payload holds raw data properties.
+		const candidate = (nestedPayload as Record<string, string | number | boolean | undefined>)[key];
+
+		if (isString(candidate)) {
+			configLabelKey = candidate;
+		}
 	}
 
 	return configLabelKey in config ? config[configLabelKey] : config[key];

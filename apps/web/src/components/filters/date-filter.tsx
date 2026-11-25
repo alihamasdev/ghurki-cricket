@@ -25,17 +25,24 @@ export function DateFilter(props: DateFilterProps) {
 
 	const getValue = () => {
 		if (search.date) return formatDate(search.date, "short");
+
 		if (search.rivalry) return search.rivalry;
+
 		if (search.starts && search.ends) {
 			const startYear = search.starts.slice(0, 4);
 			const endYear = search.ends.slice(0, 4);
+
 			if (startYear === endYear && search.starts === `${startYear}-01-01` && search.ends === `${endYear}-12-31`) {
 				return `Year ${startYear}`;
 			}
+
 			return `${formatDate(search.starts, "short")} - ${formatDate(search.ends, "short")}`;
 		}
+
 		if (search.starts) return `${formatDate(search.starts, "short")} - Present`;
+
 		if (search.ends) return `Start - ${formatDate(search.ends, "short")}`;
+
 		return props.hasAllTime === false ? "Select Rivalry" : "All Time";
 	};
 
@@ -52,19 +59,27 @@ function DateOptions({ hasAllTime = true, hasYears = true, hasRivalries = true, 
 
 	const periodKey = (p: { starts: string; ends: string }) => `${p.starts}|${p.ends}`;
 
-	const availableTabs: TabType[] = [
-		hasRivalries && ("rivalries" as const),
-		hasYears && ("years" as const),
-		hasDates && ("dates" as const),
-	].filter(Boolean) as TabType[];
+	const availableTabs: TabType[] = [];
+
+	if (hasRivalries) availableTabs.push("rivalries");
+
+	if (hasYears) availableTabs.push("years");
+
+	if (hasDates) availableTabs.push("dates");
 
 	const getDefaultTab = (): TabType => {
 		if (search.date && hasDates) return "dates";
+
 		if (search.rivalry && hasRivalries) return "rivalries";
+
 		if ((search.starts || search.ends) && hasYears) return "years";
+
 		if (hasRivalries) return "rivalries";
+
 		if (hasYears) return "years";
+
 		if (hasDates) return "dates";
+
 		return "rivalries";
 	};
 
@@ -172,6 +187,7 @@ function DateOptions({ hasAllTime = true, hasYears = true, hasRivalries = true, 
 
 	if (availableTabs.length <= 1) {
 		const singleTab = availableTabs[0];
+
 		return (
 			<>
 				{allTimeRadio}
@@ -182,8 +198,14 @@ function DateOptions({ hasAllTime = true, hasYears = true, hasRivalries = true, 
 		);
 	}
 
+	const handleTabChange = (val: string) => {
+		if (val === "rivalries" || val === "years" || val === "dates") {
+			setActiveTab(val);
+		}
+	};
+
 	return (
-		<Tabs style={{ gap: 0, overflowY: "auto" }} value={currentTab} onValueChange={(val) => setActiveTab(val as TabType)}>
+		<Tabs style={{ gap: 0, overflowY: "auto" }} value={currentTab} onValueChange={handleTabChange}>
 			<TabsList variant="sheet" className="sticky top-0 w-full">
 				{hasRivalries && <TabsTrigger value="rivalries">Rivalries</TabsTrigger>}
 				{hasYears && <TabsTrigger value="years">Years</TabsTrigger>}

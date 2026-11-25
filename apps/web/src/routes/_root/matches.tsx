@@ -38,6 +38,7 @@ export const Route = createFileRoute("/_root/matches")({
 
 function HomeRoute() {
 	const search = Route.useSearch();
+
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError, error } = useInfiniteQuery(
 		trpc.matches.list.infiniteQueryOptions(search, {
 			getNextPageParam: (lastPage) => lastPage.nextPage,
@@ -69,10 +70,12 @@ function HomeRoute() {
 	}
 
 	const groupedMatches: Record<string, typeof allMatches> = {};
+
 	for (const match of allMatches) {
 		if (!groupedMatches[match.date]) {
 			groupedMatches[match.date] = [];
 		}
+
 		groupedMatches[match.date].push(match);
 	}
 
@@ -86,6 +89,7 @@ function HomeRoute() {
 		<>
 			{dates.map((date) => {
 				const matches = groupedMatches[date] || [];
+
 				return (
 					<section key={date} className="space-y-2">
 						<h2 className="font-semibold">{date}</h2>

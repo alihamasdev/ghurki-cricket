@@ -11,11 +11,11 @@ export const matchesRouter = router({
 		const limit = input.limit;
 		const skip = (page - 1) * limit;
 
-		const where = {
-			...getDate(input),
-			potmId: input.potm,
-			...(input.overs ? { overs: input.overs } : {}),
-		};
+		const where = { ...getDate(input), potmId: input.potm };
+
+		if (input.overs) {
+			Object.assign(where, { overs: input.overs });
+		}
 
 		const [totalMatches, matches] = await db.$transaction([
 			db.matches.count({ where }),

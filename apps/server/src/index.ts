@@ -5,18 +5,22 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import cors from "cors";
 import express, { type Express } from "express";
 import helmet from "helmet";
+import { z } from "zod";
 
 const app: Express = express();
 
 const isAllowedOrigin = (origin: string | undefined): boolean => {
 	if (!origin) return true;
+
 	if (env.CORS_ORIGIN === "*" || env.CORS_ORIGIN === "") return true;
 
 	const configuredOrigins = env.CORS_ORIGIN.split(",").map((s) => s.trim());
+
 	if (configuredOrigins.includes("*") || configuredOrigins.includes(origin)) return true;
 
 	try {
 		const { hostname } = new URL(origin);
+
 		if (
 			hostname === "localhost" ||
 			hostname === "127.0.0.1" ||
@@ -55,18 +59,30 @@ app.use(["/trpc", "/api/trpc"], createExpressMiddleware({ router, createContext 
 app.get(
 	["/players/:playerId.webp", "/api/players/:playerId.webp", "/players/:playerId/:variant.webp", "/api/players/:playerId/:variant.webp"],
 	async (req, res) => {
-		const { playerId, variant } = req.params;
-		if (typeof playerId !== "string" || !playerId) {
+		const paramSchema = z.object({
+			playerId: z.string().trim().min(1),
+			variant: z.string().optional(),
+		});
+
+		const parsed = paramSchema.safeParse(req.params);
+
+		if (!parsed.success) {
 			res.status(400).send("Invalid playerId");
+
 			return;
 		}
 
+		const { playerId, variant } = parsed.data;
+
 		const folder = variant === "avatar" ? "avatars" : "profiles";
 		const upstreamUrl = `${env.SUPABASE_STORAGE_URL}/${folder}/${encodeURIComponent(playerId.trim().toLowerCase())}.webp`;
+
 		try {
 			const upstream = await fetch(upstreamUrl);
+
 			if (!upstream.ok) {
 				res.status(upstream.status).send(upstream.statusText);
+
 				return;
 			}
 
