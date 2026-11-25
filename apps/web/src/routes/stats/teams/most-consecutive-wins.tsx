@@ -13,7 +13,7 @@ const columns: ColumnDef<TeamConsecutiveWinsStat>[] = [
 	{ accessorKey: "wins", header: "Wins" },
 ];
 
-export const Route = createFileRoute("/compare/teams/most-consecutive-wins")({
+export const Route = createFileRoute("/stats/teams/most-consecutive-wins")({
 	validateSearch: overSchema,
 	head: () => ({
 		meta: [

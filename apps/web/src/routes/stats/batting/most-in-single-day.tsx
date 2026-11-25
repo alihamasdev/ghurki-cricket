@@ -16,7 +16,6 @@ const columns: ColumnDef<OtherBattingStats>[] = [
 	{ accessorKey: "balls", header: "Balls" },
 	{ accessorKey: "fours", header: "4s" },
 	{ accessorKey: "sixes", header: "6s" },
-	{ accessorKey: "thirties", header: "30s" },
 ];
 
 export const Route = createFileRoute("/stats/batting/most-in-single-day")({

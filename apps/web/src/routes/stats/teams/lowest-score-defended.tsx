@@ -3,7 +3,6 @@ import { type TeamLowestDefendedStat } from "@ghurki-cricket/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { PlayerCell } from "@/components/avatar";
 import { DataTable, type ColumnDef, DataTableLoader, DataTableError } from "@/components/data-table";
 import { OversFilter } from "@/components/filters/overs-filter";
 import { PageLayout } from "@/components/page-layout";
@@ -12,26 +11,13 @@ import { trpc } from "@/utils/trpc";
 const columns: ColumnDef<TeamLowestDefendedStat>[] = [
 	{ accessorKey: "team", header: "Team" },
 	{ accessorKey: "target", header: "Target" },
-	{
-		accessorKey: "score",
-		header: "Score",
-		sortFn: (rowA, rowB) => parseInt(rowA.original.score, 10) - parseInt(rowB.original.score, 10),
-	},
+	{ accessorKey: "score", header: "Score", sortFn: (rowA, rowB) => parseInt(rowA.original.score, 10) - parseInt(rowB.original.score, 10) },
 	{ accessorKey: "overs", header: "Overs" },
-	{
-		accessorKey: "potm",
-		header: "POTM",
-		cell: ({ row }) =>
-			row.original.potm && row.original.potm !== "-" ? (
-				<PlayerCell name={row.original.potm} style={{ display: "inline-flex" }} />
-			) : (
-				<span className="text-xs/7 font-medium">Not available</span>
-			),
-	},
+	{ accessorKey: "potm", header: "POTM" },
 	{ accessorKey: "date", header: "Date" },
 ];
 
-export const Route = createFileRoute("/compare/teams/lowest-score-defended")({
+export const Route = createFileRoute("/stats/teams/lowest-score-defended")({
 	validateSearch: overSchema,
 	head: () => ({
 		meta: [

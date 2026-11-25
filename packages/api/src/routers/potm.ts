@@ -2,7 +2,7 @@ import { db } from "@ghurki-cricket/db";
 
 import { publicProcedure, router } from "../index";
 import { getDate, getGroup } from "../lib/helpers";
-import { statSchema } from "../lib/schemas";
+import { groupSchema, statSchema } from "../lib/schemas";
 import { type POTMStats } from "../lib/types";
 
 export const potmRouter = router({
@@ -22,10 +22,10 @@ export const potmRouter = router({
 			.sort((a, b) => b.potm - a.potm);
 	}),
 
-	mostInSingleDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<POTMStats[]> => {
+	mostInSingleDay: publicProcedure.input(groupSchema).query(async ({ input }): Promise<POTMStats[]> => {
 		const data = await db.matches.groupBy({
 			by: ["potmId", "dateId"],
-			where: { ...getDate(input), potm: { group: getGroup(input) } },
+			where: { potm: { group: getGroup(input) } },
 			_count: { potmId: true },
 		});
 

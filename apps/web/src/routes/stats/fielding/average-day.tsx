@@ -11,9 +11,9 @@ import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<FieldingStats>[] = [
 	{ accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerCell name={row.original.player} /> },
-	{ accessorKey: "innings", header: "Innings", cell: ({ row }) => row.original.innings?.toFixed(1) },
-	{ accessorKey: "catches", header: "Catches", cell: ({ row }) => row.original.catches?.toFixed(1) },
-	{ accessorKey: "runOuts", header: "Run Outs", cell: ({ row }) => row.original.runOuts?.toFixed(1) },
+	{ accessorKey: "innings", header: "Innings", cell: ({ row }) => row.original.innings?.toFixed(2) },
+	{ accessorKey: "catches", header: "Catches", cell: ({ row }) => row.original.catches?.toFixed(2) },
+	{ accessorKey: "runOuts", header: "Run Outs", cell: ({ row }) => row.original.runOuts?.toFixed(2) },
 ];
 
 export const Route = createFileRoute("/stats/fielding/average-day")({

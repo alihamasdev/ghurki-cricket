@@ -1,11 +1,10 @@
-import { statSchema } from "@ghurki-cricket/api/schema";
+import { groupSchema } from "@ghurki-cricket/api/schema";
 import { type POTMStats } from "@ghurki-cricket/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PlayerCell } from "@/components/avatar";
 import { DataTable, type ColumnDef, DataTableError, DataTableLoader } from "@/components/data-table";
-import { DateFilter } from "@/components/filters/date-filter";
 import { PageLayout } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
@@ -15,7 +14,7 @@ const columns: ColumnDef<POTMStats>[] = [
 ];
 
 export const Route = createFileRoute("/stats/potm/most-in-single-day")({
-	validateSearch: statSchema,
+	validateSearch: groupSchema,
 	head: () => ({
 		meta: [
 			{ title: "Most in Single Day | Ghurki Cricket" },
@@ -24,14 +23,7 @@ export const Route = createFileRoute("/stats/potm/most-in-single-day")({
 	}),
 	component: () => {
 		return (
-			<PageLayout
-				title="Most in single day"
-				headerRight={
-					<div className="grid sm:flex sm:justify-end">
-						<DateFilter />
-					</div>
-				}
-			>
+			<PageLayout title="Most in single day">
 				<MostInSingleDayPOTMTable />
 			</PageLayout>
 		);

@@ -24,7 +24,7 @@ function FieldingLayout() {
 			<Outlet />
 			{otherStats.length > 0 && (
 				<section className="space-y-3">
-					<h2 className="text-xl/9 font-semibold">Other Stats</h2>
+					<h2 className="font-semibold">Other Stats</h2>
 					<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 						{otherStats.map(({ title, to }) => (
 							<Item

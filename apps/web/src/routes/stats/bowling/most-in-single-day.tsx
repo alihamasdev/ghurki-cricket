@@ -18,7 +18,6 @@ const columns: ColumnDef<OtherBowlingStats>[] = [
 	{ accessorKey: "runs", header: "Runs" },
 	{ accessorKey: "dots", header: "Dots" },
 	{ accessorKey: "wides", header: "WDs" },
-	{ accessorKey: "twoFR", header: "2fer" },
 ];
 
 export const Route = createFileRoute("/stats/bowling/most-in-single-day")({

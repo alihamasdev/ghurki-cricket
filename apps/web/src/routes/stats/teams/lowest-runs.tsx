@@ -10,17 +10,13 @@ import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<TeamInningStat>[] = [
 	{ accessorKey: "team", header: "Team" },
-	{
-		accessorKey: "score",
-		header: "Score",
-		sortFn: (rowA, rowB) => parseInt(rowA.original.score, 10) - parseInt(rowB.original.score, 10),
-	},
+	{ accessorKey: "score", header: "Score", sortFn: (rowA, rowB) => parseInt(rowA.original.score, 10) - parseInt(rowB.original.score, 10) },
 	{ accessorKey: "overs", header: "Overs" },
 	{ accessorKey: "runRate", header: "RR" },
 	{ accessorKey: "date", header: "Date" },
 ];
 
-export const Route = createFileRoute("/compare/teams/lowest-runs")({
+export const Route = createFileRoute("/stats/teams/lowest-runs")({
 	validateSearch: overSchema,
 	head: () => ({
 		meta: [

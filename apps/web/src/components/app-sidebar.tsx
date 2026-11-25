@@ -1,4 +1,4 @@
-import { comparePlayerSchema, compareTeamSchema, groupSchema, matchSchema, statSchema } from "@ghurki-cricket/api/schema";
+import { comparePlayerSchema, compareTeamSchema, groupSchema, matchSchema, overSchema, statSchema } from "@ghurki-cricket/api/schema";
 import { Link, type LinkOptions, useLocation, useSearch } from "@tanstack/react-router";
 import { type ZodType } from "zod";
 
@@ -12,6 +12,7 @@ import {
 	StumprIcon,
 	StumpsIcon,
 	TeamsIcon,
+	TeamStatsIcon,
 	WalletIcon,
 	TeamVsTeamIcon,
 	PlayerVsPlayerIcon,
@@ -54,6 +55,7 @@ export const sidebarList: SidebarList = [
 	{
 		label: "Stats",
 		items: [
+			{ name: "Teams", href: "/stats/teams", icon: TeamStatsIcon, search: overSchema },
 			{ name: "Batting", href: "/stats/batting", icon: BatIcon, search: statSchema },
 			{ name: "Bowling", href: "/stats/bowling", icon: BallIcon, search: statSchema },
 			{ name: "Fielding", href: "/stats/fielding", icon: StumpsIcon, search: statSchema },

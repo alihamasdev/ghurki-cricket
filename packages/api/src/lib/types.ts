@@ -21,7 +21,6 @@ export type OtherBattingStats = {
 	balls: number;
 	fours: number;
 	sixes: number;
-	thirties: number;
 };
 
 export type BowlingStats = {
@@ -47,7 +46,6 @@ export type OtherBowlingStats = {
 	wickets: number;
 	dots: number;
 	wides: number;
-	twoFR: number;
 };
 
 export type FieldingStats = {
@@ -97,6 +95,17 @@ export type TeamLowestDefendedStat = {
 export type TeamConsecutiveWinsStat = {
 	team: string;
 	wins: number;
+};
+
+export type TeamStats = {
+	team: string;
+	series: number;
+	winPercentage: number;
+	runs: number;
+	balls: number;
+	wickets: number;
+	strikeRate: number;
+	allOut: number;
 };
 
 export type ExpenseStats = {

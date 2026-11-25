@@ -56,7 +56,6 @@ export const battingRouter = router({
 				notOuts: true,
 				fours: true,
 				sixes: true,
-				thirties: true,
 			},
 		});
 		return data
@@ -67,7 +66,6 @@ export const battingRouter = router({
 				balls: val._avg.balls ?? 0,
 				fours: val._avg.fours ?? 0,
 				sixes: val._avg.sixes ?? 0,
-				thirties: val._avg.thirties ?? 0,
 			}))
 			.sort((a, b) => b.runs - a.runs);
 	}),
@@ -82,7 +80,6 @@ export const battingRouter = router({
 				balls: true,
 				fours: true,
 				sixes: true,
-				thirties: true,
 			},
 		});
 		return data
@@ -93,7 +90,6 @@ export const battingRouter = router({
 				balls: val._max.balls ?? 0,
 				fours: val._max.fours ?? 0,
 				sixes: val._max.sixes ?? 0,
-				thirties: val._max.thirties ?? 0,
 			}))
 			.sort((a, b) => b.runs - a.runs);
 	}),

@@ -18,7 +18,6 @@ const columns: ColumnDef<OtherBowlingStats>[] = [
 	{ accessorKey: "runs", header: "Runs", cell: ({ row }) => row.original.runs?.toFixed(1) },
 	{ accessorKey: "dots", header: "Dots", cell: ({ row }) => row.original.dots?.toFixed(1) },
 	{ accessorKey: "wides", header: "WDs", cell: ({ row }) => row.original.wides?.toFixed(1) },
-	{ accessorKey: "twoFR", header: "2fer", cell: ({ row }) => row.original.twoFR?.toFixed(1) },
 ];
 
 export const Route = createFileRoute("/stats/bowling/average-day")({

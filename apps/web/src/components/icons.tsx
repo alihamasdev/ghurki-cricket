@@ -60,6 +60,14 @@ export function TeamsIcon({ ...props }: React.ComponentProps<"svg">) {
 	);
 }
 
+export function TeamStatsIcon({ ...props }: React.ComponentProps<"svg">) {
+	return (
+		<svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16" {...props}>
+			<path d="M8 0.5c-.3 0-5.8 1.4-6.4 1.7-.4.2-.6.6-.6 1v5c0 4.6 3.4 7.6 6.7 8.3.2.04.4.04.6 0 3.3-.7 6.7-3.7 6.7-8.3v-5c0-.4-.2-.8-.6-1C13.8 1.9 8.3.5 8 .5zm0 2.3c.9 0 1.6.7 1.6 1.6s-.7 1.6-1.6 1.6-1.6-.7-1.6-1.6.7-1.6 1.6-1.6zm-3.5 2c.7 0 1.3.6 1.3 1.3s-.6 1.3-1.3 1.3-1.3-.6-1.3-1.3.6-1.3 1.3-1.3zm7 0c.7 0 1.3.6 1.3 1.3s-.6 1.3-1.3 1.3-1.3-.6-1.3-1.3.6-1.3 1.3-1.3zM8 7.3c1.3 0 2.5.8 2.8 2.1-.5.3-1.2.6-2.8.6s-2.3-.3-2.8-.6c.3-1.3 1.5-2.1 2.8-2.1zm-4.2 1.3c.5.2 1.1.4 1.8.5-.2.7-.4 1.5-.4 2.2H3.1c0-.9.3-1.8.7-2.7zm8.4 0c.4.9.7 1.8.7 2.7h-2.1c0-.7-.2-1.5-.4-2.2.7-.1 1.3-.3 1.8-.5z" />
+		</svg>
+	);
+}
+
 export function PlayersIcon({ ...props }: React.ComponentProps<"svg">) {
 	return (
 		<svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16" {...props}>

@@ -11,12 +11,11 @@ import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<OtherBattingStats>[] = [
 	{ accessorKey: "player", header: "Player", cell: ({ row }) => <PlayerCell name={row.original.player} /> },
-	{ accessorKey: "innings", header: "Inns", cell: ({ row }) => row.original.innings?.toFixed(1) },
-	{ accessorKey: "runs", header: "Runs", cell: ({ row }) => row.original.runs?.toFixed(1) },
-	{ accessorKey: "balls", header: "Balls", cell: ({ row }) => row.original.balls?.toFixed(1) },
-	{ accessorKey: "fours", header: "4s", cell: ({ row }) => row.original.fours?.toFixed(1) },
-	{ accessorKey: "sixes", header: "6s", cell: ({ row }) => row.original.sixes?.toFixed(1) },
-	{ accessorKey: "thirties", header: "30s", cell: ({ row }) => row.original.thirties?.toFixed(1) },
+	{ accessorKey: "innings", header: "Inns", cell: ({ row }) => row.original.innings?.toFixed(2) },
+	{ accessorKey: "runs", header: "Runs", cell: ({ row }) => row.original.runs?.toFixed(2) },
+	{ accessorKey: "balls", header: "Balls", cell: ({ row }) => row.original.balls?.toFixed(2) },
+	{ accessorKey: "fours", header: "4s", cell: ({ row }) => row.original.fours?.toFixed(2) },
+	{ accessorKey: "sixes", header: "6s", cell: ({ row }) => row.original.sixes?.toFixed(2) },
 ];
 
 export const Route = createFileRoute("/stats/batting/average-day")({

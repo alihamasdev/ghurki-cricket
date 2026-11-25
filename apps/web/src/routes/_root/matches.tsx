@@ -46,7 +46,7 @@ function HomeRoute() {
 	);
 
 	if (isPending) {
-		return Array.from({ length: 4 }).map((_, i) => (
+		return Array.from({ length: 10 }).map((_, i) => (
 			<section key={i} className="space-y-2">
 				<Skeleton className="h-6 w-25" />
 				<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
