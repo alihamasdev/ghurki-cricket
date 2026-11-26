@@ -10,6 +10,7 @@ const fieldingStatsLinks = linkOptions([
 	{ title: "Fielding stats", to: "/stats/fielding" },
 	{ title: "Average day stats", to: "/stats/fielding/average-day" },
 	{ title: "Most in single day", to: "/stats/fielding/most-in-single-day" },
+	{ title: "Timeline", to: "/stats/fielding/timeline" },
 ]);
 
 function FieldingLayout() {

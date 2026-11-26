@@ -15,7 +15,9 @@ export function getPlayerImageUrl(name: string, variant: AvatarVariant = "avatar
 		return `${env.VITE_STORAGE_URL}/${folder}/${normalizedName}.webp`;
 	}
 
-	return `/players/${normalizedName}/${variant}.webp`;
+	const serverUrl = env.VITE_SERVER_URL ? env.VITE_SERVER_URL.replace(/\/+$/, "") : "";
+
+	return `${serverUrl}/players/${normalizedName}/${variant}.webp`;
 }
 
 export type PlayerAvatarProps = React.ComponentProps<typeof Avatar> & {

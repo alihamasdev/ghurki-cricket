@@ -22,9 +22,16 @@
 	},
 	"devDependencies": {
 		"@ghurki-cricket/config": "workspace:*",
+		"@remotion/bundler": "^4.0.547",
+		"@remotion/renderer": "^4.0.547",
+		"@remotion/tailwind-v4": "^4.0.547",
 		"@types/bun": "catalog:",
 		"@types/cors": "^2.8.19",
 		"@types/express": "catalog:",
+		"@types/react": "^19.3.0",
+		"react": "^19.3.0",
+		"react-dom": "^19.3.0",
+		"remotion": "^4.0.547",
 		"tsdown": "^0.23.7",
 		"typescript": "catalog:"
 	},

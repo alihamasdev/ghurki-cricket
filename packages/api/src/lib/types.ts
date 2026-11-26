@@ -125,3 +125,13 @@ export type ExpenseData = {
 	summary: ExpenseSummary;
 	expenses: ExpenseStats[];
 };
+
+export type TimelineFrame = {
+	date: string;
+	scores: Record<string, number>;
+};
+
+export type TimelineData = {
+	players: string[];
+	frames: TimelineFrame[];
+};

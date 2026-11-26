@@ -55,9 +55,21 @@ app.use(
 	}),
 );
 
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 
 app.use(["/trpc", "/api/trpc"], createExpressMiddleware({ router, createContext }));
+
+if (env.NODE_ENV === "development") {
+	try {
+		const { startExportTimelineHandler, getExportProgressHandler, downloadExportedVideoHandler } = await import("./render-timeline");
+
+		app.post(["/export-timeline", "/api/export-timeline"], startExportTimelineHandler);
+		app.get(["/export-timeline/progress/:renderId", "/api/export-timeline/progress/:renderId"], getExportProgressHandler);
+		app.get(["/export-timeline/download/:renderId", "/api/export-timeline/download/:renderId"], downloadExportedVideoHandler);
+	} catch {
+		// Render module is dev-only and omitted from production builds
+	}
+}
 
 app.get(
 	["/players/:playerId.webp", "/api/players/:playerId.webp", "/players/:playerId/:variant.webp", "/api/players/:playerId/:variant.webp"],
@@ -70,9 +82,7 @@ app.get(
 		const parsed = paramSchema.safeParse(req.params);
 
 		if (!parsed.success) {
-			res.status(400).send("Invalid playerId");
-
-			return;
+			return res.status(400).send("Invalid playerId");
 		}
 
 		const { playerId, variant } = parsed.data;

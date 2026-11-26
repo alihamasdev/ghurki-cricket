@@ -3,7 +3,7 @@ import { db } from "@ghurki-cricket/db";
 import { publicProcedure, router } from "../index";
 import { getStatWhere } from "../lib/helpers";
 import { statSchema } from "../lib/schemas";
-import { type FieldingStats } from "../lib/types";
+import { type FieldingStats, type TimelineData } from "../lib/types";
 
 export const fieldingRouter = router({
 	/**
@@ -85,5 +85,53 @@ export const fieldingRouter = router({
 				runOuts: val._max.runOuts ?? 0,
 			}))
 			.sort((a, b) => b.catches - a.catches);
+	}),
+
+	/**
+	 * Returns cumulative fielding catches over time by date for racing bar charts.
+	 *
+	 * @param input - Optional date range, rivalry, single date, and player group filter.
+	 * @returns Array of timeline frames with cumulative catches per player by date.
+	 */
+	raceTimeline: publicProcedure.input(statSchema.omit({ date: true })).query(async ({ input }): Promise<TimelineData> => {
+		const rows = await db.fielders.findMany({
+			where: getStatWhere(input),
+			select: { dateId: true, playerId: true, catches: true },
+			orderBy: { dateId: "asc" },
+		});
+
+		const dateMap = new Map<string, { playerId: string; catches: number }[]>();
+
+		for (const row of rows) {
+			const dateStr = row.dateId.toISOString().split("T")[0] ?? "";
+
+			if (!dateStr) continue;
+			let list = dateMap.get(dateStr);
+
+			if (!list) {
+				list = [];
+				dateMap.set(dateStr, list);
+			}
+
+			list.push({ playerId: row.playerId, catches: row.catches });
+		}
+
+		const cumulative: Record<string, number> = {};
+		const frames: { date: string; scores: Record<string, number> }[] = [];
+
+		for (const [date, playerEntries] of dateMap.entries()) {
+			for (const entry of playerEntries) {
+				cumulative[entry.playerId] = (cumulative[entry.playerId] ?? 0) + entry.catches;
+			}
+
+			frames.push({
+				date,
+				scores: { ...cumulative },
+			});
+		}
+
+		const players = Object.keys(cumulative);
+
+		return { players, frames };
 	}),
 });

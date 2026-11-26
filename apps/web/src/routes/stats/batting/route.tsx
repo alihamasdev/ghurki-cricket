@@ -10,6 +10,7 @@ const battingStatsLinks = linkOptions([
 	{ title: "Batting stats", to: "/stats/batting" },
 	{ title: "Average day stats", to: "/stats/batting/average-day" },
 	{ title: "Most in single day stats", to: "/stats/batting/most-in-single-day" },
+	{ title: "Timeline", to: "/stats/batting/timeline" },
 ]);
 
 function BattingLayout() {

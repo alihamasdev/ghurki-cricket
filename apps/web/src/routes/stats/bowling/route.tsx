@@ -10,6 +10,7 @@ const bowlingStatsLinks = linkOptions([
 	{ title: "Bowling stats", to: "/stats/bowling" },
 	{ title: "Average day stats", to: "/stats/bowling/average-day" },
 	{ title: "Most in single day", to: "/stats/bowling/most-in-single-day" },
+	{ title: "Timeline", to: "/stats/bowling/timeline" },
 ]);
 
 function BowlingLayout() {
