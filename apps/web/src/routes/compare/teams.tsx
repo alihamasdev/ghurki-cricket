@@ -46,8 +46,8 @@ export const Route = createFileRoute("/compare/teams")({
 });
 
 function TeamCompareRoute() {
-	const search = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.teams.compare.queryOptions(search));
+	const { overs, rivalry, date } = Route.useSearch();
+	const { data, status, error } = useQuery(trpc.teams.compare.queryOptions({ overs, rivalry, date }));
 
 	if (status === "pending") {
 		return <DataTableLoader />;
@@ -77,7 +77,7 @@ function TeamCompareRoute() {
 	const team2 = data[1];
 
 	const rows = [
-		...(!search?.date && !search?.overs
+		...(!date && !overs
 			? [{ label: "Series Won", val1: team1?.seriesWon ?? 0, val2: team2?.seriesWon ?? 0 }]
 			: [{ label: "Matches Played", val1: team1?.matchesPlayed ?? 0, val2: team2?.matchesPlayed ?? 0 }]),
 		{ label: "Matches Won", val1: team1?.matchesWon ?? 0, val2: team2?.matchesWon ?? 0 },

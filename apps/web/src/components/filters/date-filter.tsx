@@ -21,27 +21,27 @@ type DateFilterProps = {
 type TabType = "rivalries" | "years" | "dates";
 
 export function DateFilter(props: DateFilterProps) {
-	const search = useSearch({ strict: false });
+	const { rivalry, date, starts, ends } = useSearch({ strict: false });
 
 	const getValue = () => {
-		if (search.date) return formatDate(search.date, "short");
+		if (date) return formatDate(date, "short");
 
-		if (search.rivalry) return search.rivalry;
+		if (rivalry) return rivalry;
 
-		if (search.starts && search.ends) {
-			const startYear = search.starts.slice(0, 4);
-			const endYear = search.ends.slice(0, 4);
+		if (starts && ends) {
+			const startYear = starts.slice(0, 4);
+			const endYear = ends.slice(0, 4);
 
-			if (startYear === endYear && search.starts === `${startYear}-01-01` && search.ends === `${endYear}-12-31`) {
+			if (startYear === endYear && starts === `${startYear}-01-01` && ends === `${endYear}-12-31`) {
 				return `Year ${startYear}`;
 			}
 
-			return `${formatDate(search.starts, "short")} - ${formatDate(search.ends, "short")}`;
+			return `${formatDate(starts, "short")} - ${formatDate(ends, "short")}`;
 		}
 
-		if (search.starts) return `${formatDate(search.starts, "short")} - Present`;
+		if (starts) return `${formatDate(starts, "short")} - Present`;
 
-		if (search.ends) return `Start - ${formatDate(search.ends, "short")}`;
+		if (ends) return `Start - ${formatDate(ends, "short")}`;
 
 		return props.hasAllTime === false ? "Select Rivalry" : "All Time";
 	};
@@ -55,7 +55,7 @@ export function DateFilter(props: DateFilterProps) {
 
 function DateOptions({ hasAllTime = true, hasYears = true, hasRivalries = true, hasDates = true, hasStats = true }: DateFilterProps) {
 	const navigate = useNavigate();
-	const search = useSearch({ strict: false });
+	const { rivalry, date, starts, ends } = useSearch({ strict: false });
 
 	const periodKey = (p: { starts: string; ends: string }) => `${p.starts}|${p.ends}`;
 
@@ -68,11 +68,11 @@ function DateOptions({ hasAllTime = true, hasYears = true, hasRivalries = true, 
 	if (hasDates) availableTabs.push("dates");
 
 	const getDefaultTab = (): TabType => {
-		if (search.date && hasDates) return "dates";
+		if (date && hasDates) return "dates";
 
-		if (search.rivalry && hasRivalries) return "rivalries";
+		if (rivalry && hasRivalries) return "rivalries";
 
-		if ((search.starts || search.ends) && hasYears) return "years";
+		if ((starts || ends) && hasYears) return "years";
 
 		if (hasRivalries) return "rivalries";
 
@@ -115,12 +115,9 @@ function DateOptions({ hasAllTime = true, hasYears = true, hasRivalries = true, 
 		<RadioGroup
 			length={1}
 			isLoading={totalDates.isPending}
-			value={!search.date && !search.rivalry && !search.starts && !search.ends ? "" : "all-time"}
+			value={!date && !rivalry && !starts && !ends ? "" : "all-time"}
 			onValueChange={() => {
-				navigate({
-					to: ".",
-					search: (prev) => ({ ...prev, date: undefined, rivalry: undefined, starts: undefined, ends: undefined }),
-				});
+				navigate({ to: ".", search: (prev) => ({ ...prev, date: undefined, rivalry: undefined, starts: undefined, ends: undefined }) });
 			}}
 		>
 			<RadioGroupItem value="" label="All Time" description={`${totalDates.data} days`} />
@@ -130,12 +127,9 @@ function DateOptions({ hasAllTime = true, hasYears = true, hasRivalries = true, 
 	const rivalriesRadio = hasRivalries && (
 		<RadioGroup
 			isLoading={rivalries.isPending}
-			value={search.rivalry}
+			value={rivalry}
 			onValueChange={(value: string) => {
-				navigate({
-					to: ".",
-					search: (prev) => ({ ...prev, rivalry: value, date: undefined, starts: undefined, ends: undefined }),
-				});
+				navigate({ to: ".", search: (prev) => ({ ...prev, rivalry: value, date: undefined, starts: undefined, ends: undefined }) });
 			}}
 		>
 			{rivalries.data?.map((rivalry) => (
@@ -147,13 +141,10 @@ function DateOptions({ hasAllTime = true, hasYears = true, hasRivalries = true, 
 	const yearsRadio = hasYears && (
 		<RadioGroup
 			isLoading={years.isPending}
-			value={search.starts && search.ends ? periodKey({ starts: search.starts, ends: search.ends }) : undefined}
+			value={starts && ends ? periodKey({ starts: starts, ends: ends }) : undefined}
 			onValueChange={(key: string) => {
 				const [starts, ends] = key.split("|");
-				navigate({
-					to: ".",
-					search: (prev) => ({ ...prev, starts, ends, date: undefined, rivalry: undefined }),
-				});
+				navigate({ to: ".", search: (prev) => ({ ...prev, starts, ends, date: undefined, rivalry: undefined }) });
 			}}
 		>
 			{years.data?.map((item) => (
@@ -171,12 +162,9 @@ function DateOptions({ hasAllTime = true, hasYears = true, hasRivalries = true, 
 		<RadioGroup
 			length={5}
 			isLoading={dates.isPending}
-			value={search.date}
+			value={date}
 			onValueChange={(value: string) => {
-				navigate({
-					to: ".",
-					search: (prev) => ({ ...prev, date: value, rivalry: undefined, starts: undefined, ends: undefined }),
-				});
+				navigate({ to: ".", search: (prev) => ({ ...prev, date: value, rivalry: undefined, starts: undefined, ends: undefined }) });
 			}}
 		>
 			{dates.data?.map((d) => (

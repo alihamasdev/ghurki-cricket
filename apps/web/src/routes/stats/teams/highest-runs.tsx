@@ -43,8 +43,8 @@ export const Route = createFileRoute("/stats/teams/highest-runs")({
 });
 
 function HighestRunsTable() {
-	const search = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.teams.highestRuns.queryOptions(search));
+	const { overs, limit, each } = Route.useSearch();
+	const { data, status, error } = useQuery(trpc.teams.highestRuns.queryOptions({ overs, limit, each }));
 
 	if (status === "pending") {
 		return <DataTableLoader />;

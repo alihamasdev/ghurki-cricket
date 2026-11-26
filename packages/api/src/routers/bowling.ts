@@ -54,7 +54,7 @@ export const bowlingRouter = router({
 	 * @param input - Optional date range, rivalry, single date, and player group filter.
 	 * @returns Array of players with average bowling statistics per day sorted by wickets.
 	 */
-	listAvgPerDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<OtherBowlingStats[]> => {
+	listAvgPerDay: publicProcedure.input(statSchema.omit({ date: true })).query(async ({ input }): Promise<OtherBowlingStats[]> => {
 		const data = await db.bowlers.groupBy({
 			by: ["playerId"],
 			where: getStatWhere(input),
@@ -87,7 +87,7 @@ export const bowlingRouter = router({
 	 * @param input - Optional date range, rivalry, single date, and player group filter.
 	 * @returns Array of players with their personal best single-day bowling numbers sorted by wickets.
 	 */
-	mostInSingleDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<OtherBowlingStats[]> => {
+	mostInSingleDay: publicProcedure.input(statSchema.omit({ date: true })).query(async ({ input }): Promise<OtherBowlingStats[]> => {
 		const data = await db.bowlers.groupBy({
 			by: ["playerId"],
 			where: getStatWhere(input),

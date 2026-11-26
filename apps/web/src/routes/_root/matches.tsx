@@ -37,13 +37,13 @@ export const Route = createFileRoute("/_root/matches")({
 });
 
 function HomeRoute() {
-	const search = Route.useSearch();
+	const { potm, overs, rivalry, date, starts, ends } = Route.useSearch();
 
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError, error } = useInfiniteQuery(
-		trpc.matches.list.infiniteQueryOptions(search, {
-			getNextPageParam: (lastPage) => lastPage.nextPage,
-			initialCursor: 1,
-		}),
+		trpc.matches.list.infiniteQueryOptions(
+			{ potm, overs, rivalry, date, starts, ends },
+			{ getNextPageParam: (lastPage) => lastPage.nextPage, initialCursor: 1 },
+		),
 	);
 
 	if (isPending) {

@@ -8,10 +8,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { trpc } from "@/utils/trpc";
 
 export function OversFilter() {
-	const search = useSearch({ strict: false });
+	const { overs } = useSearch({ strict: false });
 
 	const getValue = () => {
-		if (search.overs) return `${search.overs} Overs`;
+		if (overs) return `${overs} Overs`;
 
 		return "All Overs";
 	};
@@ -25,12 +25,12 @@ export function OversFilter() {
 
 function OversOptions() {
 	const navigate = useNavigate();
-	const search = useSearch({ strict: false });
+	const { overs, rivalry, date } = useSearch({ strict: false });
 
 	const { data, isPending, isError, error } = useQuery(
 		trpc.filters.listOvers.queryOptions({
-			rivalry: search.rivalry,
-			date: search.date,
+			rivalry: rivalry,
+			date: date,
 		}),
 	);
 
@@ -43,12 +43,9 @@ function OversOptions() {
 			<RadioGroup
 				length={1}
 				isLoading={isPending}
-				value={search.overs ? "" : "all-overs"}
+				value={overs ? "" : "all-overs"}
 				onValueChange={() => {
-					navigate({
-						to: ".",
-						search: (prev) => ({ ...prev, overs: undefined }),
-					});
+					navigate({ to: ".", search: (prev) => ({ ...prev, overs: undefined }) });
 				}}
 			>
 				<RadioGroupItem value="all-overs" label="All Overs" description={`${data?.totalMatches} matches`} />
@@ -56,12 +53,9 @@ function OversOptions() {
 
 			<RadioGroup
 				isLoading={isPending}
-				value={search.overs ? search.overs.toString() : undefined}
+				value={overs ? overs.toString() : undefined}
 				onValueChange={(val: string) => {
-					navigate({
-						to: ".",
-						search: (prev) => ({ ...prev, overs: Number(val) }),
-					});
+					navigate({ to: ".", search: (prev) => ({ ...prev, overs: Number(val) }) });
 				}}
 			>
 				{data?.overs.map((item) => (

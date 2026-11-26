@@ -69,12 +69,12 @@ export const Route = createFileRoute("/compare/players")({
 });
 
 function PlayerCompareRoute() {
-	const search = Route.useSearch();
+	const { player1, player2, rivalry } = Route.useSearch();
 
-	const isBothSelected = Boolean(search.player1 && search.player2 && search.player1 !== search.player2);
+	const isBothSelected = Boolean(player1 && player2 && player1 !== player2);
 
 	const { data, status, error } = useQuery({
-		...trpc.players.compare.queryOptions(search),
+		...trpc.players.compare.queryOptions({ player1, player2, rivalry }),
 		enabled: isBothSelected,
 	});
 

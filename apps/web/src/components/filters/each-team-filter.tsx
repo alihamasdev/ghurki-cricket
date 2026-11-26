@@ -5,9 +5,9 @@ import { Switch } from "@/components/ui/switch";
 
 export function EachTeamFilter() {
 	const navigate = useNavigate();
-	const search = useSearch({ strict: false });
+	const { each } = useSearch({ strict: false });
 
-	const isEach = search.each !== false;
+	const isEach = each !== false;
 
 	return (
 		<div className="flex items-center gap-2">

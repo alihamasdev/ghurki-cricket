@@ -26,8 +26,8 @@ export const Route = createFileRoute("/_root/players")({
 });
 
 function PlayersRoute() {
-	const search = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.players.list.queryOptions(search));
+	const { group } = Route.useSearch();
+	const { data, status, error } = useQuery(trpc.players.list.queryOptions({ group }));
 
 	if (status === "pending") {
 		return (

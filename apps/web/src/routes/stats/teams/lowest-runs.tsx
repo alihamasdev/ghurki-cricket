@@ -43,8 +43,8 @@ export const Route = createFileRoute("/stats/teams/lowest-runs")({
 });
 
 function LowestRunsTable() {
-	const search = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.teams.lowestRuns.queryOptions(search));
+	const { overs, limit, each } = Route.useSearch();
+	const { data, status, error } = useQuery(trpc.teams.lowestRuns.queryOptions({ overs, limit, each }));
 
 	if (status === "pending") {
 		return <DataTableLoader />;

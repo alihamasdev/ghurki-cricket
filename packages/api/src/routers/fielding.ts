@@ -39,7 +39,7 @@ export const fieldingRouter = router({
 	 * @param input - Optional date range, rivalry, single date, and player group filter.
 	 * @returns Array of players with average fielding statistics per day sorted by catches.
 	 */
-	listAvgPerDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<FieldingStats[]> => {
+	listAvgPerDay: publicProcedure.input(statSchema.omit({ date: true })).query(async ({ input }): Promise<FieldingStats[]> => {
 		const data = await db.fielders.groupBy({
 			by: ["playerId"],
 			where: getStatWhere(input),
@@ -66,7 +66,7 @@ export const fieldingRouter = router({
 	 * @param input - Optional date range, rivalry, single date, and player group filter.
 	 * @returns Array of players with personal best single-day fielding records sorted by catches.
 	 */
-	mostInSingleDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<FieldingStats[]> => {
+	mostInSingleDay: publicProcedure.input(statSchema.omit({ date: true })).query(async ({ input }): Promise<FieldingStats[]> => {
 		const data = await db.fielders.groupBy({
 			by: ["playerId"],
 			where: getStatWhere(input),

@@ -58,7 +58,7 @@ export const battingRouter = router({
 	 * @param input - Optional date range, rivalry, single date, and player group filter.
 	 * @returns Array of players with average batting statistics per day sorted by runs.
 	 */
-	listAvgPerDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<OtherBattingStats[]> => {
+	listAvgPerDay: publicProcedure.input(statSchema.omit({ date: true })).query(async ({ input }): Promise<OtherBattingStats[]> => {
 		const data = await db.batters.groupBy({
 			by: ["playerId"],
 			where: getStatWhere(input),
@@ -90,7 +90,7 @@ export const battingRouter = router({
 	 * @param input - Optional date range, rivalry, single date, and player group filter.
 	 * @returns Array of players with their personal best single-day batting numbers sorted by runs.
 	 */
-	mostInSingleDay: publicProcedure.input(statSchema).query(async ({ input }): Promise<OtherBattingStats[]> => {
+	mostInSingleDay: publicProcedure.input(statSchema.omit({ date: true })).query(async ({ input }): Promise<OtherBattingStats[]> => {
 		const data = await db.batters.groupBy({
 			by: ["playerId"],
 			where: getStatWhere(input),

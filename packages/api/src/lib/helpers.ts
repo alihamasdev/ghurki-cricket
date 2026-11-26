@@ -13,9 +13,26 @@ export function getGroup({ group }: GroupSchema): GetGroupReturn {
 	return { in: ["core"] };
 }
 
-type GetDateReturn = { date?: { rivalryId: string } } | { dateId?: Date | string | { gte?: Date; lte?: Date } } | undefined;
+export type DateWhereFilter =
+	| { dateId: Date }
+	| { date: { rivalryId: string } }
+	| { dateId: { gte: Date; lte: Date } }
+	| { dateId: { gte: Date } }
+	| { dateId: { lte: Date } };
 
-export function getDate({ date, rivalry, starts, ends }: DateSchema): GetDateReturn {
+export type GetDateReturn = DateWhereFilter | undefined;
+
+export function getDate(input: DateSchema & { rivalry: string }): { date: { rivalryId: string } };
+export function getDate(input: DateSchema & { starts: string; ends: string }): { dateId: { gte: Date; lte: Date } };
+export function getDate(input: DateSchema & { starts: string }): { dateId: { gte: Date } };
+export function getDate(input: DateSchema & { ends: string }): { dateId: { lte: Date } };
+export function getDate(input: DateSchema & { date: string }): { dateId: Date };
+export function getDate(input?: DateSchema): GetDateReturn;
+export function getDate(input?: DateSchema): GetDateReturn {
+	if (!input) return undefined;
+
+	const { date, rivalry, starts, ends } = input;
+
 	if (rivalry) return { date: { rivalryId: rivalry } };
 
 	if (starts && ends) return { dateId: { gte: new Date(starts), lte: new Date(ends) } };

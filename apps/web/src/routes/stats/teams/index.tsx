@@ -44,8 +44,8 @@ export const Route = createFileRoute("/stats/teams/")({
 });
 
 function TeamsTable() {
-	const search = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.teams.listStats.queryOptions(search));
+	const { overs } = Route.useSearch();
+	const { data, status, error } = useQuery(trpc.teams.listStats.queryOptions({ overs }));
 
 	if (status === "pending") {
 		return <DataTableLoader />;

@@ -44,8 +44,8 @@ export const Route = createFileRoute("/stats/teams/lowest-score-defended")({
 });
 
 function LowestDefendedTable() {
-	const search = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.teams.lowestDefended.queryOptions(search));
+	const { overs, limit, each } = Route.useSearch();
+	const { data, status, error } = useQuery(trpc.teams.lowestDefended.queryOptions({ overs, limit, each }));
 
 	if (status === "pending") {
 		return <DataTableLoader />;

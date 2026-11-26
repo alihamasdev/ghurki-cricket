@@ -44,8 +44,8 @@ export const Route = createFileRoute("/stats/teams/highest-successful-chase")({
 });
 
 function HighestChaseTable() {
-	const search = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.teams.highestChases.queryOptions(search));
+	const { overs, limit, each } = Route.useSearch();
+	const { data, status, error } = useQuery(trpc.teams.highestChases.queryOptions({ overs, limit, each }));
 
 	if (status === "pending") {
 		return <DataTableLoader />;

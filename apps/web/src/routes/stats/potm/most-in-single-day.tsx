@@ -5,6 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { PlayerCell } from "@/components/avatar";
 import { DataTable, type ColumnDef, DataTableError, DataTableLoader } from "@/components/data-table";
+import { GroupFilter } from "@/components/filters/group-filter";
 import { PageLayout } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
@@ -23,7 +24,14 @@ export const Route = createFileRoute("/stats/potm/most-in-single-day")({
 	}),
 	component: () => {
 		return (
-			<PageLayout title="Most in single day">
+			<PageLayout
+				title="Most in single day"
+				headerRight={
+					<div className="flex sm:justify-end">
+						<GroupFilter />
+					</div>
+				}
+			>
 				<MostInSingleDayPOTMTable />
 			</PageLayout>
 		);
@@ -31,8 +39,8 @@ export const Route = createFileRoute("/stats/potm/most-in-single-day")({
 });
 
 function MostInSingleDayPOTMTable() {
-	const search = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.potm.mostInSingleDay.queryOptions(search));
+	const { group } = Route.useSearch();
+	const { data, status, error } = useQuery(trpc.potm.mostInSingleDay.queryOptions({ group }));
 
 	if (status === "pending") {
 		return <DataTableLoader />;

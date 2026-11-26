@@ -6,6 +6,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PlayerCell } from "@/components/avatar";
 import { DataTable, type ColumnDef, DataTableError, DataTableLoader } from "@/components/data-table";
 import { DateFilter } from "@/components/filters/date-filter";
+import { GroupFilter } from "@/components/filters/group-filter";
 import { PageLayout } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
 
@@ -17,7 +18,7 @@ const columns: ColumnDef<FieldingStats>[] = [
 ];
 
 export const Route = createFileRoute("/stats/fielding/average-day")({
-	validateSearch: statSchema,
+	validateSearch: statSchema.omit({ date: true }),
 	head: () => ({
 		meta: [
 			{ title: "Average Day Stats | Ghurki Cricket" },
@@ -29,8 +30,9 @@ export const Route = createFileRoute("/stats/fielding/average-day")({
 			<PageLayout
 				title="Average Day Stats"
 				headerRight={
-					<div className="grid sm:flex sm:justify-end">
-						<DateFilter />
+					<div className="flex flex-wrap items-center gap-2 sm:justify-end">
+						<GroupFilter />
+						<DateFilter hasDates={false} />
 					</div>
 				}
 			>
@@ -41,8 +43,8 @@ export const Route = createFileRoute("/stats/fielding/average-day")({
 });
 
 function AverageFieldingDayTable() {
-	const search = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.fielding.listAvgPerDay.queryOptions(search));
+	const { group, rivalry, starts, ends } = Route.useSearch();
+	const { data, status, error } = useQuery(trpc.fielding.listAvgPerDay.queryOptions({ group, rivalry, starts, ends }));
 
 	if (status === "pending") {
 		return <DataTableLoader />;
