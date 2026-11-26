@@ -1,9 +1,10 @@
-import { overSchema } from "@ghurki-cricket/api/schema";
+import { teamRunsSchema } from "@ghurki-cricket/api/schema";
 import { type TeamInningStat } from "@ghurki-cricket/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { DataTable, type ColumnDef, DataTableLoader, DataTableError } from "@/components/data-table";
+import { EachTeamFilter } from "@/components/filters/each-team-filter";
 import { OversFilter } from "@/components/filters/overs-filter";
 import { PageLayout } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
@@ -17,19 +18,20 @@ const columns: ColumnDef<TeamInningStat>[] = [
 ];
 
 export const Route = createFileRoute("/stats/teams/lowest-runs")({
-	validateSearch: overSchema,
+	validateSearch: teamRunsSchema,
 	head: () => ({
 		meta: [
-			{ title: "Lowest Runs by Teams | Ghurki Cricket" },
+			{ title: "Lowest Runs by Teams in Inning | Ghurki Cricket" },
 			{ name: "description", content: "Lowest team innings scores, totals, and run rates for Ghurki Cricket." },
 		],
 	}),
 	component: () => {
 		return (
 			<PageLayout
-				title="Lowest runs by teams"
+				title="Lowest runs by teams in inning"
 				headerRight={
-					<div className="flex sm:justify-end">
+					<div className="flex items-center gap-4 sm:justify-end">
+						<EachTeamFilter />
 						<OversFilter />
 					</div>
 				}

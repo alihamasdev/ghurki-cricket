@@ -8,8 +8,8 @@ export const Route = createFileRoute("/stats/teams")({
 
 const teamStatsLinks = linkOptions([
 	{ title: "Team stats", to: "/stats/teams" },
-	{ title: "Highest runs by teams", to: "/stats/teams/highest-runs" },
-	{ title: "Lowest runs by teams", to: "/stats/teams/lowest-runs" },
+	{ title: "Highest runs by teams in inning", to: "/stats/teams/highest-runs" },
+	{ title: "Lowest runs by teams in inning", to: "/stats/teams/lowest-runs" },
 	{ title: "Highest successful chase", to: "/stats/teams/highest-successful-chase" },
 	{ title: "Lowest score defended", to: "/stats/teams/lowest-score-defended" },
 	{ title: "Most consecutive wins", to: "/stats/teams/most-consecutive-wins" },

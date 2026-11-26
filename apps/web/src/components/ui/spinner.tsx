@@ -1,6 +1,6 @@
 import { cn } from "cn";
 
-function Spinner({ className, ...props }: React.ComponentProps<"span">) {
+export function Spinner({ className, ...props }: React.ComponentProps<"span">) {
 	return (
 		<>
 			<style>{`
@@ -37,5 +37,3 @@ function Spinner({ className, ...props }: React.ComponentProps<"span">) {
 		</>
 	);
 }
-
-export { Spinner };

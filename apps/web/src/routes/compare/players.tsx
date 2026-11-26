@@ -10,7 +10,7 @@ import { PageLayout } from "@/components/page-layout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trpc } from "@/utils/trpc";
 
-export const Route = createFileRoute("/compare/players/")({
+export const Route = createFileRoute("/compare/players")({
 	validateSearch: comparePlayerSchema,
 	beforeLoad: async ({ context, search }) => {
 		if (!search.player1 || !search.player2 || search.player1 === search.player2) {

@@ -1,9 +1,10 @@
-import { overSchema } from "@ghurki-cricket/api/schema";
+import { teamRunsSchema } from "@ghurki-cricket/api/schema";
 import { type TeamLowestDefendedStat } from "@ghurki-cricket/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { DataTable, type ColumnDef, DataTableLoader, DataTableError } from "@/components/data-table";
+import { EachTeamFilter } from "@/components/filters/each-team-filter";
 import { OversFilter } from "@/components/filters/overs-filter";
 import { PageLayout } from "@/components/page-layout";
 import { trpc } from "@/utils/trpc";
@@ -18,7 +19,7 @@ const columns: ColumnDef<TeamLowestDefendedStat>[] = [
 ];
 
 export const Route = createFileRoute("/stats/teams/lowest-score-defended")({
-	validateSearch: overSchema,
+	validateSearch: teamRunsSchema,
 	head: () => ({
 		meta: [
 			{ title: "Lowest Score Defended | Ghurki Cricket" },
@@ -30,7 +31,8 @@ export const Route = createFileRoute("/stats/teams/lowest-score-defended")({
 			<PageLayout
 				title="Lowest score defended"
 				headerRight={
-					<div className="flex sm:justify-end">
+					<div className="flex items-center gap-4 sm:justify-end">
+						<EachTeamFilter />
 						<OversFilter />
 					</div>
 				}

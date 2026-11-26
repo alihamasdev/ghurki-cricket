@@ -14,7 +14,7 @@ export const matchesRouter = router({
 	 */
 	list: publicProcedure.input(matchListSchema).query(async ({ input }) => {
 		const page = input.cursor ?? 1;
-		const limit = input.limit;
+		const limit = input.limit ?? 25;
 		const skip = (page - 1) * limit;
 
 		const where = { ...getDate(input), potmId: input.potm };

@@ -13,7 +13,7 @@ type RadioGroupProps = RadioGroupPrimitive.Props & {
 	closeOnValueChange?: boolean;
 };
 
-function RadioGroup({
+export function RadioGroup({
 	isLoading,
 	length = 3,
 	side = "left",
@@ -52,7 +52,7 @@ type RadioGroupItemProps = RadioPrimitive.Root.Props & {
 	orientation?: "horizontal" | "vertical";
 };
 
-function RadioGroupItem({ label, description, orientation = "horizontal", className, children, ...props }: RadioGroupItemProps) {
+export function RadioGroupItem({ label, description, orientation = "horizontal", className, children, ...props }: RadioGroupItemProps) {
 	const id = useId();
 
 	return (
@@ -74,7 +74,7 @@ function RadioGroupItem({ label, description, orientation = "horizontal", classN
 	);
 }
 
-function RadioGroupItemIndicator({ className, ...props }: RadioPrimitive.Root.Props) {
+export function RadioGroupItemIndicator({ className, ...props }: RadioPrimitive.Root.Props) {
 	return (
 		<RadioPrimitive.Root
 			data-slot="radio-group-item-indicator"
@@ -90,5 +90,3 @@ function RadioGroupItemIndicator({ className, ...props }: RadioPrimitive.Root.Pr
 		</RadioPrimitive.Root>
 	);
 }
-
-export { RadioGroup, RadioGroupItem, RadioGroupItemIndicator };

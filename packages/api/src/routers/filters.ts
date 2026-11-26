@@ -1,4 +1,4 @@
-import { db, Prisma } from "@ghurki-cricket/db";
+import { db } from "@ghurki-cricket/db";
 import { z } from "zod";
 
 import { publicProcedure, router } from "../index";
@@ -62,19 +62,28 @@ export const filtersRouter = router({
 	 * @returns Array of year objects with formatted start date, end date, and count.
 	 */
 	listYears: publicProcedure.input(z.object({ hasStats: z.boolean().optional() }).optional()).query(async ({ input }) => {
-		const whereClause = input?.hasStats ? Prisma.sql`WHERE "hasStats" = true` : Prisma.empty;
-
-		const data = await db.$queryRaw<{ year: number; starts: Date; ends: Date; count: number }[]>`
-			SELECT 
-				EXTRACT(YEAR FROM "date")::int AS year,
-				make_date(EXTRACT(YEAR FROM "date")::int, 1, 1) AS starts,
-				make_date(EXTRACT(YEAR FROM "date")::int, 12, 31) AS ends,
-				COUNT(*)::int AS count
-			FROM "dates"
-			${whereClause}
-			GROUP BY EXTRACT(YEAR FROM "date")
-			ORDER BY year DESC
-		`;
+		const data = input?.hasStats
+			? await db.$queryRaw<{ year: number; starts: Date; ends: Date; count: number }[]>`
+					SELECT 
+						EXTRACT(YEAR FROM "date")::int AS year,
+						make_date(EXTRACT(YEAR FROM "date")::int, 1, 1) AS starts,
+						make_date(EXTRACT(YEAR FROM "date")::int, 12, 31) AS ends,
+						COUNT(*)::int AS count
+					FROM "dates"
+					WHERE "hasStats" = true
+					GROUP BY EXTRACT(YEAR FROM "date")
+					ORDER BY year DESC
+				`
+			: await db.$queryRaw<{ year: number; starts: Date; ends: Date; count: number }[]>`
+					SELECT 
+						EXTRACT(YEAR FROM "date")::int AS year,
+						make_date(EXTRACT(YEAR FROM "date")::int, 1, 1) AS starts,
+						make_date(EXTRACT(YEAR FROM "date")::int, 12, 31) AS ends,
+						COUNT(*)::int AS count
+					FROM "dates"
+					GROUP BY EXTRACT(YEAR FROM "date")
+					ORDER BY year DESC
+				`;
 
 		return data.map((item) => ({
 			starts: formatDate(item.starts),

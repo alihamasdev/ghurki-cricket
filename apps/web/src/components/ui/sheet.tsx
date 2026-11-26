@@ -4,23 +4,23 @@ import { XIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
-function Sheet({ ...props }: SheetPrimitive.Root.Props) {
+export function Sheet({ ...props }: SheetPrimitive.Root.Props) {
 	return <SheetPrimitive.Root data-slot="sheet" {...props} />;
 }
 
-function SheetTrigger({ ...props }: SheetPrimitive.Trigger.Props) {
+export function SheetTrigger({ ...props }: SheetPrimitive.Trigger.Props) {
 	return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />;
 }
 
-function SheetClose({ ...props }: SheetPrimitive.Close.Props) {
+export function SheetClose({ ...props }: SheetPrimitive.Close.Props) {
 	return <SheetPrimitive.Close data-slot="sheet-close" {...props} />;
 }
 
-function SheetPortal({ ...props }: SheetPrimitive.Portal.Props) {
+export function SheetPortal({ ...props }: SheetPrimitive.Portal.Props) {
 	return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />;
 }
 
-function SheetOverlay({ className, ...props }: SheetPrimitive.Backdrop.Props) {
+export function SheetOverlay({ className, ...props }: SheetPrimitive.Backdrop.Props) {
 	return (
 		<SheetPrimitive.Backdrop
 			data-slot="sheet-overlay"
@@ -33,7 +33,7 @@ function SheetOverlay({ className, ...props }: SheetPrimitive.Backdrop.Props) {
 	);
 }
 
-function SheetContent({
+export function SheetContent({
 	className,
 	children,
 	side = "right",
@@ -70,19 +70,19 @@ function SheetContent({
 	);
 }
 
-function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
+export function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
 	return <div data-slot="sheet-header" className={cn("flex flex-col gap-2 border-b px-4 py-3", className)} {...props} />;
 }
 
-function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
+export function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
 	return <div data-slot="sheet-footer" className={cn("mt-auto flex flex-col gap-2 px-4 py-3", className)} {...props} />;
 }
 
-function SheetTitle({ className, ...props }: SheetPrimitive.Title.Props) {
+export function SheetTitle({ className, ...props }: SheetPrimitive.Title.Props) {
 	return <SheetPrimitive.Title data-slot="sheet-title" className={cn("text-lg font-semibold text-foreground", className)} {...props} />;
 }
 
-function SheetDescription({ className, ...props }: SheetPrimitive.Description.Props) {
+export function SheetDescription({ className, ...props }: SheetPrimitive.Description.Props) {
 	return (
 		<SheetPrimitive.Description
 			data-slot="sheet-description"
@@ -91,5 +91,3 @@ function SheetDescription({ className, ...props }: SheetPrimitive.Description.Pr
 		/>
 	);
 }
-
-export { Sheet, SheetTrigger, SheetClose, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription };

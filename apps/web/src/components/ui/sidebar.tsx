@@ -28,7 +28,7 @@ type SidebarContextProps = {
 
 const SidebarContext = createContext<SidebarContextProps | null>(null);
 
-function useSidebar() {
+export function useSidebar() {
 	const context = use(SidebarContext);
 
 	if (!context) {
@@ -38,7 +38,7 @@ function useSidebar() {
 	return context;
 }
 
-function SidebarProvider({
+export function SidebarProvider({
 	defaultOpen = true,
 	open: openProp,
 	onOpenChange: setOpenProp,
@@ -126,7 +126,7 @@ function SidebarProvider({
 	);
 }
 
-function Sidebar({
+export function Sidebar({
 	side = "left",
 	variant = "sidebar",
 	collapsible = "offcanvas",
@@ -223,7 +223,7 @@ function Sidebar({
 	);
 }
 
-function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
+export function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
 	const { toggleSidebar } = useSidebar();
 
 	return (
@@ -245,7 +245,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
 	);
 }
 
-function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
+export function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
 	return (
 		<main
 			data-slot="sidebar-inset"
@@ -259,15 +259,15 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
 	);
 }
 
-function SidebarHeader({ className, ...props }: React.ComponentProps<"div">) {
+export function SidebarHeader({ className, ...props }: React.ComponentProps<"div">) {
 	return <div data-slot="sidebar-header" data-sidebar="header" className={cn("flex flex-col gap-2 p-2", className)} {...props} />;
 }
 
-function SidebarFooter({ className, ...props }: React.ComponentProps<"div">) {
+export function SidebarFooter({ className, ...props }: React.ComponentProps<"div">) {
 	return <div data-slot="sidebar-footer" data-sidebar="footer" className={cn("flex flex-col gap-2 p-2", className)} {...props} />;
 }
 
-function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
+export function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div
 			data-slot="sidebar-content"
@@ -281,13 +281,13 @@ function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
 	);
 }
 
-function SidebarGroup({ className, ...props }: React.ComponentProps<"div">) {
+export function SidebarGroup({ className, ...props }: React.ComponentProps<"div">) {
 	return (
 		<div data-slot="sidebar-group" data-sidebar="group" className={cn("relative flex w-full min-w-0 flex-col p-2", className)} {...props} />
 	);
 }
 
-function SidebarGroupLabel({ className, render, ...props }: useRender.ComponentProps<"div"> & React.ComponentProps<"div">) {
+export function SidebarGroupLabel({ className, render, ...props }: useRender.ComponentProps<"div"> & React.ComponentProps<"div">) {
 	return useRender({
 		defaultTagName: "div",
 		props: mergeProps<"div">(
@@ -307,7 +307,7 @@ function SidebarGroupLabel({ className, render, ...props }: useRender.ComponentP
 	});
 }
 
-function SidebarGroupAction({ className, render, ...props }: useRender.ComponentProps<"button"> & React.ComponentProps<"button">) {
+export function SidebarGroupAction({ className, render, ...props }: useRender.ComponentProps<"button"> & React.ComponentProps<"button">) {
 	return useRender({
 		defaultTagName: "button",
 		props: mergeProps<"button">(
@@ -327,19 +327,19 @@ function SidebarGroupAction({ className, render, ...props }: useRender.Component
 	});
 }
 
-function SidebarGroupContent({ className, ...props }: React.ComponentProps<"div">) {
+export function SidebarGroupContent({ className, ...props }: React.ComponentProps<"div">) {
 	return <div data-slot="sidebar-group-content" data-sidebar="group-content" className={cn("w-full text-xs", className)} {...props} />;
 }
 
-function SidebarMenu({ className, ...props }: React.ComponentProps<"ul">) {
+export function SidebarMenu({ className, ...props }: React.ComponentProps<"ul">) {
 	return <ul data-slot="sidebar-menu" data-sidebar="menu" className={cn("flex w-full min-w-0 flex-col gap-0", className)} {...props} />;
 }
 
-function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
+export function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
 	return <li data-slot="sidebar-menu-item" data-sidebar="menu-item" className={cn("group/menu-item relative", className)} {...props} />;
 }
 
-function SidebarMenuButton({
+export function SidebarMenuButton({
 	render,
 	isActive = false,
 	tooltip,
@@ -392,21 +392,3 @@ function SidebarMenuButton({
 		</Tooltip>
 	);
 }
-
-export {
-	Sidebar,
-	SidebarContent,
-	SidebarFooter,
-	SidebarGroup,
-	SidebarGroupAction,
-	SidebarGroupContent,
-	SidebarGroupLabel,
-	SidebarHeader,
-	SidebarInset,
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
-	SidebarProvider,
-	SidebarTrigger,
-	useSidebar,
-};

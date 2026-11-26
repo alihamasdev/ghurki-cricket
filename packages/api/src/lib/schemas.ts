@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { groupFilters } from "./filters";
 
-export const DEFAULT_LIMIT = 25;
+export const MAX_LIMIT = 50;
 
 export const groupSchema = z.object({
 	group: z
@@ -16,8 +16,6 @@ export type GroupSchema = z.infer<typeof groupSchema>;
 export const overSchema = z.object({
 	overs: z.coerce.number().optional().catch(undefined),
 });
-
-export type OverSchema = z.infer<typeof overSchema>;
 
 export const dateSchema = z.object({
 	rivalry: z.string().optional().catch(undefined),
@@ -39,14 +37,15 @@ export const matchSchema = dateSchema.extend({
 	potm: z.string().optional().catch(undefined),
 });
 
-export type MatchSchema = z.infer<typeof matchSchema>;
-
 export const matchListSchema = matchSchema.extend({
 	cursor: z.coerce.number().int().positive().optional().catch(undefined),
-	limit: z.coerce.number().int().positive().default(DEFAULT_LIMIT),
+	limit: z.coerce.number().int().positive().max(MAX_LIMIT).optional().catch(undefined),
 });
 
-export type MatchListSchema = z.infer<typeof matchListSchema>;
+export const teamRunsSchema = overSchema.extend({
+	each: z.boolean().optional().catch(undefined),
+	limit: z.coerce.number().int().positive().max(MAX_LIMIT).optional().catch(undefined),
+});
 
 export const compareTeamSchema = dateSchema.omit({ starts: true, ends: true }).extend({
 	...overSchema.shape,

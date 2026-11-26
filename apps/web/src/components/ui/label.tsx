@@ -1,6 +1,6 @@
 import { cn } from "cn";
 
-function Label({ className, ...props }: React.ComponentProps<"label">) {
+export function Label({ className, ...props }: React.ComponentProps<"label">) {
 	return (
 		<label
 			data-slot="label"
@@ -12,5 +12,3 @@ function Label({ className, ...props }: React.ComponentProps<"label">) {
 		/>
 	);
 }
-
-export { Label };

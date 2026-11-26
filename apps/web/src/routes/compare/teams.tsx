@@ -10,7 +10,7 @@ import { PageLayout } from "@/components/page-layout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { trpc } from "@/utils/trpc";
 
-export const Route = createFileRoute("/compare/teams/")({
+export const Route = createFileRoute("/compare/teams")({
 	validateSearch: compareTeamSchema,
 	beforeLoad: async ({ context, search }) => {
 		if (!search.rivalry && !search.date) {

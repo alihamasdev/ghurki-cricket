@@ -2,7 +2,7 @@ import { db, Prisma } from "@ghurki-cricket/db";
 
 import { publicProcedure, router } from "../index";
 import { getDate } from "../lib/helpers";
-import { compareTeamSchema, overSchema } from "../lib/schemas";
+import { compareTeamSchema, overSchema, teamRunsSchema } from "../lib/schemas";
 import type { TeamConsecutiveWinsStat, TeamHighestChaseStat, TeamInningStat, TeamLowestDefendedStat, TeamStats } from "../lib/types";
 import { calcStrikeRate, formatDate, formatMatchScore } from "../lib/utils";
 
@@ -93,14 +93,17 @@ export const teamsRouter = router({
 	/**
 	 * Finds the highest team innings totals recorded across matches.
 	 *
-	 * @param input - Optional overs filter.
+	 * @param input - Optional overs, each, and limit filter.
 	 * @returns Array of highest team scores with runs, balls, wickets, run rate, and match date sorted by runs descending.
 	 */
-	highestRuns: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamInningStat[]> => {
+	highestRuns: publicProcedure.input(teamRunsSchema).query(async ({ input }): Promise<TeamInningStat[]> => {
 		const inningsWhere = input?.overs ? { match: { overs: input.overs } } : {};
+		const isEach = input?.each !== false;
+		const limit = input?.limit ?? 10;
 
 		const innings = await db.innings.findMany({
-			distinct: ["teamId"],
+			distinct: isEach ? ["teamId"] : undefined,
+			take: isEach ? undefined : limit,
 			where: inningsWhere,
 			orderBy: { runs: "desc" },
 			include: {
@@ -124,14 +127,17 @@ export const teamsRouter = router({
 	/**
 	 * Finds the lowest team scores where the team was bowled all out.
 	 *
-	 * @param input - Optional overs filter.
+	 * @param input - Optional overs, each, and limit filter.
 	 * @returns Array of lowest all-out innings totals with runs, balls, wickets, run rate, and match date sorted by runs ascending.
 	 */
-	lowestRuns: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamInningStat[]> => {
+	lowestRuns: publicProcedure.input(teamRunsSchema).query(async ({ input }): Promise<TeamInningStat[]> => {
 		const inningsWhere = input?.overs ? { match: { overs: input.overs } } : {};
+		const isEach = input?.each !== false;
+		const limit = input?.limit ?? 10;
 
 		const innings = await db.innings.findMany({
-			distinct: ["teamId"],
+			distinct: isEach ? ["teamId"] : undefined,
+			take: isEach ? undefined : limit,
 			where: { ...inningsWhere, allOuts: 1 },
 			orderBy: { runs: "asc" },
 			include: {
@@ -153,13 +159,72 @@ export const teamsRouter = router({
 	}),
 
 	/**
-	 * Retrieves the top 10 highest successfully chased targets by teams using a LATERAL join.
+	 * Retrieves the highest successfully chased targets by teams using a LATERAL join.
 	 *
-	 * @param input - Optional overs filter.
-	 * @returns Array of top 10 highest target chases with match score and date sorted by target descending.
+	 * @param input - Optional overs, each, and limit filter.
+	 * @returns Array of target chases with match score and date sorted by target descending.
 	 */
-	highestChases: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamHighestChaseStat[]> => {
-		const overFilter = input?.overs ? Prisma.sql`AND m.overs = ${input.overs}` : Prisma.empty;
+	highestChases: publicProcedure.input(teamRunsSchema).query(async ({ input }): Promise<TeamHighestChaseStat[]> => {
+		const overs = input?.overs ?? null;
+		const isEach = input?.each !== false;
+		const limit = input?.limit ?? 10;
+
+		const query = isEach
+			? Prisma.sql`
+				WITH ranked_chases AS (
+					SELECT 
+						i."teamId" AS team,
+						m.target,
+						m.overs,
+						m."potmId" AS potm,
+						m."dateId",
+						i.runs,
+						i.balls,
+						i.wickets,
+						i."allOuts",
+						ROW_NUMBER() OVER (PARTITION BY i."teamId" ORDER BY m.target DESC, m."dateId" DESC) AS rn
+					FROM matches m
+					JOIN LATERAL (
+						SELECT id, "teamId", runs, balls, wickets, "allOuts"
+						FROM innings
+						WHERE "matchId" = m.id
+						ORDER BY id DESC
+						LIMIT 1
+					) i ON true
+					WHERE m.target IS NOT NULL
+					  AND m."winnerId" = i."teamId"
+					  AND (${overs}::int IS NULL OR m.overs = ${overs}::int)
+				)
+				SELECT team, target, overs, potm, "dateId", runs, balls, wickets, "allOuts"
+				FROM ranked_chases
+				WHERE rn = 1
+				ORDER BY target DESC
+			`
+			: Prisma.sql`
+				SELECT 
+					i."teamId" AS team,
+					m.target,
+					m.overs,
+					m."potmId" AS potm,
+					m."dateId",
+					i.runs,
+					i.balls,
+					i.wickets,
+					i."allOuts"
+				FROM matches m
+				JOIN LATERAL (
+					SELECT id, "teamId", runs, balls, wickets, "allOuts"
+					FROM innings
+					WHERE "matchId" = m.id
+					ORDER BY id DESC
+					LIMIT 1
+				) i ON true
+				WHERE m.target IS NOT NULL
+				  AND m."winnerId" = i."teamId"
+				  AND (${overs}::int IS NULL OR m.overs = ${overs}::int)
+				ORDER BY m.target DESC
+				LIMIT ${limit}
+			`;
 
 		const rows = await db.$queryRaw<
 			{
@@ -173,31 +238,7 @@ export const teamsRouter = router({
 				wickets: number;
 				allOuts: number;
 			}[]
-		>`
-			SELECT 
-				i."teamId" AS team,
-				m.target,
-				m.overs,
-				m."potmId" AS potm,
-				m."dateId",
-				i.runs,
-				i.balls,
-				i.wickets,
-				i."allOuts"
-			FROM matches m
-			JOIN LATERAL (
-				SELECT id, "teamId", runs, balls, wickets, "allOuts"
-				FROM innings
-				WHERE "matchId" = m.id
-				ORDER BY id DESC
-				LIMIT 1
-			) i ON true
-			WHERE m.target IS NOT NULL
-			  AND m."winnerId" = i."teamId"
-			  ${overFilter}
-			ORDER BY m.target DESC
-			LIMIT 10
-		`;
+		>(query);
 
 		return rows.map((r) => ({
 			team: r.team,
@@ -215,13 +256,72 @@ export const teamsRouter = router({
 	}),
 
 	/**
-	 * Retrieves the top 10 lowest defended targets where the defending team successfully won.
+	 * Retrieves the lowest defended targets where the defending team successfully won.
 	 *
-	 * @param input - Optional overs filter.
-	 * @returns Array of top 10 lowest target defenses with match score and date sorted by target ascending.
+	 * @param input - Optional overs, each, and limit filter.
+	 * @returns Array of target defenses with match score and date sorted by target ascending.
 	 */
-	lowestDefended: publicProcedure.input(overSchema).query(async ({ input }): Promise<TeamLowestDefendedStat[]> => {
-		const overFilter = input?.overs ? Prisma.sql`AND m.overs = ${input.overs}` : Prisma.empty;
+	lowestDefended: publicProcedure.input(teamRunsSchema).query(async ({ input }): Promise<TeamLowestDefendedStat[]> => {
+		const overs = input?.overs ?? null;
+		const isEach = input?.each !== false;
+		const limit = input?.limit ?? 10;
+
+		const query = isEach
+			? Prisma.sql`
+				WITH ranked_defended AS (
+					SELECT 
+						m."winnerId" AS team,
+						m.target,
+						m.overs,
+						m."potmId" AS potm,
+						m."dateId",
+						i.runs,
+						i.balls,
+						i.wickets,
+						i."allOuts",
+						ROW_NUMBER() OVER (PARTITION BY m."winnerId" ORDER BY m.target ASC, m."dateId" DESC) AS rn
+					FROM matches m
+					JOIN LATERAL (
+						SELECT id, "teamId", runs, balls, wickets, "allOuts"
+						FROM innings
+						WHERE "matchId" = m.id
+						ORDER BY id DESC
+						LIMIT 1
+					) i ON true
+					WHERE m.target IS NOT NULL
+					  AND m."winnerId" != i."teamId"
+					  AND (${overs}::int IS NULL OR m.overs = ${overs}::int)
+				)
+				SELECT team, target, overs, potm, "dateId", runs, balls, wickets, "allOuts"
+				FROM ranked_defended
+				WHERE rn = 1
+				ORDER BY target ASC
+			`
+			: Prisma.sql`
+				SELECT 
+					m."winnerId" AS team,
+					m.target,
+					m.overs,
+					m."potmId" AS potm,
+					m."dateId",
+					i.runs,
+					i.balls,
+					i.wickets,
+					i."allOuts"
+				FROM matches m
+				JOIN LATERAL (
+					SELECT id, "teamId", runs, balls, wickets, "allOuts"
+					FROM innings
+					WHERE "matchId" = m.id
+					ORDER BY id DESC
+					LIMIT 1
+				) i ON true
+				WHERE m.target IS NOT NULL
+				  AND m."winnerId" != i."teamId"
+				  AND (${overs}::int IS NULL OR m.overs = ${overs}::int)
+				ORDER BY m.target ASC
+				LIMIT ${limit}
+			`;
 
 		const rows = await db.$queryRaw<
 			{
@@ -235,31 +335,7 @@ export const teamsRouter = router({
 				wickets: number;
 				allOuts: number;
 			}[]
-		>`
-			SELECT 
-				m."winnerId" AS team,
-				m.target,
-				m.overs,
-				m."potmId" AS potm,
-				m."dateId",
-				i.runs,
-				i.balls,
-				i.wickets,
-				i."allOuts"
-			FROM matches m
-			JOIN LATERAL (
-				SELECT id, "teamId", runs, balls, wickets, "allOuts"
-				FROM innings
-				WHERE "matchId" = m.id
-				ORDER BY id DESC
-				LIMIT 1
-			) i ON true
-			WHERE m.target IS NOT NULL
-			  AND m."winnerId" != i."teamId"
-			  ${overFilter}
-			ORDER BY m.target ASC
-			LIMIT 10
-		`;
+		>(query);
 
 		return rows.map((r) => ({
 			team: r.team,
