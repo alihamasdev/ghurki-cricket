@@ -23,7 +23,7 @@ async function getOrCreateServeUrl(): Promise<string> {
 
 	const rootDir = process.cwd().includes("apps/server") ? path.resolve(process.cwd(), "../..") : process.cwd();
 
-	const entryPoint = path.resolve(rootDir, "apps/web/src/remotion/index.ts");
+	const entryPoint = path.resolve(rootDir, "apps/web/src/lib/remotion/index.ts");
 	const webSrcDir = path.resolve(rootDir, "apps/web/src");
 
 	bundlingPromise = bundle({
@@ -46,6 +46,8 @@ async function getOrCreateServeUrl(): Promise<string> {
 					...withTailwind.resolve,
 					alias: {
 						"@": webSrcDir,
+						"@remotion/video-matting": false,
+						"@remotion/whisper-webgpu": false,
 					},
 				},
 			};
@@ -76,33 +78,36 @@ type ActiveRender = {
 
 const activeRenders = new Map<string, ActiveRender>();
 
-const timelineSchema: z.ZodType<TimelineData> = z.object({
-	players: z.array(z.string()),
-	frames: z.array(
-		z.object({
-			date: z.string(),
-			scores: z.record(z.string(), z.number()),
-		}),
-	),
-});
-
-const startExportSchema = z.object({
-	timeline: timelineSchema,
-	title: z.string().optional().default("Most Batting Runs"),
+const exportSchema = z.object({
+	timeline: z.object({
+		players: z.array(z.string()),
+		frames: z.array(
+			z.object({
+				date: z.string(),
+				scores: z.record(z.string(), z.number()),
+			}),
+		),
+	}) satisfies z.ZodType<TimelineData>,
+	title: z.string().optional().default("Timeline"),
 	unit: z.string().optional().default("runs"),
+	aspectRatio: z.enum(["16:9", "1:1"]).optional().default("16:9"),
+	speed: z
+		.union([z.literal(1), z.literal(1.5), z.literal(2)])
+		.optional()
+		.default(1),
 });
 
 /**
  * Initiates video render in development environment.
  */
-export async function startExportTimelineHandler(req: Request, res: Response) {
+export async function exportTimelineHandler(req: Request, res: Response) {
 	if (env.NODE_ENV === "production") {
 		res.status(403).json({ error: "Video export is only supported in development environment." });
 
 		return;
 	}
 
-	const parsed = startExportSchema.safeParse(req.body);
+	const parsed = exportSchema.safeParse(req.body);
 
 	if (!parsed.success) {
 		res.status(400).json({ error: "Invalid timeline payload", details: parsed.error });
@@ -110,7 +115,7 @@ export async function startExportTimelineHandler(req: Request, res: Response) {
 		return;
 	}
 
-	const { timeline, title, unit } = parsed.data;
+	const { timeline, title, unit, aspectRatio, speed } = parsed.data;
 	const renderId = `render_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
 	const renderState: ActiveRender = {
@@ -135,8 +140,25 @@ export async function startExportTimelineHandler(req: Request, res: Response) {
 					timeline,
 					title,
 					unit,
+					aspectRatio,
+					speed,
 				},
 			});
+
+			const isSquare = aspectRatio === "1:1";
+			const width = isSquare ? 1080 : 1920;
+			const height = 1080;
+			const frames = timeline.frames;
+			const totalKeyframes = frames.length;
+			const baseDurationInSeconds = Math.max(15, Math.min(totalKeyframes * 1.5, 45));
+			const durationInFrames = Math.max(60, Math.round((baseDurationInSeconds * 60) / speed));
+
+			const finalComposition = {
+				...composition,
+				width,
+				height,
+				durationInFrames,
+			};
 
 			const outDir = path.join(os.tmpdir(), "ghurki-exports");
 
@@ -147,7 +169,7 @@ export async function startExportTimelineHandler(req: Request, res: Response) {
 			const outputLocation = path.join(outDir, `${renderId}.mp4`);
 
 			await renderMedia({
-				composition,
+				composition: finalComposition,
 				serveUrl,
 				codec: "h264",
 				outputLocation,
@@ -155,6 +177,8 @@ export async function startExportTimelineHandler(req: Request, res: Response) {
 					timeline,
 					title,
 					unit,
+					aspectRatio,
+					speed,
 				},
 				onProgress: ({ progress }) => {
 					renderState.progress = Math.round(progress * 100);

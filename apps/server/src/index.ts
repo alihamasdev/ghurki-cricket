@@ -55,15 +55,15 @@ app.use(
 	}),
 );
 
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: env.NODE_ENV === "development" ? "50mb" : "1mb" }));
 
 app.use(["/trpc", "/api/trpc"], createExpressMiddleware({ router, createContext }));
 
 if (env.NODE_ENV === "development") {
 	try {
-		const { startExportTimelineHandler, getExportProgressHandler, downloadExportedVideoHandler } = await import("./render-timeline");
+		const { exportTimelineHandler, getExportProgressHandler, downloadExportedVideoHandler } = await import("./render-timeline");
 
-		app.post(["/export-timeline", "/api/export-timeline"], startExportTimelineHandler);
+		app.post(["/export-timeline", "/api/export-timeline"], exportTimelineHandler);
 		app.get(["/export-timeline/progress/:renderId", "/api/export-timeline/progress/:renderId"], getExportProgressHandler);
 		app.get(["/export-timeline/download/:renderId", "/api/export-timeline/download/:renderId"], downloadExportedVideoHandler);
 	} catch {

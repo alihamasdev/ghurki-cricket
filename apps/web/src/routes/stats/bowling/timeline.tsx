@@ -20,7 +20,7 @@ export const Route = createFileRoute("/stats/bowling/timeline")({
 		return (
 			<TimelineView
 				title="Timeline"
-				chartTitle="Most Bowling Wickets"
+				chartTitle="Wickets Timeline"
 				unit="wickets"
 				filters={[<GroupFilter key="group" />, <DateFilter key="date" hasDates={false} />]}
 				queryOptions={trpc.bowling.raceTimeline.queryOptions(search)}

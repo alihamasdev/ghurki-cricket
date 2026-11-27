@@ -3,7 +3,8 @@ import { db } from "@ghurki-cricket/db";
 import { publicProcedure, router } from "../index";
 import { getDate, getGroup } from "../lib/helpers";
 import { groupSchema, statSchema } from "../lib/schemas";
-import { type POTMStats } from "../lib/types";
+import { buildRaceTimeline } from "../lib/timeline";
+import { type POTMStats, type TimelineData } from "../lib/types";
 
 export const potmRouter = router({
 	/**
@@ -55,5 +56,33 @@ export const potmRouter = router({
 		return Array.from(playerMaxMap.entries())
 			.map(([player, potm]) => ({ player, potm }))
 			.sort((a, b) => b.potm - a.potm);
+	}),
+
+	/**
+	 * Returns cumulative Player of the Match awards over time by date for racing bar charts.
+	 *
+	 * @param input - Optional date range, rivalry, and player group filter.
+	 * @returns Array of timeline frames with cumulative POTM awards per player by date.
+	 */
+	raceTimeline: publicProcedure.input(statSchema.omit({ date: true })).query(async ({ input }): Promise<TimelineData> => {
+		const rows = await db.matches.findMany({
+			where: {
+				...getDate(input),
+				potmId: { not: null },
+				potm: { group: getGroup(input) },
+			},
+			select: { dateId: true, potmId: true },
+			orderBy: { dateId: "asc" },
+		});
+
+		return buildRaceTimeline(
+			rows
+				.filter((r): r is typeof r & { potmId: string } => r.potmId !== null)
+				.map((r) => ({
+					dateId: r.dateId,
+					playerId: r.potmId,
+				})),
+			() => 1,
+		);
 	}),
 });

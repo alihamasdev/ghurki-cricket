@@ -1,44 +1,17 @@
 import { type TimelineData } from "@ghurki-cricket/api/types";
-import { env } from "@ghurki-cricket/env/web";
-import { Player } from "@remotion/player";
-import { DownloadIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { type ErrorFallback, Player } from "@remotion/player";
+import { cn } from "cn";
+import { AlertTriangleIcon } from "lucide-react";
+import { useEffect, useMemo } from "react";
 import { Img, prefetch, useCurrentFrame, useVideoConfig } from "remotion";
-import { z } from "zod";
 
 import { getPlayerImageUrl } from "@/components/avatar";
-import { Button } from "@/components/ui/button";
-
-import { Spinner } from "./ui/spinner";
-
-const exportResponseSchema = z.object({
-	renderId: z.string(),
-});
-
-const progressResponseSchema = z.object({
-	status: z.string(),
-	progress: z.number(),
-	error: z.string().optional(),
-});
-
-const errorResponseSchema = z.object({
-	error: z.string().optional(),
-});
-
-/** Internal composition width in pixels (1080p standard: w-480). */
-const CANVAS_WIDTH = 1920;
-
-/** Internal composition height in pixels (1080p standard: h-270). */
-const CANVAS_HEIGHT = 1080;
-
-/** Height of each horizontal ranking bar in pixels. */
-const BAR_HEIGHT = 60;
+import { ExportTimeline } from "@/components/export-timeline";
+import { Empty, EmptyContent, EmptyDescription, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 /** Vertical gap between consecutive bars in pixels. */
 const BAR_GAP = 20;
-
-/** Maximum available width in pixels for the longest bar. */
-const AVAILABLE_BAR_WIDTH = 1480;
 
 /** Color palette for player bars. */
 const PALETTE = [
@@ -79,14 +52,40 @@ export type TimelineCompositionProps = {
 	timeline: TimelineData;
 	title?: string;
 	unit?: string;
+	aspectRatio?: "16:9" | "1:1";
+	speed?: number;
 };
 
 /**
  * Remotion Composition component that renders the leaderboard race using Tailwind CSS flex layout.
  */
-export function TimelineComposition({ timeline, title = "Most Batting Runs", unit = "runs" }: TimelineCompositionProps) {
+export function TimelineComposition({ timeline, title = "Timeline", unit = "runs" }: TimelineCompositionProps) {
 	const frame = useCurrentFrame();
-	const { durationInFrames } = useVideoConfig();
+	const { durationInFrames, width, height } = useVideoConfig();
+
+	const isSquare = width === 1080;
+	// 16:9 (width 1920): left pad 56px (p-14) + line offset 48px + right margin ~336px = 440px
+	// 1:1  (width 1080): left pad 32px (p-8)  + line offset 48px + right margin ~200px = 280px
+	const availableBarWidth = Math.max(160, isSquare ? width - 280 : width - 440);
+
+	// Layout vertical budget calculation:
+	// Total canvas height = 1080px
+	// verticalPadding = isSquare ? 64px (p-8 = 32px top + 32px bottom) : 112px (p-14 = 56px top + 56px bottom)
+	// verticalGap = isSquare ? 48px (gap-6 = 24px * 2) : 112px (gap-14 = 56px * 2)
+	// headerHeight ≈ 36px (text-3xl line-height)
+	// footerHeight ≈ 32px (text-2xl line-height)
+	const verticalPadding = isSquare ? 64 : 112;
+	const verticalGaps = isSquare ? 48 : 112;
+	const textContentHeights = 68; // header + footer
+	const mainHeight = height - verticalPadding - verticalGaps - textContentHeights;
+
+	// Distribute mainHeight evenly across 10 player slots:
+	// 10 slots have 9 gaps of BAR_GAP (20px) = 180px of gaps
+	const maxSlots = 10;
+	const totalGapsHeight = (maxSlots - 1) * BAR_GAP;
+	const barHeight = Math.max(40, Math.floor((mainHeight - totalGapsHeight) / maxSlots));
+	const rowHeight = barHeight + BAR_GAP;
+	const avatarSize = Math.max(32, Math.min(56, Math.round(barHeight * 0.72)));
 
 	const frames = timeline.frames;
 
@@ -100,11 +99,10 @@ export function TimelineComposition({ timeline, title = "Most Batting Runs", uni
 
 	const totalIntervals = Math.max(1, frames.length - 1);
 
-	// Precompute deterministic smooth vertical position trajectories for all players across all frames
+	/** Precompute deterministic smooth vertical position trajectories for all players across all frames */
 	const smoothPositions = useMemo(() => {
 		const numFrames = Math.max(1, durationInFrames);
 		const trajectories: Record<string, Float32Array> = {};
-		const rowHeight = BAR_HEIGHT + BAR_GAP;
 
 		for (const p of timeline.players) {
 			trajectories[p] = new Float32Array(numFrames);
@@ -165,7 +163,7 @@ export function TimelineComposition({ timeline, title = "Most Batting Runs", uni
 		}
 
 		return trajectories;
-	}, [frames, durationInFrames, timeline.players, totalIntervals]);
+	}, [frames, durationInFrames, timeline.players, totalIntervals, rowHeight]);
 
 	// Calculate progress t from current frame (0 at frame 0, 1 at durationInFrames - 1)
 	const t = durationInFrames > 1 ? frame / (durationInFrames - 1) : 0;
@@ -185,7 +183,6 @@ export function TimelineComposition({ timeline, title = "Most Batting Runs", uni
 	}
 
 	const clampedFrame = Math.min(Math.max(0, Math.floor(frame)), durationInFrames - 1);
-	const rowHeight = BAR_HEIGHT + BAR_GAP;
 
 	const sortedAll = timeline.players
 		.map((p) => ({
@@ -204,13 +201,18 @@ export function TimelineComposition({ timeline, title = "Most Batting Runs", uni
 	const visiblePlayers = sortedAll.filter((p) => p.smoothY < 9.6 * rowHeight);
 
 	return (
-		<div className="flex h-270 w-480 flex-col justify-between gap-14 overflow-hidden bg-background p-14 font-sans select-none">
+		<div
+			className={cn(
+				"flex size-full flex-col justify-between overflow-hidden bg-background font-sans select-none",
+				isSquare ? "gap-6 py-8" : "gap-14 p-14",
+			)}
+		>
 			<header className="text-center text-3xl font-bold tracking-tight text-foreground">{title}</header>
 			<main className="relative flex-1">
-				<div className="absolute top-0 bottom-3 left-12 w-1 rounded-full bg-border" />
+				<div className={cn("absolute top-0 bottom-3 w-1 rounded-full bg-border", isSquare ? "left-6" : "left-12")} />
 
 				{visiblePlayers.map((player) => {
-					const barWidth = Math.max(12, (player.runs / maxScore) * AVAILABLE_BAR_WIDTH);
+					const barWidth = Math.max(12, (player.runs / maxScore) * availableBarWidth);
 					const barY = player.smoothY;
 					const color = getPlayerColor(player.name);
 					const avatarUrl = getPlayerImageUrl(player.name, "avatar");
@@ -219,10 +221,13 @@ export function TimelineComposition({ timeline, title = "Most Batting Runs", uni
 					return (
 						<div
 							key={player.name}
-							className="absolute left-12 flex h-15 items-center justify-end gap-3 rounded-r-lg pr-3 shadow-xs"
-							style={{ top: barY, width: barWidth, backgroundColor: color, opacity }}
+							style={{ top: barY, width: barWidth, height: barHeight, backgroundColor: color, opacity }}
+							className={cn("absolute flex items-center justify-end gap-3 rounded-r-lg pr-3 shadow-xs", isSquare ? "left-6" : "left-12")}
 						>
-							<div className="flex size-10 shrink-0 items-center justify-center overflow-hidden squircle bg-muted">
+							<div
+								className="flex shrink-0 items-center justify-center overflow-hidden squircle bg-muted"
+								style={{ width: avatarSize, height: avatarSize }}
+							>
 								<Img
 									src={avatarUrl}
 									alt={player.name}
@@ -243,7 +248,7 @@ export function TimelineComposition({ timeline, title = "Most Batting Runs", uni
 					);
 				})}
 			</main>
-			<footer className="text-right text-2xl font-semibold text-muted-foreground">{currentDate}</footer>
+			<footer className={cn("text-right text-2xl font-semibold text-muted-foreground", isSquare && "pr-10")}>{currentDate}</footer>
 		</div>
 	);
 }
@@ -255,15 +260,7 @@ type TimelineProps = {
 };
 
 export function Timeline({ title, unit = "runs", timeline }: TimelineProps) {
-	const [exportState, setExportState] = useState<{
-		isExporting: boolean;
-		progress: number;
-		status: string;
-	}>({
-		isExporting: false,
-		progress: 0,
-		status: "",
-	});
+	const isMobile = useIsMobile();
 
 	useEffect(() => {
 		const prefetches = timeline.players.map((player) => {
@@ -279,116 +276,56 @@ export function Timeline({ title, unit = "runs", timeline }: TimelineProps) {
 		};
 	}, [timeline.players]);
 
-	const handleExport = async () => {
-		if (exportState.isExporting) return;
-
-		setExportState({ isExporting: true, progress: 0, status: "Starting..." });
-
-		try {
-			const serverUrl = env.VITE_SERVER_URL.replace(/\/+$/, "");
-
-			const res = await fetch(`${serverUrl}/api/export-timeline`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ timeline, title, unit }),
-			});
-
-			if (!res.ok) {
-				const errorJson = await res.json().catch(() => ({}));
-				const parsedError = errorResponseSchema.safeParse(errorJson);
-				const errorMessage = parsedError.success && parsedError.data.error ? parsedError.data.error : `Server error: ${res.status}`;
-				throw new Error(errorMessage);
-			}
-
-			const json = await res.json();
-			const parsedStart = exportResponseSchema.safeParse(json);
-
-			if (!parsedStart.success) {
-				throw new Error("Invalid response from export server");
-			}
-
-			const renderId = parsedStart.data.renderId;
-
-			const pollInterval = setInterval(async () => {
-				try {
-					const progRes = await fetch(`${serverUrl}/api/export-timeline/progress/${renderId}`);
-
-					if (!progRes.ok) return;
-
-					const progJson = await progRes.json();
-					const parsedProgress = progressResponseSchema.safeParse(progJson);
-
-					if (!parsedProgress.success) return;
-
-					const progData = parsedProgress.data;
-
-					if (progData.status === "error") {
-						clearInterval(pollInterval);
-						setExportState({ isExporting: false, progress: 0, status: "" });
-						alert(`Export failed: ${progData.error || "Unknown error"}`);
-
-						return;
-					}
-
-					setExportState({
-						isExporting: true,
-						progress: progData.progress,
-						status: progData.status === "bundling" ? "Compiling..." : `Rendering ${progData.progress}%`,
-					});
-
-					if (progData.status === "done") {
-						clearInterval(pollInterval);
-						setExportState({ isExporting: false, progress: 100, status: "" });
-
-						const filename = `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.mp4`;
-
-						const downloadUrl = `${serverUrl}/api/export-timeline/download/${renderId}?filename=${encodeURIComponent(filename)}`;
-
-						const link = document.createElement("a");
-						link.href = downloadUrl;
-						link.download = filename;
-						document.body.appendChild(link);
-						link.click();
-						document.body.removeChild(link);
-					}
-				} catch {
-					// Ignore transient poll failure
-				}
-			}, 1000);
-		} catch (err: unknown) {
-			setExportState({ isExporting: false, progress: 0, status: "" });
-			alert(err instanceof Error ? err.message : "Failed to start export");
-		}
-	};
-
 	const frames = timeline.frames;
 	const totalKeyframes = frames.length;
 	const durationInSeconds = Math.max(15, Math.min(totalKeyframes * 1.5, 45));
 	const totalFrames = Math.round(durationInSeconds * 60);
 
+	const compositionWidth = isMobile ? 1080 : 1920;
+	const compositionHeight = 1080;
+	const aspectRatioStyle = isMobile ? "1 / 1" : "16 / 9";
+
+	const renderErrorFallback: ErrorFallback = ({ error }) => {
+		return (
+			<Empty>
+				<EmptyContent>
+					<EmptyMedia variant="icon">
+						<AlertTriangleIcon className="text-destructive" />
+					</EmptyMedia>
+					<EmptyTitle>Failed to render timeline</EmptyTitle>
+					<EmptyDescription>{error?.message || "An unexpected error occurred while rendering the animation."}</EmptyDescription>
+				</EmptyContent>
+			</Empty>
+		);
+	};
+
 	return (
 		<div className="relative overflow-hidden rounded-md border bg-background">
 			{import.meta.env.DEV && (
-				<div className="absolute top-4 right-4 z-10">
-					<Button size="icon" variant="secondary" disabled={exportState.isExporting} onClick={handleExport}>
-						{exportState.isExporting ? <Spinner /> : <DownloadIcon />}
-					</Button>
+				<div className="absolute top-3 right-3 z-10">
+					<ExportTimeline timeline={timeline} title={title} unit={unit} />
 				</div>
 			)}
 
 			<Player
 				component={TimelineComposition}
-				inputProps={{ timeline, title, unit }}
+				inputProps={{
+					timeline,
+					title,
+					unit,
+					aspectRatio: isMobile ? "1:1" : "16:9",
+				}}
 				durationInFrames={totalFrames}
-				compositionWidth={CANVAS_WIDTH}
-				compositionHeight={CANVAS_HEIGHT}
-				style={{ width: "100%", aspectRatio: "16 / 9" }}
+				compositionWidth={compositionWidth}
+				compositionHeight={compositionHeight}
+				style={{ width: "100%", aspectRatio: aspectRatioStyle }}
 				fps={60}
 				controls={false}
 				loop={false}
 				autoPlay
 				moveToBeginningWhenEnded={false}
 				acknowledgeRemotionLicense
+				errorFallback={renderErrorFallback}
 			/>
 		</div>
 	);

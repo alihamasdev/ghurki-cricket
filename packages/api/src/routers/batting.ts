@@ -3,8 +3,9 @@ import { db } from "@ghurki-cricket/db";
 import { publicProcedure, router } from "../index";
 import { getStatWhere } from "../lib/helpers";
 import { statSchema } from "../lib/schemas";
+import { mapBattingStats, mapOtherBattingStats } from "../lib/stats";
+import { buildRaceTimeline } from "../lib/timeline";
 import type { BattingStats, OtherBattingStats, TimelineData } from "../lib/types";
-import { calcBattingAverage, calcStrikeRate } from "../lib/utils";
 
 export const battingRouter = router({
 	/**
@@ -33,23 +34,7 @@ export const battingRouter = router({
 			},
 		});
 
-		return data
-			.map((val) => ({
-				player: val.playerId,
-				innings: val._sum.innings ?? 0,
-				runs: val._sum.runs ?? 0,
-				balls: val._sum.balls ?? 0,
-				notOuts: val._sum.notOuts ?? 0,
-				fours: val._sum.fours ?? 0,
-				sixes: val._sum.sixes ?? 0,
-				ducks: val._sum.ducks ?? 0,
-				thirties: val._sum.thirties ?? 0,
-				fifties: val._sum.fifties ?? 0,
-				highestScore: val._max.highestScore ?? 0,
-				strikeRate: calcStrikeRate(val._sum),
-				average: calcBattingAverage(val._sum),
-			}))
-			.sort((a, b) => b.runs - a.runs);
+		return data.map(mapBattingStats).sort((a, b) => b.runs - a.runs);
 	}),
 
 	/**
@@ -72,16 +57,7 @@ export const battingRouter = router({
 			},
 		});
 
-		return data
-			.map((val) => ({
-				player: val.playerId,
-				innings: val._avg.innings ?? 0,
-				runs: val._avg.runs ?? 0,
-				balls: val._avg.balls ?? 0,
-				fours: val._avg.fours ?? 0,
-				sixes: val._avg.sixes ?? 0,
-			}))
-			.sort((a, b) => b.runs - a.runs);
+		return data.map(mapOtherBattingStats).sort((a, b) => b.runs - a.runs);
 	}),
 
 	/**
@@ -103,16 +79,7 @@ export const battingRouter = router({
 			},
 		});
 
-		return data
-			.map((val) => ({
-				player: val.playerId,
-				innings: val._max.innings ?? 0,
-				runs: val._max.runs ?? 0,
-				balls: val._max.balls ?? 0,
-				fours: val._max.fours ?? 0,
-				sixes: val._max.sixes ?? 0,
-			}))
-			.sort((a, b) => b.runs - a.runs);
+		return data.map(mapOtherBattingStats).sort((a, b) => b.runs - a.runs);
 	}),
 
 	/**
@@ -128,38 +95,6 @@ export const battingRouter = router({
 			orderBy: { dateId: "asc" },
 		});
 
-		const dateMap = new Map<string, { playerId: string; runs: number }[]>();
-
-		for (const row of rows) {
-			const dateStr = row.dateId.toISOString().split("T")[0] ?? "";
-
-			if (!dateStr) continue;
-			let list = dateMap.get(dateStr);
-
-			if (!list) {
-				list = [];
-				dateMap.set(dateStr, list);
-			}
-
-			list.push({ playerId: row.playerId, runs: row.runs });
-		}
-
-		const cumulative: Record<string, number> = {};
-		const frames: { date: string; scores: Record<string, number> }[] = [];
-
-		for (const [date, playerEntries] of dateMap.entries()) {
-			for (const entry of playerEntries) {
-				cumulative[entry.playerId] = (cumulative[entry.playerId] ?? 0) + entry.runs;
-			}
-
-			frames.push({
-				date,
-				scores: { ...cumulative },
-			});
-		}
-
-		const players = Object.keys(cumulative);
-
-		return { players, frames };
+		return buildRaceTimeline(rows, (row) => row.runs);
 	}),
 });

@@ -20,7 +20,7 @@ export const Route = createFileRoute("/stats/fielding/timeline")({
 		return (
 			<TimelineView
 				title="Timeline"
-				chartTitle="Most Fielding Catches"
+				chartTitle="Catches Timeline"
 				unit="catches"
 				filters={[<GroupFilter key="group" />, <DateFilter key="date" hasDates={false} />]}
 				queryOptions={trpc.fielding.raceTimeline.queryOptions(search)}

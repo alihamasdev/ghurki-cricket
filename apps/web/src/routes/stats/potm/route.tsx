@@ -9,6 +9,7 @@ export const Route = createFileRoute("/stats/potm")({
 const potmStatsLinks = linkOptions([
 	{ title: "Player of the match stats", to: "/stats/potm" },
 	{ title: "Most in single day", to: "/stats/potm/most-in-single-day" },
+	{ title: "Timeline", to: "/stats/potm/timeline" },
 ]);
 
 function POTMLayout() {

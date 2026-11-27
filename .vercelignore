@@ -9,3 +9,9 @@
 local.db
 local.db-*
 .alchemy/
+.agents/
+.vscode/
+scripts/
+tools/
+supabase/
+logo.png

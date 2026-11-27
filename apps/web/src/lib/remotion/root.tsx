@@ -20,18 +20,22 @@ export function RemotionRoot() {
 			defaultProps={
 				{
 					timeline: defaultTimeline,
-					title: "Most Batting Runs",
+					title: "Timeline",
 					unit: "runs",
 				} satisfies TimelineCompositionProps
 			}
 			calculateMetadata={({ props }) => {
 				const frames = props.timeline?.frames ?? [];
 				const totalKeyframes = frames.length;
-				const durationInSeconds = Math.max(15, Math.min(totalKeyframes * 1.5, 45));
-				const totalFrames = Math.max(60, Math.round(durationInSeconds * 60));
+				const baseDurationInSeconds = Math.max(15, Math.min(totalKeyframes * 1.5, 45));
+				const speed = props.speed ?? 1;
+				const totalFrames = Math.max(60, Math.round((baseDurationInSeconds * 60) / speed));
+				const isSquare = props.aspectRatio === "1:1";
 
 				return {
 					durationInFrames: totalFrames,
+					width: isSquare ? 1080 : 1920,
+					height: 1080,
 				};
 			}}
 		/>
