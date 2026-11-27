@@ -9,8 +9,9 @@ export function getPlayerImageUrl(name: string, variant: AvatarVariant = "avatar
 	if (!name) return "";
 
 	const normalizedName = encodeURIComponent(name.trim().toLowerCase());
+	const baseUrl = env.VITE_SERVER_URL.startsWith("http") ? env.VITE_SERVER_URL : "";
 
-	return `${env.VITE_SERVER_URL}/players/${normalizedName}/${variant}.webp`;
+	return `${baseUrl}/players/${normalizedName}/${variant}.webp`;
 }
 
 export type PlayerAvatarProps = React.ComponentProps<typeof Avatar> & {

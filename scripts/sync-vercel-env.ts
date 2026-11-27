@@ -82,9 +82,23 @@ if (localKeys.length > 0) {
 console.log(`Syncing ${env.size} env var(s) to Vercel ${environment}.`);
 
 for (const [key, value] of env.entries()) {
+	const isPublic = key.startsWith("VITE_") || key.startsWith("NEXT_PUBLIC_") || key.startsWith("PUBLIC_") || key === "PORT";
+	const sensitivityFlag = isPublic ? ["--no-sensitive"] : [];
+
 	const result = spawnSync(
 		VERCEL_COMMAND[0],
-		[...VERCEL_COMMAND.slice(1), "env", "add", key, environment, "--force", "--yes", "--non-interactive", ...vercelArgs],
+		[
+			...VERCEL_COMMAND.slice(1),
+			"env",
+			"add",
+			key,
+			environment,
+			"--force",
+			"--yes",
+			"--non-interactive",
+			...sensitivityFlag,
+			...vercelArgs,
+		],
 		{
 			input: `${value}\n`,
 			stdio: ["pipe", "inherit", "inherit"],
