@@ -1,12 +1,11 @@
 import { groupSchema } from "@ghurki-cricket/api/schema";
 import { type POTMStats } from "@ghurki-cricket/api/types";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PlayerCell } from "@/components/avatar";
-import { DataTable, type ColumnDef, DataTableError, DataTableLoader } from "@/components/data-table";
+import { type ColumnDef } from "@/components/data-table";
 import { GroupFilter } from "@/components/filters/group-filter";
-import { PageLayout } from "@/components/page-layout";
+import { StatsView } from "@/components/stats-view";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<POTMStats>[] = [
@@ -23,32 +22,16 @@ export const Route = createFileRoute("/stats/potm/most-in-single-day")({
 		],
 	}),
 	component: () => {
+		const search = Route.useSearch();
+
 		return (
-			<PageLayout
+			<StatsView
 				title="Most in single day"
-				headerRight={
-					<div className="flex sm:justify-end">
-						<GroupFilter />
-					</div>
-				}
-			>
-				<MostInSingleDayPOTMTable />
-			</PageLayout>
+				filters={[<GroupFilter key="group" />]}
+				queryOptions={trpc.potm.mostInSingleDay.queryOptions(search)}
+				columns={columns}
+				defaultSort={{ id: "potm", desc: true }}
+			/>
 		);
 	},
 });
-
-function MostInSingleDayPOTMTable() {
-	const { group } = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.potm.mostInSingleDay.queryOptions({ group }));
-
-	if (status === "pending") {
-		return <DataTableLoader />;
-	}
-
-	if (status === "error") {
-		return <DataTableError error={error.message} />;
-	}
-
-	return <DataTable columns={columns} data={data} defaultSort={{ id: "potm", desc: true }} />;
-}

@@ -7,17 +7,10 @@ export type AvatarVariant = "avatar" | "profile";
 
 export function getPlayerImageUrl(name: string, variant: AvatarVariant = "avatar"): string {
 	if (!name) return "";
+
 	const normalizedName = encodeURIComponent(name.trim().toLowerCase());
 
-	if (env.VITE_STORAGE_URL) {
-		const folder = variant === "avatar" ? "avatars" : "profiles";
-
-		return `${env.VITE_STORAGE_URL}/${folder}/${normalizedName}.webp`;
-	}
-
-	const serverUrl = env.VITE_SERVER_URL ? env.VITE_SERVER_URL.replace(/\/+$/, "") : "";
-
-	return `${serverUrl}/players/${normalizedName}/${variant}.webp`;
+	return `${env.VITE_SERVER_URL}/players/${normalizedName}/${variant}.webp`;
 }
 
 export type PlayerAvatarProps = React.ComponentProps<typeof Avatar> & {

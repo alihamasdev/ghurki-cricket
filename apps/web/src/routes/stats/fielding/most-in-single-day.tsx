@@ -1,13 +1,12 @@
 import { statSchema } from "@ghurki-cricket/api/schema";
 import { type FieldingStats } from "@ghurki-cricket/api/types";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PlayerCell } from "@/components/avatar";
-import { DataTable, type ColumnDef, DataTableError, DataTableLoader } from "@/components/data-table";
+import { type ColumnDef } from "@/components/data-table";
 import { DateFilter } from "@/components/filters/date-filter";
 import { GroupFilter } from "@/components/filters/group-filter";
-import { PageLayout } from "@/components/page-layout";
+import { StatsView } from "@/components/stats-view";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<FieldingStats>[] = [
@@ -26,33 +25,16 @@ export const Route = createFileRoute("/stats/fielding/most-in-single-day")({
 		],
 	}),
 	component: () => {
+		const search = Route.useSearch();
+
 		return (
-			<PageLayout
+			<StatsView
 				title="Most in single day"
-				headerRight={
-					<div className="flex flex-wrap items-center gap-2 sm:justify-end">
-						<GroupFilter />
-						<DateFilter hasDates={false} />
-					</div>
-				}
-			>
-				<MostInSingleDayTable />
-			</PageLayout>
+				filters={[<GroupFilter key="group" />, <DateFilter key="date" hasDates={false} />]}
+				queryOptions={trpc.fielding.mostInSingleDay.queryOptions(search)}
+				columns={columns}
+				defaultSort={{ id: "catches", desc: true }}
+			/>
 		);
 	},
 });
-
-function MostInSingleDayTable() {
-	const { group, rivalry, starts, ends } = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.fielding.mostInSingleDay.queryOptions({ group, rivalry, starts, ends }));
-
-	if (status === "pending") {
-		return <DataTableLoader />;
-	}
-
-	if (status === "error") {
-		return <DataTableError error={error.message} />;
-	}
-
-	return <DataTable columns={columns} data={data} defaultSort={{ id: "catches", desc: true }} />;
-}

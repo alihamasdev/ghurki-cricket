@@ -1,12 +1,11 @@
 import { teamRunsSchema } from "@ghurki-cricket/api/schema";
 import { type TeamHighestChaseStat } from "@ghurki-cricket/api/types";
-import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DataTable, type ColumnDef, DataTableError, DataTableLoader } from "@/components/data-table";
+import { type ColumnDef } from "@/components/data-table";
 import { EachTeamFilter } from "@/components/filters/each-team-filter";
 import { OversFilter } from "@/components/filters/overs-filter";
-import { PageLayout } from "@/components/page-layout";
+import { StatsView } from "@/components/stats-view";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<TeamHighestChaseStat>[] = [
@@ -27,33 +26,16 @@ export const Route = createFileRoute("/stats/teams/highest-successful-chase")({
 		],
 	}),
 	component: () => {
+		const search = Route.useSearch();
+
 		return (
-			<PageLayout
+			<StatsView
 				title="Highest successful chase"
-				headerRight={
-					<div className="flex items-center gap-4 sm:justify-end">
-						<EachTeamFilter />
-						<OversFilter />
-					</div>
-				}
-			>
-				<HighestChaseTable />
-			</PageLayout>
+				filters={[<EachTeamFilter key="each-team" />, <OversFilter key="overs" />]}
+				queryOptions={trpc.teams.highestChases.queryOptions(search)}
+				columns={columns}
+				defaultSort={{ id: "target", desc: true }}
+			/>
 		);
 	},
 });
-
-function HighestChaseTable() {
-	const { overs, limit, each } = Route.useSearch();
-	const { data, status, error } = useQuery(trpc.teams.highestChases.queryOptions({ overs, limit, each }));
-
-	if (status === "pending") {
-		return <DataTableLoader />;
-	}
-
-	if (status === "error") {
-		return <DataTableError error={error.message} />;
-	}
-
-	return <DataTable columns={columns} data={data} defaultSort={{ id: "target", desc: true }} />;
-}

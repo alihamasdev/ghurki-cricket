@@ -29,6 +29,10 @@ export function createPrismaClient() {
 		connectionTimeoutMillis: 5000,
 	});
 
+	pool.on("error", (err) => {
+		console.error("Unexpected error on idle pg pool client:", err);
+	});
+
 	const adapter = new PrismaPg(pool);
 
 	const isDev = env.NODE_ENV === "development";

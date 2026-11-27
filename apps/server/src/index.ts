@@ -100,9 +100,9 @@ app.get(
 			}
 
 			res.setHeader("Content-Type", "image/webp");
-			res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-			res.setHeader("CDN-Cache-Control", "no-store");
-			res.setHeader("Vercel-CDN-Cache-Control", "no-store");
+			res.setHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
+			res.setHeader("CDN-Cache-Control", "public, s-maxage=86400, stale-while-revalidate=604800");
+			res.setHeader("Vercel-CDN-Cache-Control", "public, s-maxage=86400, stale-while-revalidate=604800");
 
 			if (upstream.body) {
 				// SAFETY: Fetch ReadableStream is compatible with Node.js Readable.fromWeb stream adapter.

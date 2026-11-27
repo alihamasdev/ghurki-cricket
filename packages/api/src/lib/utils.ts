@@ -6,6 +6,13 @@ export function ballsToOvers(balls: number): string {
 	return `${completedOvers}.${remainingBalls}`;
 }
 
+const shortDateFormatter = new Intl.DateTimeFormat("en-US", {
+	timeZone: "UTC",
+	month: "short",
+	day: "2-digit",
+	year: "numeric",
+});
+
 export function formatDate(inputDate: Date | string, type: "short" | "numeric" = "numeric"): string {
 	let date: Date;
 
@@ -18,12 +25,7 @@ export function formatDate(inputDate: Date | string, type: "short" | "numeric" =
 	}
 
 	if (type === "short") {
-		return Intl.DateTimeFormat("en-US", {
-			timeZone: "UTC",
-			month: "short",
-			day: "2-digit",
-			year: "numeric",
-		}).format(date);
+		return shortDateFormatter.format(date);
 	}
 
 	const y = date.getUTCFullYear();
