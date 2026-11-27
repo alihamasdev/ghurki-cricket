@@ -7,6 +7,7 @@ import { type ColumnDef } from "@/components/data-table";
 import { DateFilter } from "@/components/filters/date-filter";
 import { GroupFilter } from "@/components/filters/group-filter";
 import { StatsView } from "@/components/stats-view";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<FieldingStats>[] = [
@@ -18,12 +19,7 @@ const columns: ColumnDef<FieldingStats>[] = [
 
 export const Route = createFileRoute("/stats/fielding/")({
 	validateSearch: statSchema,
-	head: () => ({
-		meta: [
-			{ title: "Fielding Stats | Ghurki Cricket" },
-			{ name: "description", content: "Fielding statistics including catches and run-outs for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Fielding Stats", "Fielding statistics including catches and run-outs for Ghurki Cricket."),
 	component: () => {
 		const search = Route.useSearch();
 

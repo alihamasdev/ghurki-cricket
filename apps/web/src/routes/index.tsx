@@ -3,14 +3,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { sidebarList } from "@/components/app-sidebar";
 import { PageLayout } from "@/components/page-layout";
 import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
-	head: () => ({
-		meta: [
-			{ title: "Home | Ghurki Cricket" },
-			{ name: "description", content: "Overview and quick access to Ghurki Cricket stats, matches, players, and teams." },
-		],
-	}),
+	head: () => seo("Home", "Overview and quick access to Ghurki Cricket stats, matches, players, and teams."),
 	component: () => {
 		return (
 			<PageLayout title="Home">

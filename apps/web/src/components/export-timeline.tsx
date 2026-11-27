@@ -43,7 +43,7 @@ export function ExportTimeline({ timeline, title, unit = "runs" }: ExportTimelin
 	const [speed, setSpeed] = useState<VideoSpeed>(1);
 	const [renderId, setRenderId] = useState<string | null>(null);
 
-	const serverUrl = env.VITE_SERVER_URL.replace(/\/+$/, "");
+	const serverUrl = env.VITE_SERVER_URL;
 
 	/**  Mutation to start the export job on the backend */
 	const exportMutation = useMutation({

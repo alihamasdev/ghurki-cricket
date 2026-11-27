@@ -8,6 +8,7 @@ import { PlayerFilter } from "@/components/filters/player-filter";
 import { ImageCapture } from "@/components/image-capture";
 import { PageLayout } from "@/components/page-layout";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/compare/players")({
@@ -44,12 +45,7 @@ export const Route = createFileRoute("/compare/players")({
 			}
 		}
 	},
-	head: () => ({
-		meta: [
-			{ title: "Player vs Player | Ghurki Cricket" },
-			{ name: "description", content: "Head-to-head comparison and statistics between cricket players." },
-		],
-	}),
+	head: () => seo("Player vs Player", "Head-to-head comparison and statistics between cricket players."),
 	component: () => {
 		return (
 			<PageLayout

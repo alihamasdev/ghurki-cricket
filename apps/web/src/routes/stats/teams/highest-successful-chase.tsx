@@ -6,6 +6,7 @@ import { type ColumnDef } from "@/components/data-table";
 import { EachTeamFilter } from "@/components/filters/each-team-filter";
 import { OversFilter } from "@/components/filters/overs-filter";
 import { StatsView } from "@/components/stats-view";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<TeamHighestChaseStat>[] = [
@@ -19,12 +20,7 @@ const columns: ColumnDef<TeamHighestChaseStat>[] = [
 
 export const Route = createFileRoute("/stats/teams/highest-successful-chase")({
 	validateSearch: teamRunsSchema,
-	head: () => ({
-		meta: [
-			{ title: "Highest Successful Chase | Ghurki Cricket" },
-			{ name: "description", content: "Highest successful run chases by teams in Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Highest Successful Chase", "Highest successful run chases by teams in Ghurki Cricket."),
 	component: () => {
 		const search = Route.useSearch();
 

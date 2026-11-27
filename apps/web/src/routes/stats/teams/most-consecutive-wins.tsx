@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { type ColumnDef } from "@/components/data-table";
 import { StatsView } from "@/components/stats-view";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<TeamConsecutiveWinsStat>[] = [
@@ -11,12 +12,7 @@ const columns: ColumnDef<TeamConsecutiveWinsStat>[] = [
 ];
 
 export const Route = createFileRoute("/stats/teams/most-consecutive-wins")({
-	head: () => ({
-		meta: [
-			{ title: "Most Consecutive Wins | Ghurki Cricket" },
-			{ name: "description", content: "Longest consecutive match winning streaks by teams for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Most Consecutive Wins", "Longest consecutive match winning streaks by teams for Ghurki Cricket."),
 	component: () => {
 		return (
 			<StatsView

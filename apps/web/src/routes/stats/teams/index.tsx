@@ -5,6 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { type ColumnDef } from "@/components/data-table";
 import { OversFilter } from "@/components/filters/overs-filter";
 import { StatsView } from "@/components/stats-view";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<TeamStats>[] = [
@@ -20,12 +21,7 @@ const columns: ColumnDef<TeamStats>[] = [
 
 export const Route = createFileRoute("/stats/teams/")({
 	validateSearch: overSchema,
-	head: () => ({
-		meta: [
-			{ title: "Team Stats | Ghurki Cricket" },
-			{ name: "description", content: "Team statistics, match wins, series, runs, wickets, and strike rates for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Team Stats", "Team statistics, match wins, series, runs, wickets, and strike rates for Ghurki Cricket."),
 	component: () => {
 		const search = Route.useSearch();
 

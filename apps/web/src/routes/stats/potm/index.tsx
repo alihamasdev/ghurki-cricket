@@ -7,6 +7,7 @@ import { type ColumnDef } from "@/components/data-table";
 import { DateFilter } from "@/components/filters/date-filter";
 import { GroupFilter } from "@/components/filters/group-filter";
 import { StatsView } from "@/components/stats-view";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<POTMStats>[] = [
@@ -16,12 +17,7 @@ const columns: ColumnDef<POTMStats>[] = [
 
 export const Route = createFileRoute("/stats/potm/")({
 	validateSearch: statSchema,
-	head: () => ({
-		meta: [
-			{ title: "Player of the Match Stats | Ghurki Cricket" },
-			{ name: "description", content: "Player of the Match (POTM) awards tally and leaderboards for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Player of the Match Stats", "Player of the Match (POTM) awards tally and leaderboards for Ghurki Cricket."),
 	component: () => {
 		const search = Route.useSearch();
 

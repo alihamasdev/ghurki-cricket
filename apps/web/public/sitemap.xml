@@ -43,25 +43,105 @@
   <url>
     <loc>https://stats.alihamas.pk/stats/batting</loc>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/batting/average-day</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/batting/most-in-single-day</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/batting/timeline</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://stats.alihamas.pk/stats/bowling</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/bowling/average-day</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/bowling/most-in-single-day</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/bowling/timeline</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://stats.alihamas.pk/stats/fielding</loc>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/fielding/average-day</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/fielding/most-in-single-day</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/fielding/timeline</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://stats.alihamas.pk/stats/potm</loc>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/potm/most-in-single-day</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/potm/timeline</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://stats.alihamas.pk/stats/teams</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/teams/highest-runs</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/teams/lowest-runs</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/teams/highest-successful-chase</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/teams/lowest-score-defended</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://stats.alihamas.pk/stats/teams/most-consecutive-wins</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

@@ -8,6 +8,7 @@ import { type ColumnDef } from "@/components/data-table";
 import { DateFilter } from "@/components/filters/date-filter";
 import { GroupFilter } from "@/components/filters/group-filter";
 import { StatsView } from "@/components/stats-view";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<OtherBowlingStats>[] = [
@@ -22,12 +23,7 @@ const columns: ColumnDef<OtherBowlingStats>[] = [
 
 export const Route = createFileRoute("/stats/bowling/average-day")({
 	validateSearch: statSchema.omit({ date: true }),
-	head: () => ({
-		meta: [
-			{ title: "Average Day Stats | Ghurki Cricket" },
-			{ name: "description", content: "Average day bowling statistics for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Average Day Bowling", "Average day bowling statistics for Ghurki Cricket."),
 	component: () => {
 		const search = Route.useSearch();
 

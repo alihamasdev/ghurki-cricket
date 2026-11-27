@@ -6,6 +6,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { DataTable, type ColumnDef, DataTableError, DataTableLoader } from "@/components/data-table";
 import { DateFilter } from "@/components/filters/date-filter";
 import { PageLayout } from "@/components/page-layout";
+import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
 
@@ -17,12 +18,7 @@ const columns: ColumnDef<ExpenseStats>[] = [
 
 export const Route = createFileRoute("/_root/expense")({
 	validateSearch: expenseSchema,
-	head: () => ({
-		meta: [
-			{ title: "Expense | Ghurki Cricket" },
-			{ name: "description", content: "Track and review ground expenses and match costs for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Expense", "Track and review ground expenses and match costs for Ghurki Cricket."),
 	component: () => {
 		return (
 			<PageLayout

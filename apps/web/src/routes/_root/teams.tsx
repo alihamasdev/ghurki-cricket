@@ -5,15 +5,11 @@ import { TeamAvatar } from "@/components/avatar";
 import { PageError, PageLayout } from "@/components/page-layout";
 import { Item, ItemContent, ItemMedia, ItemTitle, ItemDescription } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/_root/teams")({
-	head: () => ({
-		meta: [
-			{ title: "Teams | Ghurki Cricket" },
-			{ name: "description", content: "Explore teams, team logos, and squad information for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Teams", "Explore teams, team logos, and squad information for Ghurki Cricket."),
 	component: () => {
 		return (
 			<PageLayout title="Teams">

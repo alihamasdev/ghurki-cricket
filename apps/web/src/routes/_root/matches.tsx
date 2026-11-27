@@ -9,16 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Item, ItemContent, ItemDescription, ItemFooter, ItemTitle } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/_root/matches")({
 	validateSearch: matchSchema,
-	head: () => ({
-		meta: [
-			{ title: "Matches | Ghurki Cricket" },
-			{ name: "description", content: "Browse all cricket matches, scores, dates, and match results for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Matches", "Browse all cricket matches, scores, dates, and match results for Ghurki Cricket."),
 	component: () => {
 		return (
 			<PageLayout

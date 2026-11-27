@@ -6,16 +6,12 @@ import { PlayerAvatar } from "@/components/avatar";
 import { PageError, PageLayout } from "@/components/page-layout";
 import { Item, ItemContent, ItemMedia, ItemTitle, ItemDescription } from "@/components/ui/item";
 import { Skeleton } from "@/components/ui/skeleton";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/_root/players")({
 	validateSearch: groupSchema,
-	head: () => ({
-		meta: [
-			{ title: "Players | Ghurki Cricket" },
-			{ name: "description", content: "View all player profiles and squad rosters for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Players", "View all player profiles and squad rosters for Ghurki Cricket."),
 	component: () => {
 		return (
 			<PageLayout title="Players">

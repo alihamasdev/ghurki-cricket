@@ -6,6 +6,7 @@ import { type ColumnDef } from "@/components/data-table";
 import { EachTeamFilter } from "@/components/filters/each-team-filter";
 import { OversFilter } from "@/components/filters/overs-filter";
 import { StatsView } from "@/components/stats-view";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<TeamLowestDefendedStat>[] = [
@@ -19,12 +20,7 @@ const columns: ColumnDef<TeamLowestDefendedStat>[] = [
 
 export const Route = createFileRoute("/stats/teams/lowest-score-defended")({
 	validateSearch: teamRunsSchema,
-	head: () => ({
-		meta: [
-			{ title: "Lowest Score Defended | Ghurki Cricket" },
-			{ name: "description", content: "Lowest scores defended by teams in Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Lowest Score Defended", "Lowest scores defended by teams in Ghurki Cricket."),
 	component: () => {
 		const search = Route.useSearch();
 

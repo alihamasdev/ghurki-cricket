@@ -7,6 +7,7 @@ import { type ColumnDef } from "@/components/data-table";
 import { DateFilter } from "@/components/filters/date-filter";
 import { GroupFilter } from "@/components/filters/group-filter";
 import { StatsView } from "@/components/stats-view";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<AttendanceStats>[] = [
@@ -17,12 +18,7 @@ const columns: ColumnDef<AttendanceStats>[] = [
 
 export const Route = createFileRoute("/stats/attendance/")({
 	validateSearch: statSchema,
-	head: () => ({
-		meta: [
-			{ title: "Attendance Stats | Ghurki Cricket" },
-			{ name: "description", content: "Player attendance tracking and participation statistics for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Attendance Stats", "Player attendance tracking and participation statistics for Ghurki Cricket."),
 	component: () => {
 		const search = Route.useSearch();
 

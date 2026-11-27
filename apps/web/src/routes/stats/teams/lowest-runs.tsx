@@ -6,6 +6,7 @@ import { type ColumnDef } from "@/components/data-table";
 import { EachTeamFilter } from "@/components/filters/each-team-filter";
 import { OversFilter } from "@/components/filters/overs-filter";
 import { StatsView } from "@/components/stats-view";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<TeamInningStat>[] = [
@@ -18,12 +19,7 @@ const columns: ColumnDef<TeamInningStat>[] = [
 
 export const Route = createFileRoute("/stats/teams/lowest-runs")({
 	validateSearch: teamRunsSchema,
-	head: () => ({
-		meta: [
-			{ title: "Lowest Runs by Teams in Inning | Ghurki Cricket" },
-			{ name: "description", content: "Lowest team innings scores, totals, and run rates for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Lowest Runs by Teams", "Lowest team innings scores, totals, and run rates for Ghurki Cricket."),
 	component: () => {
 		const search = Route.useSearch();
 

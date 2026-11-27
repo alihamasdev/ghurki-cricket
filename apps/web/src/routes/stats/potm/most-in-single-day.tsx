@@ -6,6 +6,7 @@ import { PlayerCell } from "@/components/avatar";
 import { type ColumnDef } from "@/components/data-table";
 import { GroupFilter } from "@/components/filters/group-filter";
 import { StatsView } from "@/components/stats-view";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<POTMStats>[] = [
@@ -15,12 +16,7 @@ const columns: ColumnDef<POTMStats>[] = [
 
 export const Route = createFileRoute("/stats/potm/most-in-single-day")({
 	validateSearch: groupSchema,
-	head: () => ({
-		meta: [
-			{ title: "Most in Single Day | Ghurki Cricket" },
-			{ name: "description", content: "Most in a single day Player of the Match statistics for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Most in Single Day POTM", "Most in a single day Player of the Match statistics for Ghurki Cricket."),
 	component: () => {
 		const search = Route.useSearch();
 

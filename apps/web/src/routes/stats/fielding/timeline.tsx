@@ -4,16 +4,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { DateFilter } from "@/components/filters/date-filter";
 import { GroupFilter } from "@/components/filters/group-filter";
 import { TimelineView } from "@/components/stats-view";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 export const Route = createFileRoute("/stats/fielding/timeline")({
 	validateSearch: statSchema,
-	head: () => ({
-		meta: [
-			{ title: "Fielding Timeline | Ghurki Cricket" },
-			{ name: "description", content: "Animated leaderboard timeline showing fielding catches over time for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Fielding Timeline", "Animated leaderboard timeline showing fielding catches over time for Ghurki Cricket."),
 	component: () => {
 		const search = Route.useSearch();
 

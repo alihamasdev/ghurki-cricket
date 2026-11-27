@@ -7,6 +7,7 @@ import { type ColumnDef } from "@/components/data-table";
 import { DateFilter } from "@/components/filters/date-filter";
 import { GroupFilter } from "@/components/filters/group-filter";
 import { StatsView } from "@/components/stats-view";
+import { seo } from "@/lib/seo";
 import { trpc } from "@/utils/trpc";
 
 const columns: ColumnDef<BattingStats>[] = [
@@ -27,12 +28,7 @@ const columns: ColumnDef<BattingStats>[] = [
 
 export const Route = createFileRoute("/stats/batting/")({
 	validateSearch: statSchema,
-	head: () => ({
-		meta: [
-			{ title: "Batting Stats | Ghurki Cricket" },
-			{ name: "description", content: "Batting leaderboards, runs, strike rates, averages, and boundaries for Ghurki Cricket." },
-		],
-	}),
+	head: () => seo("Batting Stats", "Batting leaderboards, runs, strike rates, averages, and boundaries for Ghurki Cricket."),
 	component: () => {
 		const search = Route.useSearch();
 
